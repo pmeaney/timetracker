@@ -21,19 +21,41 @@ if (!isProd) {
   const config = require("../../config/webpack.dev.js")
   const compiler = webpack(config)
 
-  const webpackDevMiddleware = require("webpack-dev-middleware")(
-    compiler,
-    config.devServer
-  )
+  // const webpackDevMiddleware = require("webpack-dev-middleware")(
+  //   compiler,
+  //   config.devServer
+  // )
 
-  const webpackHotMiddlware = require("webpack-hot-middleware")(
-    compiler,
-    config.devServer
-  )
+  // const webpackHotMiddleware = require("webpack-hot-middleware")(
+  //   compiler,
+  //   config.devServer
+  // )
 
-  app.use(webpackDevMiddleware)
-  app.use(webpackHotMiddlware)
-  console.log("Middleware enabled")
+  const webpackDevMiddleware = require("webpack-dev-middleware")
+  const webpackHotMiddleware = require("webpack-hot-middleware")
+  // app.use(webpackDevMiddleware)
+  // app.use(webpackHotMiddleware)
+  // console.log("Middleware enabled")
+
+  app.use(
+    webpackDevMiddleware(compiler, {
+      hot: true,
+      filename: "main-bundle.js",
+      publicPath: "/reactBundles/",
+      stats: {
+        colors: true
+      },
+      historyApiFallback: true
+    })
+  );
+
+  app.use(
+    webpackHotMiddleware(compiler, {
+      log: console.log,
+      path: "/__webpack_hmr",
+      heartbeat: 10 * 1000
+    })
+  );
 }
 
 // end: stuff for frontend development (webpack)

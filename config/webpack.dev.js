@@ -7,7 +7,7 @@ module.exports = {
       // "react-hot-loader/patch",
       "babel-runtime/regenerator",
       "babel-register",
-      "webpack-hot-middleware/client?reload=true",
+      "webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000",
       "./src/client/app.js"
     ]
   },
@@ -18,7 +18,7 @@ module.exports = {
     publicPath: "/"
   },
   devServer: {
-    contentBase: "dist",
+    contentBase: "../src/server/public/reactBundles",
     overlay: true,
     stats: {
       colors: true
@@ -37,31 +37,14 @@ module.exports = {
         ]
       },
       {
-        test: /\.css$/,
+        // this is to find css files
+        test: /\.s?css$/,
+        // this lets us set up an array of loaders
         use: [
-          {
-            loader: "style-loader"
-          },
-          { loader: "css-loader" }
-        ]
-      },
-      {
-        test: /\.jpg$/,
-        use: [
-          {
-            loader: "file-loader",
-            options: {
-              name: "images/[name].[ext]"
-            }
-          }
-        ]
-      },
-      {
-        test: /\.md$/,
-        use: [
-          {
-            loader: "markdown-with-front-matter-loader"
-          }
+          'style-loader', // dumps css file into style tag
+          'MiniCSSExtractPlugin.loader',
+          'css-loader', // reads css files in
+          'sass-loader' // reads sass files in
         ]
       }
     ]

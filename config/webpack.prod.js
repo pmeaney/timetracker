@@ -45,28 +45,16 @@ module.exports = env => {
           ]
         },
         {
-          test: /\.css$/,
-          use: [MiniCSSExtractPlugin.loader, "css-loader"]
-        },
-        {
-          test: /\.jpg$/,
-          use: [
-            {
-              loader: "file-loader",
-              options: {
-                name: "images/[name].[ext]"
-              }
-            }
-          ]
-        },
-        {
-          test: /\.md$/,
-          use: [
-            {
-              loader: "markdown-with-front-matter-loader"
-            }
-          ]
-        }
+        // this is to find css files
+        test: /\.s?css$/,
+        // this lets us set up an array of loaders
+        use: [
+          'style-loader', // dumps css file into style tag
+          'MiniCSSExtractPlugin.loader',
+          'css-loader', // reads css files in
+          'sass-loader' // reads sass files in
+        ]
+      }
       ]
     },
     plugins: [
@@ -82,20 +70,6 @@ module.exports = env => {
           NODE_ENV: JSON.stringify(env.NODE_ENV)
         }
       }),
-      new HTMLWebpackPlugin({
-        template: "./src/client/index.ejs",
-        filename: "index.html",
-        inject: true,
-        title: "Link's Journal",
-        chunks: ["vendor", "main"]
-      }),
-      // new HTMLWebpackPlugin({
-      //   template: "./src/client/index.ejs",
-      //   filename: "blog.html",
-      //   inject: true,
-      //   chunks: ["vendor", "main2"],
-      //   title: "Blog"
-      // }),
       new UglifyJSPlugin(),
       new CompressionPlugin({
         algorithm: "gzip"
