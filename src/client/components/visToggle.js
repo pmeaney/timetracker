@@ -23,7 +23,8 @@ export default class MyComponent extends React.Component {
       return (
         <div>
           <button onClick={this.toggleVisibility}>Click Me</button>
-          <h1>Now you see me!</h1>
+          <h1>Now you see me! !
+          </h1>
         </div>
       );
     } else {
