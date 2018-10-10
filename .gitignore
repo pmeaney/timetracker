@@ -1,0 +1,8 @@
+**/.DS_Store
+**.log
+**/.sass-cache
+**/node_modules
+**/.Rhistory
+
+.env
+projectNotes.txt
