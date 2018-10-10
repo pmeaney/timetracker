@@ -36,12 +36,12 @@ if (!isProd) {
   console.log("Middleware enabled")
 }
 
-const expressStaticGzip = require("express-static-gzip")
-app.use(
-  expressStaticGzip("dist", {
-    enableBrotli: true
-  })
-)
+// const expressStaticGzip = require("express-static-gzip")
+// app.use(
+//   expressStaticGzip("dist", {
+//     enableBrotli: true
+//   })
+// )
 // end: stuff for frontend development (webpack)
 
 app.use(logger('dev'));
