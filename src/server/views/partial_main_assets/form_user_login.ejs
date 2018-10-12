@@ -1,0 +1,68 @@
+<!-- note: can use "novalidate" empty attribute (it has no quotes or anything) on form tag -->
+<form class="form-horizontal" role="form" method="POST" action="/users/login" novalidate>
+  <div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+      <h5>Please login below</h2>
+        <hr>
+        <p>
+          <% if (Object.keys(errors).length === 0) { %>
+          <% } else { %>
+          <h6 class="text-danger">Oops, please correct the following:</h2>
+            <ul class="errors-list">
+              <% Object.values(errors).forEach(error => { %>
+              <li class="text-danger">
+                <%= error.msg %>
+              </li>
+              <% }) %>
+            </ul>
+            <% } %>
+        </p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-3 field-label-responsive <%= errors.email ? 'is-invalid' : '' %>">
+      <label for="email">E-Mail Address</label>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+        <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+          <input type="text" name="email" class="form-control" id="email" placeholder="you@example.com" required
+            autofocus>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <!-- <div class="form-control-feedback">
+                        <span class="text-danger align-middle">
+                            Put e-mail validation error messages here
+                        </span>
+                </div> -->
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-3 field-label-responsive <%= errors.password ? 'is-invalid' : '' %>">
+      <label for="password">Password</label>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group has-danger">
+        <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+          <input type="password" name="password" class="form-control" id="password" placeholder="Password" required>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <!-- <div class="form-control-feedback">
+                        <span class="text-danger align-middle">
+                            <i class="fa fa-close"> Example Error Message</i>
+                        </span>
+                </div> -->
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+      <button type="submit" class="btn btn-success">Login</button>
+    </div>
+  </div>
+</form>

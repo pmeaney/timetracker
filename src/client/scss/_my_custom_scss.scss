@@ -1,0 +1,514 @@
+// * {
+//     border: 1px solid red;
+// }
+
+/* NOTE: NEED TO EXTEND BOOTSTRAP4 BUTTON CODE, OR NEST SPAN INSIDE SOMETHING ELSE.. FIX BUTTON ISSUE.
+Can reference my old scss from git repo to sort of reapproach the process with original setup (minus icons)
+then very carefully work the icons in, and check and make sure all bootstrap4 buttons are not changed.
+perhaps just copy the btn code, and then create an "extended" button just for icons' buttons 
+
+Bootstrap 4 Sass Mixins [Cheat sheet with examples] - https://gist.github.com/RickR2H/92984dbeaf051300f4b1eb3422e28777
+simple custom buttons -- https://codepen.io/jason-kinney/pen/AqbCi
+how to setup custom breakpoint xxl https://www.youtube.com/watch?v=B2_AMTwYm30
+
+Bootstrap 4  - interactive list of Classes Cheat Sheet for v 4.1.1
+https://hackerthemes.com/bootstrap-cheatsheet
+
+// .popup modal css source:  https://codepen.io/iampankajdhiman/pen/oBYYgg
+
+*/
+
+/* ################################################################# */
+
+body {
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.table-wrapper-2 {
+    display: block;
+    max-height: 300px;
+    overflow-y: auto;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+.popup {
+  width: 100%;
+  height: 100%;
+  display: none;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 100;
+}
+
+.popup {
+  text-align: center;
+}
+
+.popup:before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  margin-right: -4px;
+  vertical-align: middle;
+}
+
+.popup-inner {
+  display: inline-block;
+  text-align: left;
+  vertical-align: middle;
+  position: relative;
+  max-width: 700px;
+  width: 90%;
+  padding: 40px;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 1);
+  border-radius: 3px;
+  background: #fff;
+  text-align: center;
+  // z-index: 9999;
+
+}
+
+.popup-inner h1 {
+  font-family: 'Roboto Slab', serif;
+  font-weight: 700;
+}
+
+.popup-inner p {
+  font-size: 24px;
+  font-weight: 400;
+}
+
+.popup-close {
+  width: 34px;
+  height: 34px;
+  padding-top: 4px;
+  display: inline-block;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  -webkit-transform: translate(50%, -50%);
+  transform: translate(50%, -50%);
+  border-radius: 100%;
+  background: transparent;
+  border: solid 4px #808080;
+}
+
+.popup-close:after,
+.popup-close:before {
+  content: "";
+  position: absolute;
+  top: 11px;
+  left: 5px;
+  height: 4px;
+  width: 16px;
+  border-radius: 30px;
+  background: #808080;
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+.popup-close:after {
+  -webkit-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+}
+
+.popup-close:hover {
+  -webkit-transform: translate(50%, -50%) rotate(180deg);
+  transform: translate(50%, -50%) rotate(180deg);
+  background: #f00;
+  text-decoration: none;
+  border-color: #f00;
+}
+
+.popup-close:hover:after,
+.popup-close:hover:before {
+  background: #fff;
+}
+
+
+
+/* ################################################################# */
+.my-modal-backdrop{
+  // height: 10rem;
+  // width: 10rem;
+  // background: black;
+  z-index: 100;
+ //  position: fixed;
+ //  display: none;
+
+  width: 100%;
+  height: 100%;
+  display: none;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  background: rgba(0, 0, 0, 0.75);
+}
+
+
+
+span.employee_activities_icon { // source of this way of using span to hold svg: https://codepen.io/rasx/pen/VeQNgv
+    background: url(/icons/employee_activity.svg) no-repeat top left;
+    background-size: contain;
+    // cursor: pointer;
+    display: inline-block;
+    margin: .3rem .2rem 0 .4rem;
+    height: 2.5rem;
+    width: 2.5rem;
+}
+
+span.timesheets_icon { // source of this way of using span to hold svg: https://codepen.io/rasx/pen/VeQNgv
+    background: url(/icons/calendar-clock.svg) no-repeat top left;
+    background-size: contain;
+    // cursor: pointer;
+    display: inline-block;
+    margin: .3rem .2rem 0 .4rem;
+    height: 2.5rem;
+    width: 2.5rem;
+}
+
+span.calendar_icon { // source of this way of using span to hold svg: https://codepen.io/rasx/pen/VeQNgv
+    background: url(/icons/calendar.svg) no-repeat top left;
+    background-size: contain;
+    // cursor: pointer;
+    display: inline-block;
+    margin: .3rem .3rem 0 .3rem;
+    padding: 0;
+    height: 2.5rem;
+    width: 2.5rem;
+}
+
+span.activity_magnifyingGlass_icon { // source of this way of using span to hold svg: https://codepen.io/rasx/pen/VeQNgv
+    background: url(/icons/magnifyingGlass_icon_dark.svg) no-repeat top left;
+    background-size: contain;
+    // cursor: pointer;
+    display: inline-block;
+    // margin: .3rem .3rem 0 .3rem;
+    height: 1.3rem;
+    width: 1.3rem;
+}
+
+
+.close-bs4{
+  background: none;
+  border-radius: .5rem;
+  padding: .4rem .7rem .4rem .7rem;
+
+}
+
+.quotation-header{
+  color: lightgrey;
+  font-style: italic;
+}
+
+.my-close-btn {
+    @include float-right;
+    height: 2rem;
+    // ref: https://stackoverflow.com/questions/30108750/bootstrap-and-z-index
+    // z-index: 100;
+    // position: relative;
+    border-radius: .2rem;
+    background: $gray-100;
+    &:hover {
+        background: $white;
+    }
+}
+
+.employee-zoom-btn {
+    @include float-right;
+    height: 2rem;
+    padding: .3rem .3rem;
+    // ref: https://stackoverflow.com/questions/30108750/bootstrap-and-z-index
+    // z-index: 100;
+    // position: relative;
+    border-radius: .2rem;
+    background: $gray-100;
+    &:hover {
+        background: $white;
+    }
+}
+
+
+
+.my-icon-btn { // grep -nr 'button-size' ./scss
+  display: inline-block;
+  font-weight: $btn-font-weight;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  user-select: none;
+  border: $btn-border-width solid transparent;
+  // grep -nr 'button-size' ./scss  --> shows definition of button-size
+  // note: I reduce padding-y and padidng-x to accomodate the svg icons into the buttons
+  @include button-size(0, 0, $font-size-base, $btn-line-height, $btn-border-radius);
+  @include transition($btn-transition);
+
+  // Share hover and focus styles
+  @include hover-focus {
+    text-decoration: none;
+  }
+
+  &:focus,
+  &.focus {
+    outline: 0;
+    box-shadow: $btn-focus-box-shadow;
+  }
+
+  // Disabled comes first so active can properly restyle
+  &.disabled,
+  &:disabled {
+    opacity: $btn-disabled-opacity;
+    @include box-shadow(none);
+  }
+
+  // Opinionated: add "hand" cursor to non-disabled .btn elements
+  &:not(:disabled):not(.disabled) {
+    cursor: pointer;
+  }
+
+  &:not(:disabled):not(.disabled):active,
+  &:not(:disabled):not(.disabled).active {
+    background-image: none;
+    @include box-shadow($btn-active-box-shadow);
+
+    &:focus {
+      @include box-shadow($btn-focus-box-shadow, $btn-active-box-shadow);
+    }
+  }
+}
+
+
+
+@include media-breakpoint-down(xs) { 
+  .row-sx-screen-w100 {
+    width: 100%;
+  }
+}
+
+
+// .grey-border-outline {
+//     border: 2px solid $gray-100;
+//     border-radius: .5rem;
+// }
+
+
+
+#map {
+  height: 100%;
+}
+
+.responsiveCal {
+  position: relative; padding-bottom: 75%; height: 0; overflow: hidden;
+}
+ 
+.responsiveCal iframe {
+  position: absolute; top:0; left: 0; width: 100%; height: 100%;
+}
+
+.my-vis-check {
+  border: 1px solid red;
+}
+
+body {
+  padding-top: 1rem;
+}
+
+.flash-msg {
+  width: 80%;
+}
+
+.employee_activities_list{
+  overflow-y: scroll;
+  // overflow-x: scroll;
+  min-height:22rem;
+  max-height:22rem;
+  // .card {
+    .card {
+        // height: 100%;
+        min-height:21rem;
+        // max-height:20rem;
+        min-width: 18rem;
+        max-width: 18rem;
+        margin-right: 0.5rem;
+    }
+  // }
+}
+
+.admin_activities_list {
+  overflow-y: scroll;
+  overflow-x: scroll;
+  min-height:22rem;
+  max-height:22rem;
+  // .card {
+    .card {
+        // height: 100%;
+        min-height:21rem;
+        // max-height:20rem;
+        min-width: 18rem;
+        max-width: 18rem;
+        margin-right: 0.5rem;
+    }
+  // }
+}
+
+
+
+.timesheet_scroll_card {
+  overflow-y: scroll;
+  overflow-x: scroll;
+  min-height:22rem;
+  max-height:22rem;
+  table {
+    overflow-y: scroll;
+    overflow-x: scroll;
+  }
+}
+
+
+.form-field-invalid {
+    border: 1px solid red;
+}
+
+.starter-template {
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.border-rad-025 {
+    border-radius: .25rem
+}
+// derp devnote: .sidenav width is the same width as margin-left .shift-for-sidebar
+// it should be 4 rem. which represents 64px.  
+// this is just big enough (the perfect size) to contain the buttons
+.sidenav {
+    width: 4rem;
+    position: fixed;
+    z-index: 1;
+    top: 20px;
+    left: 10px;
+    background: #eee;
+    overflow-x: hidden;
+    // padding: .3rem 0;
+    margin-top: 4rem;
+    border-radius: .25rem;
+}
+
+.sidenav a {
+    padding: 6px 8px 6px 6px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #2196F3;
+    display: block;
+
+}
+
+.sidenav a:hover {
+    color: #064579;
+}
+
+/* derp devnote: margin-left here is width of the .sidenav + left position in px */
+.shift-for-sidebar {
+    margin-left: 5.5rem;
+    // font-size: 28px; 
+    padding: 0px 10px;
+    // width: 95%;
+    @include media-breakpoint-up(sm) { 
+        width: 87%;
+    }
+    @include media-breakpoint-up(md) { 
+        width: 91%;
+    }
+    @include media-breakpoint-up(lg) { 
+        width: 94%;
+    }
+    @include media-breakpoint-up(xl) { 
+        width: 96%;
+    }
+    // for larger breakpoint check this out: https://www.youtube.com/watch?v=B2_AMTwYm30
+}
+
+@media screen and (max-height: 450px) {
+    .sidenav {padding-top: 0.3rem; }
+    .sidenav a {font-size: 18px; }
+}
+
+.displayToggle {
+    // -webkit-transition: width 0.5s ease;
+    // -moz-transition: width 0.5s ease;
+    // -o-transition: width 0.5s ease;
+    // transition: width 0.5s ease;
+    
+    
+    // overflow: hidden;
+    // white-space: nowrap;
+    // background: yellow;
+    // vertical-align: middle;
+    // line-height: 30px;
+    // height: auto;
+    display: none;
+    width: 95%;
+}
+
+.center-block {
+  display: block;
+  margin: 1rem auto;
+  text-align: center;
+}
+
+// .my-icon-btn {
+//     @include btn
+
+// }
+
+
+
+.shadow {  // source: https://codepen.io/souajitn/pen/xdMWoR
+  box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+  transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  &:hover {
+    box-shadow: 0px 11px 15px -7px rgba(0, 0, 0, 0.2), 0px 24px 38px 3px rgba(0, 0, 0, 0.14), 0px 9px 46px 8px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.shadow-nohover {  // source: https://codepen.io/soumyajitn/pen/xdMWoR
+  box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+  transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+
+/* #####################    For   homepage.ejs  
+
+/* #### D3 #### */
+/* Style the lines by removing the fill and applying a stroke */
+.line {
+    fill: none;
+    stroke: #ffab00;
+    stroke-width: 3;
+}
+
+/* Style the dots by assigning a fill and stroke */
+.dot {
+    fill: #ffab00;
+    stroke: #fff;
+}
+
+/*!
+ * Start Bootstrap - 1 Col Portfolio (https://startbootstrap.com/template-overviews/1-col-portfolio)
+ * Copyright 2013-2018 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-1-col-portfolio/blob/master/LICENSE)
+ */
+
+// body {
+//   padding-top: 54px;
+// }
+
+// @media (min-width: 992px) {
+//   body {
+//     padding-top: 56px;
+//   }
+// }
+

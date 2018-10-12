@@ -1,0 +1,123 @@
+
+const Promise = require('bluebird');
+
+// knex
+const dotenv = require("dotenv").config({ path: '../.env'}); // access .env dotfile settings
+const knex = require('knex');
+const environment = process.env.NODE_ENV;
+const knex_config = require('../knexfile');
+const database = require('knex')(knex_config[environment]);
+
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+
+/*
+''	
+''	This file defines the functions used in the User authorization aspect of the app.
+''	These functions handle things relevant just to user data.
+''	Things such as: registering, logging in, and accessing the user's profile data
+''
+*/
+
+const hashPassword = (password) => {
+	return bcrypt.hash(password, saltRounds)
+}
+
+// this shows useful example:
+// https://gist.github.com/joepie91/4c3a10629a4263a522e3bc4839a28c83
+
+const getUserByEmail = (email) => {
+	return Promise.try(() => {
+	        return database("users").where({ user_email: email });
+    })
+}
+
+
+const createUser = (email, hashed_password) => {
+
+	// our default usertype is 'general-hasNot-applied'
+	return Promise.try(() => {
+		return database('users').insert([
+			{	user_email: email,
+			 	hashed_password: hashed_password,
+			 	user_type: 'general-hasNot-applied'
+			}
+		])
+	})
+}
+
+
+
+// try this function
+// https://www.abeautifulsite.net/hashing-passwords-with-nodejs-and-bcrypt
+const checkPasswordForEmail = (password, email)=> {
+
+	// return Promise.try((email) => {
+	return Promise.try(() => {
+	        return database("users").where({ user_email: email });
+	}).then((user)=>{
+		console.log('user from user_fns of user lookup is ', user)
+		// compare hashed version of the password input via the form
+		// with the [looked-up-by-email] user's hashed password
+
+		return Promise.try(() => {
+
+			return bcrypt.compare(password, user[0]["hashed_password"])
+
+			  if(res) {
+			   // Passwords match
+			   console.log('[Msg from user_fns.js] we have a match')
+			   return true
+			  } else {
+			   // Passwords don't match
+			   console.log('[Msg from user_fns.js] we do not have a match')
+			   return false
+			  } 
+
+		})
+
+	})
+}
+
+// need to do the same with the resume filename   !!!!!!!  #  # # # # #
+const uploadProfilePhoto_filename = (user_id, user_profile_imageFilename) => {
+
+// // Just need to: 1. lookup by user_id from session, and B. insert/update
+
+/* 
+
+prob need to "insert" . "where" thing = thing
+
+	return Promise.try(() => {
+	        return database("user_profiles").where({ user_id: user_id });
+	    }).then  .... not sure yet
+
+
+	return Promise.try(() => {
+		return database('user_profiles').insert([
+			{	user_profile_imageFilename: user_profile_imageFilename	}
+		])
+	})
+
+*/
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+module.exports = {
+    hashPassword,
+    getUserByEmail,
+    createUser,
+    checkPasswordForEmail,
+    uploadProfilePhoto_filename
+};

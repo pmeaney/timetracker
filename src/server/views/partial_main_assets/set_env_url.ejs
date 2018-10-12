@@ -1,0 +1,16 @@
+<script>
+  // gets set to either production or development
+  // depending on process.env.NODE_ENV
+  var env = '<%= env %>';
+
+  // console.log('env is', env);
+
+  if (env == 'development') {
+    var env_root_url = 'http://localhost:3000'
+  }
+
+  if (env == 'production') {
+    var env_root_url = 'https://pmeaney.com'
+  }
+
+</script>

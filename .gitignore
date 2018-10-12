@@ -4,5 +4,7 @@
 **/node_modules
 **/.Rhistory
 
-.env
+**/.env
+**/config.json
+
 projectNotes.txt

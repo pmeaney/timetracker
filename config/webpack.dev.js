@@ -42,7 +42,6 @@ module.exports = {
         // this lets us set up an array of loaders
         use: [
           'style-loader', // dumps css file into style tag
-          'MiniCSSExtractPlugin.loader',
           'css-loader', // reads css files in
           'sass-loader' // reads sass files in
         ]

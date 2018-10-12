@@ -60,7 +60,7 @@ module.exports = env => {
     plugins: [
       new MiniCSSExtractPlugin(),
       new OptimizeCssAssetsPlugin({
-        assetNameRegExp: /\.css$/g,
+        assetNameRegExp: /\.s?css$/g,
         cssProcessor: require("cssnano"),
         cssProcessorOptions: { discardComments: { removeAll: true } },
         canPrint: true
