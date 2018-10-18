@@ -6,12 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-  
     <title>Login</title>
+
   
     <!-- Currently CSS is in react bundle -->
     <!-- <link href="/stylesheets/bootstrap4-compiled.css" rel="stylesheet" type="text/css"> -->
-  
+    <link rel='stylesheet' href='/reactBundles/main.css' />
   
   </head>
 
@@ -69,7 +69,7 @@
   <div class="alert alert-info" role="alert"><%= messages.success %></div>
 <% } %>
 
-<% include ../partials_main_assets/form_user_login %>
+<% include ../page_partials/form_user_login %>
 
 </div>
 
@@ -77,20 +77,8 @@
 </main><!-- /.container -->
 
 <!-- framework js, such as from jquery, bootstrap, popper, etc -->
-<% include ../partials_main_assets/set_env_url %>
-
-<!-- my JS acting on the page, such as for sidebar functionality -->
-<!-- <% include ../partials_main_assets/included_custom_employee_js_assets %> -->
-<!-- This would include:    ...note: these should be in react bundle or a vendor bundle
-<script src="/javascripts/prefab_js_assets/jquery-3.3.1.min.js"></script>
-<script src="/javascripts/prefab_js_assets/popper.min.js"></script>
-<script src="/javascripts/prefab_js_assets/bootstrap.min.js"></script>
-<script src="/javascripts/prefab_js_assets/bootstrap.bundle.min.js"></script>
-<script src="/javascripts/prefab_js_assets/holder.min.js"></script>
-<script src="/javascripts/prefab_js_assets/anchor.min.js"></script>
-<script src="/javascripts/prefab_js_assets/clipboard.min.js"></script>
-<script src="/javascripts/prefab_js_assets/d3.js"></script>
- -->
+<% include ../page_partials/set_env_url %>
+<script src="/reactBundles/main-bundle.js"></script>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->

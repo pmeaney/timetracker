@@ -10,16 +10,12 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 module.exports = env => {
   return {
     entry: {
-      // 'component_modules/employee_dashboard/mainExample': [
-      //   "./src/client/mainExample.js"
-      // ],
-      'component_modules/employee_dashboard/testCardArray': [
-        "./src/client/testCardArray.js"
-      ]
+      main: ["./src/client/app.js"],
+      // main2: ["./src/client/main2.js"]
     },
     mode: "production",
     output: {
-      filename: "[name].js",
+      filename: "[name]-bundle.js",
       path: path.resolve(__dirname, "../src/server/public/reactBundles"),
       publicPath: "/"
     },
@@ -36,13 +32,13 @@ module.exports = env => {
         }
       },
       minimizer: [
-      new UglifyJsPlugin({
-        cache: true,
-        parallel: true,
-        sourceMap: true // set to true if you want JS source maps
-      }),
-      // new OptimizeCssAssetsPlugin({})
-    ]
+        new UglifyJsPlugin({
+          cache: true,
+          parallel: true,
+          sourceMap: true // set to true if you want JS source maps
+        }),
+        // new OptimizeCssAssetsPlugin({})
+      ]
     },
     module: {
       rules: [
@@ -56,16 +52,16 @@ module.exports = env => {
           ]
         },
         {
-        // this is to find css files
-        test: /\.s?ass$/,
-        // this lets us set up an array of loaders
-        use: [
-          'style-loader', // dumps css file into style tag
-          MiniCssExtractPlugin.loader,
-          'css-loader', // reads css files in
-          'sass-loader' // reads sass files in
-        ]
-      }
+          // this is to find css files
+          test: /\.s?css$/,
+          // this lets us set up an array of loaders
+          use: [
+            'style-loader', // dumps css file into style tag
+            MiniCssExtractPlugin.loader,
+            'css-loader', // reads css files in
+            'sass-loader' // reads sass files in
+          ]
+        }
       ]
     },
     plugins: [

@@ -7,7 +7,17 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/test', function (req, res, next) {
-  res.render('test');
+  res.render('reactTesting/test');
 });
+
+router.get('/test2', function (req, res, next) {
+  res.render('reactTesting/test2');
+});
+
+
+router.get('/testReactStrap', function (req, res, next) {
+  res.render('reactTesting/testReactStrap');
+});
+
 
 module.exports = router;

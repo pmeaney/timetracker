@@ -3,23 +3,17 @@ const webpack = require("webpack")
 
 module.exports = {
   entry: {
-    'component_modules/employee_dashboard/mainExample': [
+    main: [
       // "react-hot-loader/patch",
       "babel-runtime/regenerator",
       "babel-register",
       "webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000",
-      "./src/client/mainExample.js"
-    ],
-    'component_modules/employee_dashboard/testCardArray': [
-      "babel-runtime/regenerator",
-      "babel-register",
-      "webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000",
-      "./src/client/testCardArray.js"
+      "./src/client/app.js"
     ]
   },
   mode: "development",
   output: {
-    filename: "[name].js",
+    filename: "[name]-bundle.js",
     path: path.resolve(__dirname, "../src/server/public/reactBundles"),
     publicPath: "/"
   },
@@ -43,7 +37,7 @@ module.exports = {
         ]
       },
       { // Compile Boostrap4 scss
-        test: /.*\.s?ass$/,
+        test: /.*\.s?css$/,
           use: [
             'style-loader', // dumps css file into style tag
             'css-loader', // reads css files in
