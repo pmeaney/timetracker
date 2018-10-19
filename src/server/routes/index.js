@@ -11,7 +11,7 @@ router.get('/test', function (req, res, next) {
 });
 
 router.get('/test2', function (req, res, next) {
-  res.render('reactTesting/test2');
+  res.render('reactTesting/test2', { testInfo: 'blah this is a test' });
 });
 
 
