@@ -37,7 +37,7 @@ module.exports = {
         ]
       },
       { // Compile Boostrap4 scss
-        test: /.*\.s?css$/,
+        test: /.*\.(sass|scss|css)$/,
           use: [
             'style-loader', // dumps css file into style tag
             'css-loader', // reads css files in

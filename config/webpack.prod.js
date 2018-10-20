@@ -57,7 +57,7 @@ module.exports = env => {
         },
         {
         // this is to find css files
-        test: /\.s?ass$/,
+        test: /\.s?[ac]ss$/,
         // this lets us set up an array of loaders
         use: [
           'style-loader', // dumps css file into style tag

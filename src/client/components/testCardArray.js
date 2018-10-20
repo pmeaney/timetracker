@@ -1,6 +1,9 @@
 import '../scss/bulma_sass/bulma.sass'
 import React from 'react';
 
+// NOTE: DUPLICATE THIS, AND THEN CHANGE OUT THE MAIN CONTAINING CARD FOR A MESSAGE
+  // -- It has the [X] button build in already
+// https://bulma.io/documentation/components/message/
 const Example = (props) => {
   return (
     <div class="container topSpacing">
@@ -18,7 +21,7 @@ const Example = (props) => {
         <div class="card-content">
           <div class="content">
       <h1 class="title">Some title</h1>
-            <div class="columns overflowXYScroll makeFixedColumnHeight">
+      <div class="columns overflowXYScroll makeFixedColumnHeight">
         <div class="column makeFixedColumnWidth">
                 <div class="box">Charlie {window.testInfo}
           </div>

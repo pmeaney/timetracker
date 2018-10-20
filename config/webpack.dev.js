@@ -43,13 +43,16 @@ module.exports = {
         ]
       },
       { // Compile Boostrap4 scss
-        test: /.*\.s?ass$/,
+        test: /\.s[ac]ss$/,
           use: [
             'style-loader', // dumps css file into style tag
             'css-loader', // reads css files in
             'sass-loader' // reads sass files in
           ]
-      }
+      },
+        { test:  /\.(png|woff|woff2|eot|ttf|svg|gif)$/,
+          loader: 'url-loader?limit=100000'
+        }
     ]
   },
   plugins: [
