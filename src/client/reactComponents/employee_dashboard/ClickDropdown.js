@@ -3,17 +3,6 @@ import "../../scss/bulma_sass/bulma.sass"
 import { toggleOnVisibility_ViewportA, toggleOffVisibility_ViewportA } from "./redux/actions"
 import { connect } from 'react-redux'
 import { dispatch } from 'redux'
-/* 
-idea: 
-menuVisibility begins as false.
-onMouseClick of Button,  menuVisibility changes to true
-onMouseLeave of Button, menuVisibility changes to false, UNLESS onMouseEnter of Menu is true and onMouseLeave of Menu is false
-onMouseLeave of Menu,  menuVisibility changes to false
-
-On click of a dropdown button, change set LocalStorage key-value to true for the particular viewport corresponding to the button.
-Within testViewportIdea.js (the main container, i.e. app container), for each 'task list' viweport window, check localStorage for visibility.
-If visible, show it.  if not, null.
-   */
 
 class ClickDropdown extends Component {
 
