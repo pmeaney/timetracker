@@ -1,7 +1,7 @@
 {
   "presets": [
     [
-      "env",
+      "@babel/env",
       {
         "targets": {
           "browsers": ["last 2 versions"]
@@ -9,7 +9,8 @@
         "debug": false
       }
     ],
-    "babel-preset-react"
+    "@babel/preset-react"
   ],
-  "plugins": ["transform-runtime", "react-hot-loader/babel"]
+  "plugins": ["@babel/transform-runtime",
+              "react-hot-loader/babel"]
 }

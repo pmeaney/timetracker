@@ -5,7 +5,7 @@ import "../../scss/bulma_sass/bulma.sass"
 idea: 
 menuVisibility begins as false.
 onMouseEnter of Button,  menuVisibility changes to true
-onMouseLeave of Button, menuVisibility changes to true, UNLESS onMouseEnter of Menu is true and onMouseLeave of Menu is false
+onMouseLeave of Button, menuVisibility changes to false, UNLESS onMouseEnter of Menu is true and onMouseLeave of Menu is false
 onMouseLeave of Menu,  menuVisibility changes to false
    */
 
@@ -50,13 +50,13 @@ class Example extends Component {
   }
 
   Toggle_onMouseEnter_menu() {
-    this.setState(prevState => ({
+    this.setState(() => ({
       menuVisibility: true 
     }))
   }
 
   ToggleMenuVisibility() {
-    this.setState(prevState => ({
+    this.setState(() => ({
       menuVisibility: true
     }))
   }
@@ -87,10 +87,6 @@ class Example extends Component {
           </div>
         : null
         }
-        
-        <h1>
-          Hide and Show in React js
-        </h1>
       </div>
     )
   }

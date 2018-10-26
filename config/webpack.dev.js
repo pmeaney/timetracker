@@ -3,18 +3,18 @@ const webpack = require("webpack")
 
 module.exports = {
   entry: {
-    'component_modules/employee_dashboard/mainExample': [
-      // "react-hot-loader/patch",
-      "babel-runtime/regenerator",
-      "babel-register",
-      "webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000",
-      "./src/client/mainExample.js"
-    ],
+    // 'component_modules/employee_dashboard/mainExample': [
+    //   // "react-hot-loader/patch",
+    //   "babel-runtime/regenerator",
+    //   "babel-register",
+    //   "webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000",
+    //   "./src/client/mainExample.js"
+    // ],
     'component_modules/employee_dashboard/testCardArray': [
       "babel-runtime/regenerator",
       "babel-register",
       "webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000",
-      "./src/client/testCardArray.js"
+      "./src/client/ViewportApp.js"
     ]
   },
   mode: "development",
@@ -43,7 +43,7 @@ module.exports = {
         ]
       },
       { // Compile Boostrap4 scss
-        test: /\.s[ac]ss$/,
+        test: /\.(s[ac]ss|css)$/,
           use: [
             'style-loader', // dumps css file into style tag
             'css-loader', // reads css files in

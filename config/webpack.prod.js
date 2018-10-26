@@ -14,7 +14,7 @@ module.exports = env => {
       //   "./src/client/mainExample.js"
       // ],
       'component_modules/employee_dashboard/testCardArray': [
-        "./src/client/testCardArray.js"
+        "./src/client/ViewportApp.js"
       ]
     },
     mode: "production",

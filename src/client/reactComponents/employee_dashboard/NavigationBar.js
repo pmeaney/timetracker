@@ -1,7 +1,7 @@
 import '../../scss/bulma_sass/bulma.sass'
 import React from 'react';
-// import DropdownMenu from './DropdownMenu'
-import { PopUpMenu } from './PopUpMenu'
+import ClickDropdown from './ClickDropdown'
+import 'normalize.css'
 
 const NavigationBar = (props) => {
   return (
@@ -9,7 +9,8 @@ const NavigationBar = (props) => {
   <nav className="navbar" role="navigation" aria-label="main navigation">
   <div className="navbar-brand">
     <a className="navbar-item">
-      <PopUpMenu />
+      {/* <PopUpMenu /> */}
+      <ClickDropdown />
       {/* <DropdownMenu /> */}
     </a>
 

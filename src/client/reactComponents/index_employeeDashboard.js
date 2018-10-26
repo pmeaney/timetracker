@@ -3,15 +3,17 @@ import React from 'react';
 import TaskList from './employee_dashboard/TaskList'
 import NavigationBar from './employee_dashboard/NavigationBar'
 
-const Example = (props) => {
+/*  
+The thing that controls the viewports is the HoverDropdown */
+const EmployeeDashboard = (props) => {
   return (
     <div>
       <NavigationBar />
-      <div class="container topSpacing">
+      <div className="container topSpacing">
         <TaskList />
       </div>
     </div>
   )
 }
 
-export default Example
+export default EmployeeDashboard
