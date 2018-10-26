@@ -10,6 +10,7 @@
 
 # ignore file:
 projectNotes.txt
+ircNotes.txt
 
 # recursively ignore directory:
 fontAwesome/

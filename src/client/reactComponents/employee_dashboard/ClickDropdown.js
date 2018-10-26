@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import "../../scss/bulma_sass/bulma.sass"
-import { toggleOnVisibility_ViewportA, toggleOffVisibility_ViewportA } from "./redux/actions"
+import { toggle_Visibility_ViewportA } from "./redux/actions"
 import { connect } from 'react-redux'
-import { dispatch } from 'redux'
-
+ 
 class ClickDropdown extends Component {
 
   constructor() {
@@ -15,6 +14,10 @@ class ClickDropdown extends Component {
       onMouseEnter_menu: false,
       onMouseLeave_menu: false,
     }
+
+    this.HandleClick_VisibilityToggle_example = this.HandleClick_VisibilityToggle_example.bind(
+      this
+    );
   }
 
   Toggle_onMouseLeave_button() {
@@ -53,17 +56,19 @@ class ClickDropdown extends Component {
     }))
   }
 
-  HandleClick_VisibilityToggle_example(e) {
+  HandleClick_VisibilityToggle_example(toggleValue, e) {
     e.stopPropagation(); // stop bubbling up to parent div
-    console.log('test')
-    dispatch(toggleOnVisibility_ViewportA)
+    console.log("test")
+    this.props.toggle_Visibility_ViewportA(toggleValue);
   }
 
 
   render() {
     return (
       <div>
-        {this.state.visibility_viewport_a ? <p>Yes</p> : <p>No</p>}
+        {console.log("state is:", this.state)}
+        {console.log("props is:", this.props)}
+        {this.props.visibility_viewport_a ? <p>Yes</p> : <p>No</p>}
         <button
           className="button popUpMenuButton"
           onMouseLeave={() => this.Toggle_onMouseLeave_button()}
@@ -87,8 +92,7 @@ class ClickDropdown extends Component {
                     <button
                       className="button"
                       onClick={
-                        this.HandleClick_VisibilityToggle_example
-                        // () => dispatch(ToggleVisibility_TaskList)
+                        e => this.HandleClick_VisibilityToggle_example(true, e)
                       }
                     >
                       Task List
@@ -108,15 +112,17 @@ class ClickDropdown extends Component {
   }
 }
 
-const mapStateToProps = (store) => {
+const mapStateToProps = store => {
   return {
     visibility_viewport_a: store.visibility_viewport_a
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  toggleOnVisibility_ViewportA: dispatch(toggleOnVisibility_ViewportA)
+const mapDispatchToProps = {
+  toggle_Visibility_ViewportA
 }
 
-
-export default connect(mapStateToProps, mapDispatchToProps)(ClickDropdown);
+export default connect(
+  mapStateToProps, 
+  mapDispatchToProps
+  )(ClickDropdown);
