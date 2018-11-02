@@ -11,6 +11,7 @@
 # ignore file:
 projectNotes.txt
 ircNotes.txt
+notesForGoogleDrive.txt
 
 # recursively ignore directory:
 fontAwesome/

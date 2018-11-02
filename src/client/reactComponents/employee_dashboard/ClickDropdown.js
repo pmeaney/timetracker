@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import "../../scss/bulma_sass/bulma.sass"
-import { toggle_Visibility_ViewportA } from "./redux/actions"
+import { toggle_Visibility_Viewport_A } from "./redux/actions"
 import { connect } from 'react-redux'
  
 class ClickDropdown extends Component {
-
   constructor() {
     super()
     this.state = {
@@ -15,7 +13,7 @@ class ClickDropdown extends Component {
       onMouseLeave_menu: false,
     }
 
-    this.HandleClick_VisibilityToggle_example = this.HandleClick_VisibilityToggle_example.bind(
+    this.HandleClick_VisibilityToggle_Viewort_A = this.HandleClick_VisibilityToggle_Viewort_A.bind(
       this
     );
   }
@@ -56,19 +54,14 @@ class ClickDropdown extends Component {
     }))
   }
 
-  HandleClick_VisibilityToggle_example(toggleValue, e) {
+  HandleClick_VisibilityToggle_Viewort_A(toggleValue, e) {
     e.stopPropagation(); // stop bubbling up to parent div
-    console.log("test")
-    this.props.toggle_Visibility_ViewportA(toggleValue);
+    this.props.toggle_Visibility_Viewport_A(!this.props.visibility_viewport_a);
   }
-
 
   render() {
     return (
       <div>
-        {console.log("state is:", this.state)}
-        {console.log("props is:", this.props)}
-        {this.props.visibility_viewport_a ? <p>Yes</p> : <p>No</p>}
         <button
           className="button popUpMenuButton"
           onMouseLeave={() => this.Toggle_onMouseLeave_button()}
@@ -84,7 +77,7 @@ class ClickDropdown extends Component {
               onMouseEnter={() => this.Toggle_onMouseEnter_menu()}
             >
               <div className="popUpMenuHeader">
-                <p>Test header</p>
+                <p>Dashboard modules:</p>
               </div>
               <div className="popUpMenuContent">
                 <ul>
@@ -92,14 +85,12 @@ class ClickDropdown extends Component {
                     <button
                       className="button"
                       onClick={
-                        e => this.HandleClick_VisibilityToggle_example(true, e)
+                        e => this.HandleClick_VisibilityToggle_Viewort_A(true, e)
                       }
                     >
                       Task List
                     </button>
                   </li>
-                  <li>BLahhh</li>
-                  <li>BLahhh</li>
                 </ul>
               </div>
 
@@ -112,14 +103,12 @@ class ClickDropdown extends Component {
   }
 }
 
-const mapStateToProps = store => {
-  return {
+const mapStateToProps = store => ({
     visibility_viewport_a: store.visibility_viewport_a
-  }
-}
+})
 
 const mapDispatchToProps = {
-  toggle_Visibility_ViewportA
+  toggle_Visibility_Viewport_A
 }
 
 export default connect(

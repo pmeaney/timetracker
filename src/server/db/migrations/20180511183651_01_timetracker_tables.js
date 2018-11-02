@@ -105,7 +105,8 @@ exports.up = function(knex, Promise) {
 	  table.timestamp('timesheet_clockin');
 	  table.timestamp('timesheet_clockout');
 
-	  // info on GPS precision: https://en.wikipedia.org/wiki/Decimal_degrees
+		// info on GPS precision: https://en.wikipedia.org/wiki/Decimal_degrees
+		// DECIMAL offers an insane amount of digits before and after decimal: https://www.postgresql.org/docs/9.1/static/datatype-numeric.html
 	  table.specificType('timesheet_clockin_lat', 'DECIMAL'); //.defaultTo(knex.raw('POINT (37.3875, -122.0575)'))
 	  table.specificType('timesheet_clockin_long', 'DECIMAL'); //.defaultTo(knex.raw('POINT (37.3875, -122.0575)'))
 	  table.specificType('timesheet_clockout_lat', 'DECIMAL'); //.defaultTo(knex.raw('POINT (37.3875, -122.0575)'))

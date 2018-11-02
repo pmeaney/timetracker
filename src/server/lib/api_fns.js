@@ -50,8 +50,67 @@ const getAllTimesheets = () => {
     })
 }
 
+const getTimesheet_by_activity_id = (activity_id) => {
+	return Promise.try(() => {
+		return database("timesheets").where({ activity_id: activity_id });
+	})
+}
+
+/* Timesheet - POST - Create new timesheet 
+timesheet object: {
+	timesheet_id: 3, -> is automatically added
+	activity_id: 3, -> add in from form params
+	emp_authorized_by: 2, -> leave null(to be updated by mgr or admin)
+	emp_accepted_by: 3, -> add in from form params(clockedIn employee ID)
+	cost_center_id: 1, -> leave null(to be updated by mgr or admin)
+	timesheet_notes: 'we broke a wheelbarrow', -> leave null: update on 'Post TimeSheet Info' -> when the user uploads a photo or notes about timesheet
+	timesheet_submitted_datetime: 2018 - 02 - 14T15: 02: 00.000Z, -> leave null
+	timesheet_clockin: 2018 - 02 - 01T16: 05: 00.000Z, -> Here, we add info
+	timesheet_clockout: 2018 - 02 - 02T00: 05: 00.000Z, -> leave null(updated on Clockout)
+	timesheet_clockin_lat: '37.684310', -> Here, we add info
+	timesheet_clockin_long: '-122.40293', -> Here, we add info
+	timesheet_clockout_lat: '37.684136', -> leave null(updated on Clockout)
+	timesheet_clockout_long: '-122.40240', -> leave null(updated on Clockout)
+	created_at: 2018 - 10 - 31T21: 42: 51.742Z, -> is automatically added
+	updated_at: 2018 - 10 - 31T21: 42: 51.742Z -> is automatically added
 
 
+	To Insert:
+	activity_id: 3, -> add in from form params
+	emp_accepted_by: 3, -> add in from form params(clockedIn employee ID)
+	timesheet_clockin: 2018 - 02 - 01T16: 05: 00.000Z, -> add in from form params
+	timesheet_clockin_lat: '37.684310', -> add in from form params
+	timesheet_clockin_long: '-122.40293', -> add in from form params
+
+	NULLS:
+	emp_authorized_by: null
+	cost_center_id: null
+	timesheet_notes: null
+	timesheet_submitted_datetime: null
+	timesheet_clockout: null
+	timesheet_clockout_lat: null
+	timesheet_clockout_long: null
+}
+*/
+
+const createNewTimesheet_onClockin = (activity_id, emp_accepted_by, timesheet_clockin, timesheet_clockin_lat, timesheet_clockin_long) => {
+	return Promise.try(() => {
+		return database("timesheets").insert({
+			activity_id: activity_id,
+			emp_accepted_by: emp_accepted_by,
+			timesheet_clockin: timesheet_clockin,
+			timesheet_clockin_lat: timesheet_clockin_lat,
+			timesheet_clockin_long: timesheet_clockin_long,
+			emp_authorized_by: null,
+			cost_center_id: null,
+			timesheet_notes: null,
+			timesheet_submitted_datetime: null,
+			timesheet_clockout: null,
+			timesheet_clockout_lat: null,
+			timesheet_clockout_long: null
+		})
+	})
+}
 
 
 /* #############	Employees 	  ################ */
@@ -101,7 +160,9 @@ module.exports = {
 	getAllEmployees,
 	getEmployee_by_id,
 	getAllTimesheets,
+	getTimesheet_by_activity_id,
+	createNewTimesheet_onClockin,
 	getActivityType_by_activity_code,
 	getLocation_by_project_id,
-	getProjectMgr_by_project_id
+	getProjectMgr_by_project_id,
 };

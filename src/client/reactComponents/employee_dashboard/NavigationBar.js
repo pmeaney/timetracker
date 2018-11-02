@@ -1,7 +1,5 @@
-import '../../scss/bulma_sass/bulma.sass'
 import React from 'react';
 import ClickDropdown from './ClickDropdown'
-import 'normalize.css'
 
 const NavigationBar = (props) => {
   return (

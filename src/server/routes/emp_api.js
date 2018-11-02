@@ -23,6 +23,10 @@ router.get('/', function (req, res, next) {
   res.send('this is the regular /emp_api route');
 });
 
+router.post('/test_post', function (req, res, next) {
+  var time = new Date()
+  console.log('req.body @ time', req.body, time)
+});
 
 // ############ PROJECTS ##############
 // Get ALL PROJECTS
@@ -74,7 +78,133 @@ router.get('/timesheets', (req, res) => {
     });
 });
 
+/* This route is for creating new timesheets, or upating an existing timesheet in order to add its ClockOut Time & Coordinates
+  1. Look up the activity ID in timesheets.
+    IF: if a timesheet for that activity DOES exists:
+      (A timesheet exists for that particular activity ID, and so then we know it has a clocked in value.()
+      Therefore, just check if if it has a clockOut value.
+      IF: If it does: notify of error: already exists
+      ELSE: If not: update the timesheet with clockout data (time, coordinates)
+    ELSE:  if a timesheet for that activity DOES NOT exist:
+      create a new timesheet, with clockin data
+*/
+router.post('/timesheets/createOrUpdate_timesheet', (req, res) => {
 
+  /*  Note:
+  THE FOLLOWING THINGS NEED TO BE PASSED IN: (they will be are of the req.body 
+    (although activity_id passed as req.params))
+  
+  activity_id_For_Timesheets_Lookup, i.e. activity ID --> from the url's request lookup params (req.params)
+  param_emp_id_asInt, --> i.e. employee id --> from user session: server has access
+  timesheet_clockin, --> from form = time
+  timesheet_clockin_lat, --> from form = coords
+  timesheet_clockin_long --> from form = coords
+  */
+
+  
+  console.log('req.body', req.body)
+  
+  // console.log('type of req.body.latitude', typeof req.body.latitude)
+  // var edited_lat = req.body.latitude.toString().replace(/\d{10}$/, '')
+  // console.log('edited_lat', edited_lat)
+
+  // var edited_long = req.body.longitude.toString().replace(/\d{12}$/, '')
+  // console.log('edited_long', edited_long)
+
+  const activity_id_For_Timesheets_Lookup = parseInt(req.body.activity_id, 10)
+  
+  /* first, need to do validation of data: make sure it's ready to go into db
+    integer, time, coordinates
+  */
+ 
+
+  if (true) {
+    return Promise.try(() => {
+      return Api_fns.getTimesheet_by_activity_id(activity_id_For_Timesheets_Lookup)
+    })
+    .then((timesheets_per_activity_id) => {
+      console.log('timesheets_per_activity_id', timesheets_per_activity_id)
+    
+      if (timesheets_per_activity_id.length < 1) {
+        console.log('A timesheet for that activity_id does not exist in timesheets table')
+        /* ########### Here, we CREATE a new row in timesheets ############# */
+        // PRODUCTION FLAG: use this version of this constant in production:
+        // const param_emp_id_asInt = parseInt(req.params.emp_id, 10); 
+        const mock_employee_id = 2
+        const employee_id_asInt = parseInt(mock_employee_id, 10); 
+
+        return Promise.try(() => {
+          // This will be an Api_fns call to an insert function,
+          // into which we pass current time, coordinates from task clock-in form
+          /* 
+              Pass the appropriate parameters into this function:
+
+              - activity_id, --> ready to go: activity_id_For_Timesheets_Lookup
+              - emp_accepted_by, --> session's employee ID
+
+              ( In production we would use the session's employee id...
+              but instead we are mocking it, just so I dont have to login.
+              const employee_id_asInt = parseInt(employee_id, 10); )
+
+              - timesheet_clockin, --> from form = time
+              - timesheet_clockin_lat, --> from form = coords
+              - timesheet_clockin_long --> from form
+
+              (all others are null)
+              */
+
+              // FUNCTION TO USE:
+              /* Just need to add these:
+              timesheet_clockin, --> from form = time
+              timesheet_clockin_lat, --> from form = coords
+              timesheet_clockin_long --> from form
+               */
+          return Api_fns.createNewTimesheet_onClockin(
+            // activity_id_For_Timesheets_Lookup,
+            // employee_id_asInt,
+
+              
+            )
+        })
+
+
+      } else {
+        console.log('A timesheet for that activity_id already exists')
+         /* ########### Here, we UPDATE a new row in timesheets #############
+        i.e. now we need to check if ClockOut data exists.  If so, then we do nothing and
+        tell the user about an error
+        If clockout data does not exist, then we update the row to insert clockout data
+        
+        */
+
+        for (index in timesheets_per_activity_id) {
+          const clockOut_value = timesheets_per_activity_id[index]['timesheet_clockout']
+          if (typeof clockOut_value !== 'undefined' && clockOut_value !== '' && clockOut_value !== null) {
+            console.log('clockout exists for that timesheet i.e. we do nothing but tell user: error, that timesheet already exists. Contact your mgr for assistance')
+          } else {
+            console.log('clockOut_value does not exist for that timesheet i.e. we update that timesheet row to add clockout time & coordinates')
+          }
+        }
+         
+      }
+
+    })
+  } else {
+    // res.status(500).json({ error: 'sorry, we were unable to fulfill your request for timesheet data.' });
+  }
+  
+
+});
+
+/* With this route, first we get all activities for the particular employee ID with Api_fns.getActivitiesBy_employee_assigned_to().
+    Now we have access to all the employee's activities.
+    With that data, we do other lookups: for employee info, for activity type, location, and project data.
+    Then, those other lookups mentioned above are stitched together as 'finalData'.
+  Now that we have all the data we want (activity & 'finalData'), we merge
+  the data sets into the real final set: perActivity_mergedData and send it to the requestor 
+  
+  Note: Rather than do lookups on tables of specific fields, I simply return the entire set of fields, and
+  then below, when merging data, I use the return statements to specify the particular fields I want to send to the requestor*/
 router.get('/activities/emp/:emp_id', (req, res) => {
     // Previously I was passing in the mocked employee ID of 2, from the session (set on login)
   const param_emp_id_asInt = parseInt(req.params.emp_id, 10);

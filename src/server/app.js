@@ -49,7 +49,9 @@ const errorReporter = unhandledError((error, context) => {
 
 // begin: stuff for frontend development (webpack)
 const isProd = process.env.NODE_ENV === "production"
+// const isDev = process.env.NODE_ENV === "development"
 if (!isProd) {
+// if (isDev) {
 
 
   const webpack = require("webpack")
