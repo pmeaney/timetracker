@@ -418,7 +418,6 @@ router.get('/login', function (req, res, next) {
       env: process.env.NODE_ENV
     });
 
-
 })
 
 router.post('/login', function (req, res, next) {

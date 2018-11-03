@@ -78,6 +78,7 @@ router.get('/timesheets', (req, res) => {
     });
 });
 
+
 /* This route is for creating new timesheets, or upating an existing timesheet in order to add its ClockOut Time & Coordinates
   1. Look up the activity ID in timesheets.
     IF: if a timesheet for that activity DOES exists:
@@ -115,8 +116,15 @@ router.post('/timesheets/createOrUpdate_timesheet', (req, res) => {
   
   /* first, need to do validation of data: make sure it's ready to go into db
     integer, time, coordinates
+
+    check if: 
+    has session employee id 
+    make sure the session employee matches activity data's employee id (activity__emp_id_assigned_to)
+
+    if not, redirect them to login page
+    if so, continue. (allow access b/c they're logged in-- their session has an employee id)
   */
- 
+    
 
   if (true) {
     return Promise.try(() => {
@@ -149,20 +157,18 @@ router.post('/timesheets/createOrUpdate_timesheet', (req, res) => {
               - timesheet_clockin, --> from form = time
               - timesheet_clockin_lat, --> from form = coords
               - timesheet_clockin_long --> from form
-
-              (all others are null)
+              (all others are null-- set in DB call fn)
               */
 
               // FUNCTION TO USE:
-              /* Just need to add these:
-              timesheet_clockin, --> from form = time
-              timesheet_clockin_lat, --> from form = coords
-              timesheet_clockin_long --> from form
-               */
           return Api_fns.createNewTimesheet_onClockin(
             // activity_id_For_Timesheets_Lookup,
             // employee_id_asInt,
-
+            /* Just need to add these:
+              timesheet_clockin, --> from form = time
+              timesheet_clockin_lat, --> from form = coords
+              timesheet_clockin_long --> from form
+            */
               
             )
         })
@@ -195,6 +201,106 @@ router.post('/timesheets/createOrUpdate_timesheet', (req, res) => {
   
 
 });
+
+
+
+
+
+/*
+  A. Get all activities for this employee, where activities.activity_id does not match any timesheets.activity_id
+    getActivities_whichHave_NoTimesheetsYet()
+
+  B. Then, get any timesheets where clockout is null.
+    Already created this route
+  
+  A is activities which have not yet been clocked into (and thereby turned into new timesheets)
+  B is timesheets which have not been clocked out of yet. 
+
+  NOTE: THIS RETURNS AN ARRAY OF TWO THINGS:
+  0 - Activities
+  1 - Timesheets.
+
+  Timesheets which have not been clocked out should be shown on frontend first, so on frontend
+  we'll access [1] (i.e. open timesheets) and its data to create task card(s).
+      --> ACTUALLY, We'll use these task cards to look up the corresponding activity 
+          and display its info
+          alongside clockedIn info
+  Then, we'll access [0] (i.e. activities) and its data to create task card(s).
+  
+  Note: if one of the items above is empty, then it's simply an empty array, but the position in object still exists.
+  */
+
+router.get('/activities/getPendingTasks/emp/:emp_id', (req, res) => {
+
+  const param_emp_id_asInt = parseInt(req.params.emp_id, 10);
+
+  if (true) {
+    return Promise.try(() => {
+      return Promise.all([
+        Api_fns.getTimesheetsAndActivities_forWhich_Timesheets_haveNullClockOut_forEmployee(param_emp_id_asInt),
+        Api_fns.getActivities_forWhich_timesheetsDoNotExist(param_emp_id_asInt)
+      ])
+      .then((result) => {
+
+        // Before we combine the object with mapping, need to use the first object to lookup activities (i.e. for each timesheet so we have complete info on that timesheet)
+        var array_task_list = []
+
+        result[0].map((obj, i) => {
+          array_task_list.push(obj)
+        })
+        result[1].map((obj, i) => {
+          array_task_list.push(obj)
+        })
+
+        console.log('array_task_list', array_task_list)
+        return array_task_list
+
+        // return Promise.map(array_task_list, (task) => {
+        //   Api_fns.getLocation_by_project_id(task.activity_id)
+        // })
+        /*Possible way: Map through the two arrays.  Capture all the activity IDs. OR simply merge the two arrays, since they all have activity_id,
+        and the one(s) with timesheet clockin property are distinguishable as open timesheets */
+        /* 
+        Next, we need to do a lookup of activities for the unclosed timesheets, so that we can get project Id to lead us to location info (address).
+        -> To do that, we'll just do a DB lookup function: 
+          return a joined object from DB, of activity & timesheet based on activity_id from this set of unclosed timesheets (i.e. 'Timesheets_withNullClockOut_forEmployee').
+        
+        -> Combine object from previous step with the Activities_forWhich_timesheetsDoNotExist (i.e. result[1])
+
+        -> Then, we'll use Promise.Map for this next step:
+        -> Now with this object for which each activity has project_id, we can do a mapped lookup of:
+            Api_fn.getLocation_by_project_id()
+
+           The eventual goal: Send thru tasks. (activity, timesheet, project's location data)
+           On the frontend, we'll map thru unclosed timesheets, push them into a new array.
+           Into that same array, we'll push the activities.  This way we have a stack containing:
+           unclosed timsheets' timesheet (just clockin) + activity info, followd by activities
+           So on the frontend, we'll present task cards for clockedIn activities, and upcoming activities
+           Make sure it's sorted in the right order (by date) before it gets sent to user
+           Note: Ultimately, we want to return project address info as well.  Therefore,
+           we'll need a final array, featuring activity_id, which we use to do a lookup of activity -> project -> location
+
+           Then on the frontend, we can use Object.keys to inspect objects for timesheet related keys, and keep these on top of stack.
+           Then, add on the rest (regular unclockedIn activities) at buttom of stack.
+           Then, conditionally display timesheet cards first (if they exist), then activity cards next
+        */
+      }).then((task_list) => {
+        console.log('task_list', task_list)
+
+        
+
+        res.status(200).json(task_list);
+      })
+    })
+  }
+    else {
+      res.status(500).json({ error: 'sorry, we were unable to fulfill your request for activity data.' });
+    }
+
+});
+
+
+
 
 /* With this route, first we get all activities for the particular employee ID with Api_fns.getActivitiesBy_employee_assigned_to().
     Now we have access to all the employee's activities.

@@ -1,0 +1,30 @@
+.customBoxSpacing {
+  margin: 4rem auto 0 auto;
+  width: 70%;
+  max-width: 40rem;
+}
+
+.customNavbarSpacing {
+  padding-top: 1rem;
+  margin: 0 auto;
+  width: 70%;
+}
+
+.CustomFormSpacing {
+  margin: 1rem auto 1rem auto;
+  width: 90%;
+  max-width: 30rem;
+}
+
+.topSpacing {
+  margin-top: 1rem;
+}
+.smallSpacing{
+  padding: 1vh;
+}
+
+.loginHeader {
+  color: darkslategray
+  font-weight: bold;
+  font-size: 1.5rem;
+}

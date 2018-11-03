@@ -26,10 +26,14 @@ const getAllActivities = () => {
 }
 
 const getActivitiesBy_employee_assigned_to = (emp_id) => {
+	/* Here, we are going to get all activities and join them on timesheets where timesheet has null for clockout value
+	for matching activity ids
+	(on frontend, we'll be returning unstarted or started-but-unfinished timesheets.) */
 	return Promise.try(() => {
 		return database("activities").where({ emp_assigned_to: emp_id });
     })
 }
+
 
 const getActivity_by_id = (activity_id) => {
 	return Promise.try(() => {
@@ -43,6 +47,22 @@ const getActivityType_by_activity_code = (activity_code) => {
     })
 }
 
+const getActivities_forWhich_timesheetsDoNotExist = (emp_id) => {
+	/* We want to return:
+	Activities for which there are no timesheets.
+	*/
+	let subquery = database('timesheets').select('activity_id').where({ emp_accepted_by: emp_id })
+	// subquery returns the following Timesheets format of data: [{"activity_id":1},{"activity_id":2},{"activity_id":5}] 
+	// these activity IDs are then used within the .whereNotIn statement below-- So that we only 
+	// return activities for which there are no matching timesheets (i.e. timesheets with the same activity_id) -- since timesheets should not exist until one is created upon user clockIn
+	return Promise.try(() => {
+		return database('activities')
+			.select('*')
+			.where({ emp_assigned_to: emp_id })
+			.whereNotIn('activity_id', subquery)
+	})
+}
+
 /* #############	Timesheets 	  ################ */
 const getAllTimesheets = () => {
 	return Promise.try(() => {
@@ -53,6 +73,20 @@ const getAllTimesheets = () => {
 const getTimesheet_by_activity_id = (activity_id) => {
 	return Promise.try(() => {
 		return database("timesheets").where({ activity_id: activity_id });
+	})
+}
+
+const getTimesheetsAndActivities_forWhich_Timesheets_haveNullClockOut_forEmployee = (emp_id) => {
+	/* For emp_id, uses activity_id lookup on timesheets to return timesheets with null clockout values
+	*/
+	return Promise.try(() => {
+		return database('timesheets')
+			.where({ emp_accepted_by: emp_id, timesheet_clockout: null })
+			.join('activities',
+						'timesheets.activity_id',
+						'=',
+						'activities.activity_id'
+						)
 	})
 }
 
@@ -165,4 +199,6 @@ module.exports = {
 	getActivityType_by_activity_code,
 	getLocation_by_project_id,
 	getProjectMgr_by_project_id,
+	getTimesheetsAndActivities_forWhich_Timesheets_haveNullClockOut_forEmployee,
+	getActivities_forWhich_timesheetsDoNotExist
 };

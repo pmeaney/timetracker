@@ -22,9 +22,19 @@ class TaskList extends Component {
   componentWillMount() {
     console.log('TaskList has mounted.')
     axios.get('http://localhost:3000/emp_api/activities/emp/2')
+    // need to set this up instead:
+    // axios.get('http://localhost:3000/emp_api/activities/getPendingTasks/emp/2')
+    // 
+
       .then((response) => {
+
+        
+
+
         var dataToSet = response.data['perActivity_mergedData']
         console.log('dataToSet',dataToSet)
+
+
         this.setState({
           employee_data: dataToSet
         });

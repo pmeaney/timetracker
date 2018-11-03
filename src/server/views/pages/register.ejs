@@ -18,20 +18,20 @@
 
 <body>
 
-    <!-- Navigation bar -->
-  
+  <!-- Navigation bar -->
+
   <nav class="navbar customNavbarSpacing" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
       <a class="navbar-item">Home
       </a>
-  
+
       <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
       </a>
     </div>
-  
+
     <div id="navbarBasicExample" class="navbar-menu">
       <div class="navbar-end">
         <div class="navbar-item">
@@ -49,45 +49,16 @@
   </nav>
 
   <div class="container is-fluid topSpacing">
-   
+
     <div class="box customBoxSpacing">
-
-      <!-- NOTE:
-      !
-      !   This needs a 2nd password input for validation
-      !
-      !
-      ! -->
-    <!-- Content -->
-    <!-- These flash messages need to be made to work, and tweak the css classes to point to bulma or custom classes -->
-    <!--  Test these out by themselves, without the css and html -->
-    <% if (messages.success) { %>
-    <div class="alert alert-info" role="alert">
-      <%= messages.success %>
-    </div>
-    <% } %>
-            <!-- this merely checks keys of the object to see if the 'errors' key/value pair contains anything -->
-    <% if (Object.keys(errors).length === 0) { %>
-    <!-- Try this: <% if (Object.keys(errors).length !== 0) { %> -->
-    <% } else { %>
-      <h2 class="text-danger">Oops, please correct the following:</h2>
-      <ul class="errors-list">
-        <% Object.values(errors).forEach(error => { %>
-        <li class="text-danger">
-          <%= error.msg %>
-        </li>
-        <% }) %>
-      </ul>
-    <% } %>
-
+      <!-- Content -->
       <div class="container CustomFormSpacing">
-        <h1 class="loginHeader">Log in below</h1>
+        <h1 class="loginHeader">Register below</h1>
         <br>
-        <div class="field <%= errors.email ? 'is-invalid' : '' %>"> <!-- CSS FIX NEEDED -- add bulma or custom class -->
+        <div class="field">
           <p class="control">
-          <!-- <p class="control has-icons-left has-icons-right"> -->
+            <!-- <p class="control has-icons-left has-icons-right"> -->
             <input class="input" type="email" placeholder="Email">
-            
             <!-- <span class="icon is-small is-left">
               <i class="fas fa-envelope"></i>
             </span>
@@ -95,9 +66,8 @@
               <i class="fas fa-check"></i>
             </span> -->
           </p>
-          <%= errors.email ? '<p class="help is-danger">This email is invalid *TESTING******** </p>' : '' %>
         </div>
-        <div class="field <%= errors.password ? 'is-invalid' : '' %>"> <!-- CSS FIX NEEDED -- add bulma or custom class -->
+        <div class="field">
           <!-- <p class="control has-icons-left"> -->
           <p class="control">
             <input class="input" type="password" placeholder="Password">
@@ -117,7 +87,7 @@
 
     </div>
   </div>
-  
+
   <script>
     document.addEventListener('DOMContentLoaded', () => {
 
@@ -146,5 +116,5 @@
     });
   </script>
 </body>
-</html>
 
+</html>

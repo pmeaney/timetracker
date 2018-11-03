@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Login</title>
+
+  
+    <!-- Currently CSS is in react bundle -->
+    <!-- <link href="/stylesheets/bootstrap4-compiled.css" rel="stylesheet" type="text/css"> -->
+    <link rel='stylesheet' href='/reactBundles/main.css' />
+  
+  </head>
+
+
+  <body>
+
+
+<main role="main" class="my-main">
+
+  <nav class="navbar navbar-expand-lg navbar-light d-flex justify-content-end">
+    <a class="navbar-brand d-flex" href="#">Auth &amp; Dash</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03"
+      aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  
+    <div class="collapse navbar-collapse navbar-right" id="navbarColor03">
+      <ul class="nav navbar-nav d-flex flex-row-reverse">
+        <li class="nav-item active p-1">
+          <a class="nav-link" href="/admin_dash2">Home</a>
+        </li>
+        <li class="nav-item p-1">
+          <a class="nav-link" href="/users/register">Register</a>
+        </li>
+        <li class="nav-item p-1">
+          <a class="nav-link" href="/users/login">Login</a>
+        </li>
+        <!-- <li class="nav-item">
+            <a class="nav-link" href="#">About</a>
+          </li> -->
+      </ul>
+      <!-- <form class="form-inline">
+          <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" />
+          <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
+        </form> -->
+    </div>
+  </nav>
+
+
+<div class="container">
+
+<!--   <div class="row my-row">
+
+      <button type="button" class="btn btn-primary btn-sm" 
+              data-toggle="toggle" data-target="#demo1">
+          +
+      </button>
+
+      
+
+
+  </div>
+ -->
+ <% if (messages.success) { %>
+  <div class="alert alert-info" role="alert"><%= messages.success %></div>
+<% } %>
+
+<% include ../page_partials/form_user_login %>
+
+</div>
+
+
+</main><!-- /.container -->
+
+<!-- framework js, such as from jquery, bootstrap, popper, etc -->
+<% include ../page_partials/set_env_url %>
+<script src="/reactBundles/main-bundle.js"></script>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script> -->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script> -->
+<!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script> -->
+   <!-- <script src="javascripts/jquery-slim.min.js"></script> -->
+
+
+  </body>
+</html>
