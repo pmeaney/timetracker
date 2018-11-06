@@ -241,62 +241,65 @@ router.get('/activities/getPendingTasks/emp/:emp_id', (req, res) => {
         Api_fns.getActivities_forWhich_timesheetsDoNotExist(param_emp_id_asInt)
       ])
       .then((result) => {
-
-        // Before we combine the object with mapping, need to use the first object to lookup activities (i.e. for each timesheet so we have complete info on that timesheet)
-        var array_task_list = []
-
-        result[0].map((obj, i) => {
-          array_task_list.push(obj)
-        })
-        result[1].map((obj, i) => {
-          array_task_list.push(obj)
-        })
-
-        console.log('array_task_list', array_task_list)
+        // flatten the nested array which was returned  -- source: https://stackoverflow.com/questions/10865025/merge-flatten-an-array-of-arrays-in-javascript
+        const array_task_list = [].concat.apply([], result);
         return array_task_list
+        })
+      .then((array_task_list) => {
 
-        // return Promise.map(array_task_list, (task) => {
-        //   Api_fns.getLocation_by_project_id(task.activity_id)
-        // })
-        /*Possible way: Map through the two arrays.  Capture all the activity IDs. OR simply merge the two arrays, since they all have activity_id,
-        and the one(s) with timesheet clockin property are distinguishable as open timesheets */
-        /* 
-        Next, we need to do a lookup of activities for the unclosed timesheets, so that we can get project Id to lead us to location info (address).
-        -> To do that, we'll just do a DB lookup function: 
-          return a joined object from DB, of activity & timesheet based on activity_id from this set of unclosed timesheets (i.e. 'Timesheets_withNullClockOut_forEmployee').
-        
-        -> Combine object from previous step with the Activities_forWhich_timesheetsDoNotExist (i.e. result[1])
+          // Going to leave this Promise.map in here to show a more simplified version of retrieval, where I don't map thru and take project_id to look up more stuff as I do in the next Promise.map function
+          // return Promise.map(array_task_list, (task) => {
+          //   return Api_fns.getLocation_by_project_id(task.project_id)
+          // }).then((resultOfLocationGet) => {
+          //   // flatten the nested array which was returned  -- source: https://stackoverflow.com/questions/10865025/merge-flatten-an-array-of-arrays-in-javascript
+          //   const mergedLocationList = [].concat.apply([], resultOfLocationGet);
+          //   const mergedFinalData = merge(array_task_list, mergedLocationList)
+          //   console.log('mergedFinalData', mergedFinalData)
+          // })
 
-        -> Then, we'll use Promise.Map for this next step:
-        -> Now with this object for which each activity has project_id, we can do a mapped lookup of:
-            Api_fn.getLocation_by_project_id()
+        return Promise.map(array_task_list, (task) => {
+          return Promise.all([
+            Api_fns.getLocation_by_project_id(task.project_id),
+            Api_fns.getProjectMgr_by_project_id(task.project_id),
+            Api_fns.getActivityType_by_activity_code(task.activity_code)
+          ]).spread(( locationbyProjectID, projectMgrByProjectID, ActivityType_by_activity_code) => {
+            return { locationbyProjectID, projectMgrByProjectID, ActivityType_by_activity_code }
+          })
+        })
+        .then((resultData) => {
 
-           The eventual goal: Send thru tasks. (activity, timesheet, project's location data)
-           On the frontend, we'll map thru unclosed timesheets, push them into a new array.
-           Into that same array, we'll push the activities.  This way we have a stack containing:
-           unclosed timsheets' timesheet (just clockin) + activity info, followd by activities
-           So on the frontend, we'll present task cards for clockedIn activities, and upcoming activities
-           Make sure it's sorted in the right order (by date) before it gets sent to user
-           Note: Ultimately, we want to return project address info as well.  Therefore,
-           we'll need a final array, featuring activity_id, which we use to do a lookup of activity -> project -> location
+          
+          const combined_Project_Location_Data = resultData.map((currElement, index) => {  // activity set one
+            return {
+              // from location object
+              location_name: currElement.locationbyProjectID[0].location_name,
+              location_address: currElement.locationbyProjectID[0].location_address,
+              location_city: currElement.locationbyProjectID[0].location_city,
+              location_state: currElement.locationbyProjectID[0].location_state,
+              location_zip: currElement.locationbyProjectID[0].location_zip,
+              location_type: currElement.locationbyProjectID[0].location_type,
+              // from project object
+              projectMgr_firstName: currElement.projectMgrByProjectID[0].firstName,
+              projectMgr_lastName: currElement.projectMgrByProjectID[0].lastName,
+              projectMgr_phone: currElement.projectMgrByProjectID[0].phone,
+              projectMgr_email: currElement.projectMgrByProjectID[0].email,
+              // from activity type object
+              activity_type: currElement.ActivityType_by_activity_code[0].activity_type
+            }
+          })
 
-           Then on the frontend, we can use Object.keys to inspect objects for timesheet related keys, and keep these on top of stack.
-           Then, add on the rest (regular unclockedIn activities) at buttom of stack.
-           Then, conditionally display timesheet cards first (if they exist), then activity cards next
-        */
-      }).then((task_list) => {
-        console.log('task_list', task_list)
-
-        
-
-        res.status(200).json(task_list);
+          const merged_Task_Project_Location_data = merge(array_task_list, combined_Project_Location_Data )
+          // return merged_Task_Project_Location_data
+          res.status(200).json(merged_Task_Project_Location_data);
+       
+    
+        })
       })
     })
   }
     else {
       res.status(500).json({ error: 'sorry, we were unable to fulfill your request for activity data.' });
     }
-
 });
 
 

@@ -57,7 +57,16 @@ const getActivities_forWhich_timesheetsDoNotExist = (emp_id) => {
 	// return activities for which there are no matching timesheets (i.e. timesheets with the same activity_id) -- since timesheets should not exist until one is created upon user clockIn
 	return Promise.try(() => {
 		return database('activities')
-			.select('*')
+			.select(
+							'activity_id',
+							'activity_code',
+							'project_id',
+							'emp_assigned_by',
+							'emp_assigned_to',
+							'activity_notes',
+							'activity_datetime_begin',
+							'activity_datetime_end'
+							)
 			.where({ emp_assigned_to: emp_id })
 			.whereNotIn('activity_id', subquery)
 	})
@@ -87,6 +96,25 @@ const getTimesheetsAndActivities_forWhich_Timesheets_haveNullClockOut_forEmploye
 						'=',
 						'activities.activity_id'
 						)
+			.select('activities.activity_code',
+							'activities.project_id',
+							'activities.emp_assigned_by',
+							'activities.emp_assigned_to',
+							'activities.activity_notes',
+							'activities.activity_datetime_begin',
+							'activities.activity_datetime_end',
+							'timesheets.activity_id',
+							'timesheets.timesheet_id',
+							'timesheets.emp_accepted_by',
+							'timesheets.cost_center_id',
+							'timesheets.timesheet_notes',
+							'timesheets.timesheet_clockin',
+							'timesheets.timesheet_clockout',
+							'timesheets.timesheet_clockin_lat',
+							'timesheets.timesheet_clockin_long',
+							'timesheets.timesheet_clockout_lat',
+							'timesheets.timesheet_clockout_long'
+							)
 	})
 }
 
