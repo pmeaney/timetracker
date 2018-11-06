@@ -56,6 +56,12 @@ const checkPasswordForEmail = (password, email)=> {
 	return Promise.try(() => {
 	        return database("users").where({ user_email: email });
 	}).then((user)=>{
+
+		console.log('user.length',user.length)
+		if (user.length < 1 || user === 'undefined') {
+			return false
+		} else {
+
 		console.log('user from user_fns of user lookup is ', user)
 		// compare hashed version of the password input via the form
 		// with the [looked-up-by-email] user's hashed password
@@ -75,6 +81,7 @@ const checkPasswordForEmail = (password, email)=> {
 			  } 
 
 		})
+		}
 
 	})
 }

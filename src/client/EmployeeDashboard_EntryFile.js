@@ -8,13 +8,13 @@ import { createStore } from 'redux'
 const store = createStore(visibilityToggler)
 
 
-import ViewportController from "./reactComponents/ViewportController"
+import EmployeeDashboardController from "./reactComponents/employee_dashboard/EmployeeDashboardController"
 
 
 /* Here we want to take the session and based on the user type, deliver the appropriate dashboard */
 ReactDOM.render(
   <Provider store={store}>
-    <ViewportController />
+    <EmployeeDashboardController />
   </Provider>,
   document.getElementById("react-root")
 )

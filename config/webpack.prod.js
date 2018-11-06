@@ -13,8 +13,8 @@ module.exports = env => {
       // 'component_modules/employee_dashboard/mainExample': [
       //   "./src/client/mainExample.js"
       // ],
-      'component_modules/employee_dashboard/testCardArray': [
-        "./src/client/ViewportApp.js"
+      'component_modules/employee_dashboard/employee_dashboard': [
+        "./src/client/EmployeeDashboard_EntryFile.js"
       ]
     },
     mode: "production",
@@ -75,7 +75,7 @@ module.exports = env => {
         filename: "[name].css",
       }),
       new OptimizeCssAssetsPlugin({
-        assetNameRegExp: /\.s?ass$/g,
+        assetNameRegExp: /\.s?[ac]ss$/g,
         cssProcessor: require("cssnano"),
         cssProcessorOptions: { discardComments: { removeAll: true } },
         canPrint: true

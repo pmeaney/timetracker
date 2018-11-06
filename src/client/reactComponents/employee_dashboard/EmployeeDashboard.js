@@ -1,6 +1,6 @@
 import React from 'react';
-import TaskList from './employee_dashboard/TaskList'
-import NavigationBar from './employee_dashboard/NavigationBar'
+import TaskList from './TaskList'
+import NavigationBar from './NavigationBar'
 import { connect } from 'react-redux'
 
 const EmployeeDashboard = (props) => {

@@ -1,5 +1,5 @@
 import React from 'react'
-import '../scss/bulma_sass/bulma.sass'
+import '../../scss/bulma_sass/bulma.sass'
 
 import EmployeeDashboard from "./EmployeeDashboard"
 

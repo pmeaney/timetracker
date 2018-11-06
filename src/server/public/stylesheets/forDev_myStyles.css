@@ -28,3 +28,8 @@
   font-weight: bold;
   font-size: 1.5rem;
 }
+
+.is-invalid {
+  color: red;
+  background: lightgrey;
+}

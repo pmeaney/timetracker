@@ -393,34 +393,28 @@ router.post('/profile/resumeUpload', uploadedResume, function (req, res, next) {
 
 
 router.get('/login', function (req, res, next) {
-  // ### NOTE:
-  // ### Need to fix frontend of both pages/register.ejs and pages/login.ejs
-  // ### -- both are pulling in jquery for employee pages.
-  // ###    -> there needs to be a jquery file for just general pages/components (rather than employee or admin, etc.)
 
   // if user has a session already, redirect them to their profile page.
-
   // else, render the login page.
 
+    // here, we're just rendering the login page, with a flash message if there has been a validation error in login
   if (req.session.bad_user_login_attempt) {
-    req.flash('success', req.session.bad_user_login_attempt)
+    req.flash('infoMessage', req.session.bad_user_login_attempt)
     delete req.session.bad_user_login_attempt;
-  }
-
-  if (req.session.good_user_login_attempt) {
-    req.flash('success', req.session.good_user_login_attempt)
-    delete req.session.good_user_login_attempt;
   }
 
   res.render('pages/login',
     {
-      errors: '',
+      // errors: '',
       env: process.env.NODE_ENV
     });
 
 })
 
 router.post('/login', function (req, res, next) {
+  console.log('req.body', req.body)
+  console.log('session info', req.session)
+  
   return Promise.try(() => {
     return User_fns.checkPasswordForEmail(req.body.password, req.body.email)
   }).then((result) => {
@@ -428,11 +422,12 @@ router.post('/login', function (req, res, next) {
     if (result === true) {
       req.session.good_user_login_attempt = 'Hey there.  Welcome.'
       res.redirect('/users/profile/' + req.session.user_id)
+      console.log('session info updated: ', req.session)
     } else {
       req.session.bad_user_login_attempt = 'Sorry, your login credentials were incorrect. Please try again.'
       res.redirect('/users/login')
+      console.log('session info updated: ', req.session)
     }
-
   })
 
 })

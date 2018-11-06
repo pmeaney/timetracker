@@ -10,11 +10,11 @@ module.exports = {
     //   "webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000",
     //   "./src/client/mainExample.js"
     // ],
-    'component_modules/employee_dashboard/testCardArray': [
+    'component_modules/employee_dashboard/employee_dashboard': [
       "babel-runtime/regenerator",
       "babel-register",
       "webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000",
-      "./src/client/ViewportApp.js"
+      "./src/client/EmployeeDashboard_EntryFile.js"
     ]
   },
   mode: "development",
