@@ -1,5 +1,3 @@
-var express = require('express');
-var router = express.Router();
 const Promise = require('bluebird')
 const merge = require('array-object-merge')
 
@@ -12,14 +10,10 @@ const database = require('knex')(knex_config[environment]);
 const Api_fns = require('../lib/api_fns')
 const General_fns = require('../lib/general_fns')
 
-
-router.get('/', function (req, res, next) {
-  res.send('this is the regular /admin_api route');
-});
-
-
-
-router.get('/timesheets', (req, res) => {
+/*##########################################
+##            Timesheets
+##########################################*/
+const get_Timesheets_All = (req, res) => {
 
   if (true /* need to do some sort of security check */) {
     return Promise.try(() => {
@@ -156,10 +150,12 @@ router.get('/timesheets', (req, res) => {
   } else {
     res.status(500).json({ error: 'sorry, we were unable to fulfill your request for activity data.' });
   }
-});
+}
 
-
-router.get('/activities/all', (req, res) => {
+/*##########################################
+##            Activities
+##########################################*/
+const get_Activities_All = (req, res) => {
 
   if (true /* need to do some sort of security check */) {
     return Promise.try(() => {
@@ -235,8 +231,9 @@ router.get('/activities/all', (req, res) => {
   else {
     res.status(500).json({ error: 'sorry, we were unable to fulfill your request for activity data.' });
   }
+}
 
-})
-
-
-module.exports = router;
+module.exports = { 
+  get_Timesheets_All,
+  get_Activities_All
+}

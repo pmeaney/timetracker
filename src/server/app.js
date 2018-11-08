@@ -22,9 +22,10 @@ const config = require("./config.json");
 
 // ############## Router  #####################
 const index_Router = require('./routes/index');
-const users_Router = require('./routes/users');
-const emp_api_Router = require('./routes/emp_api');
-const admin_api_Router = require('./routes/admin_api');
+const authentication_Router = require('./routes/authentication');
+const renderDashboard_Router = require('./routes/renderDashboard');
+const EmployeeAPI_Router = require('./routes/EmployeeAPI');
+const AdminAPI_Router = require('./routes/AdminAPI');
 
 var app = express();
 
@@ -107,9 +108,10 @@ const middleware = [
 app.use(middleware)
 
 app.use('/', index_Router);
-app.use('/users', users_Router);
-app.use('/emp_api', emp_api_Router);
-app.use('/admin_api', admin_api_Router);
+app.use('/auth', authentication_Router);
+app.use('/emp_api', EmployeeAPI_Router);
+app.use('/admin_api', AdminAPI_Router);
+app.use('/dashboard', renderDashboard_Router);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

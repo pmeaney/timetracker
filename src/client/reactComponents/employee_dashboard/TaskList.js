@@ -68,37 +68,29 @@ class TaskList extends Component {
     this.props.toggle_Visibility_Viewport_A(toggleValue);
   }
 
-  /* Idea for using same fn for clock in and clock out:
-    Fn() {
-      get lat, long, time. already have activity_id.  also existingTimesheetBoolean
-      
-      Note: existingTimesheetBoolean -- this shows whether we're trying to access an existing timesheet or not.
-      Depending on the boolean, one of two different 'geolocation' success posts will fire
-      SuccessCallback_submitData_ClockIn or SuccessCallback_submitData_ClockOut
-
-      if (existingTimesheetBoolean = true) {
-      // post this way
-      // data would be: activity_id, lat, long, (clockOut) time
-      // i.e. 'select these objects out and send them'
-      } else {
-        // post this way
-        // data would be: activity_id, lat, long, (clockIn) time
-        // i.e. 'select these objects out and send them'
-        // note: uses a 'createTimesheet' API library function which inserts null automatically
-      }
-    }
-
-  */
 
   HandleClick_Task_ClockIn_or_ClockOut(isActiveTimesheet, activity_id, e) {
     e.stopPropagation(); // stop bubbling up to parent div
 
     const SuccessCallback_submitData_ClockIn_newTimesheet = (latitude, longitude) => {
       console.log('Clocking in...')
+      /* This will contain an http post request with:
+        activity_id
+        time
+        latitude
+        longitude
+      */
+
     }
 
     const SuccessCallback_submitData_ClockOut_ActiveTimesheet = (latitude, longitude) => {
       console.log('Clocking Out...')
+      /* This will contain an http put request with:
+        activity_id
+        time
+        latitude
+        longitude
+      */
     }
 
     const geoFindMe = () => {
@@ -205,7 +197,7 @@ class TaskList extends Component {
                   href="#"
                   className="card-footer-item"
                   onClick=
-                  {e => this.HandleClick_Task_ClockIn_or_ClockOut(true, obj.activity_id, e)}
+                  { e => this.HandleClick_Task_ClockIn_or_ClockOut(true, obj.activity_id, e)}
                 >Clock Out</a>
 
               <a href="#" className="card-footer-item">More Info</a>
@@ -244,7 +236,7 @@ class TaskList extends Component {
                 href="#"
                 className="card-footer-item"
                 onClick=
-                {e => this.HandleClick_Task_ClockIn_or_ClockOut(false, obj.activity_id, e)}
+                { e => this.HandleClick_Task_ClockIn_or_ClockOut(false, obj.activity_id, e)}
               >Clock In</a>
 
               <a href="#" className="card-footer-item">More Info</a>

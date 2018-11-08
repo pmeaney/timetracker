@@ -2,7 +2,6 @@ const Promise = require('bluebird');
 
 // knex
 const dotenv = require("dotenv").config({ path: '../.env'}); // access .env dotfile settings
-const knex = require('knex');
 const environment = process.env.NODE_ENV;
 const knex_config = require('../knexfile');
 const database = require('knex')(knex_config[environment]);

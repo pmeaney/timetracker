@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
-  <title>Login</title>
+  <title>Register</title>
 
 
   <!-- Currently CSS is in react bundle -->
@@ -37,7 +37,7 @@
         <div class="navbar-item">
           <div class="buttons">
             <a class="button is-primary">
-              <strong>Sign up</strong>
+              Sign up
             </a>
             <a class="button is-light">
               Log in
@@ -55,34 +55,68 @@
       <div class="container CustomFormSpacing">
         <h1 class="loginHeader">Register below</h1>
         <br>
-        <div class="field">
-          <p class="control">
-            <!-- <p class="control has-icons-left has-icons-right"> -->
-            <input class="input" type="email" placeholder="Email">
-            <!-- <span class="icon is-small is-left">
-              <i class="fas fa-envelope"></i>
-            </span>
-            <span class="icon is-small is-right">
-              <i class="fas fa-check"></i>
-            </span> -->
-          </p>
-        </div>
-        <div class="field">
-          <!-- <p class="control has-icons-left"> -->
-          <p class="control">
-            <input class="input" type="password" placeholder="Password">
-            <!-- <span class="icon is-small is-left">
-              <i class="fas fa-lock"></i>
-            </span> -->
-          </p>
-        </div>
-        <div class="field">
-          <p class="control">
-            <button class="button is-success">
-              Login
-            </button>
-          </p>
-        </div>
+        <% if ( messages.infoMessage ) { %>
+        <p>Error:
+          <%= messages.infoMessage %>
+        </p>
+        <br>
+        <% } %>
+
+        <% if (Object.keys(errors).length === 0) { %>
+          <p>Please enter the email and password you would like to use for your account.</p>
+          <br>
+        <% } else { %>
+        <h4 class="title is-5">Oops, please correct the following:</h4>
+        <ul class="subtitle is-5">
+          <% Object.values(errors).forEach(error => { %>
+          <li>
+            &bull;&nbsp; <%= error.msg %>
+          </li>
+          <% }) %>
+        </ul>
+        <% } %>
+
+        <form role="form" method="POST" action="/auth/register" novalidate>
+          <div class="field">
+            <p class="control">
+              <!-- <p class="control has-icons-left has-icons-right"> -->
+              <input class="input" name="email" type="email" placeholder="Email">
+              <!-- <span class="icon is-small is-left">
+                <i class="fas fa-envelope"></i>
+              </span>
+              <span class="icon is-small is-right">
+                <i class="fas fa-check"></i>
+              </span> -->
+            </p>
+          </div>
+          <div class="field">
+            <!-- <p class="control has-icons-left"> -->
+            <p class="control">
+              <input class="input" name="password" type="password" placeholder="Password">
+              <!-- <span class="icon is-small is-left">
+                <i class="fas fa-lock"></i>
+              </span> -->
+            </p>
+          </div>
+          <div class="field">
+            <!-- <p class="control has-icons-left"> -->
+            <p class="control">
+              <input class="input" name="passwordconfirmation" type="password" placeholder="Please confirm your password">
+              <!-- <span class="icon is-small is-left">
+                          <i class="fas fa-lock"></i>
+                        </span> -->
+            </p>
+          </div>
+          <div class="field">
+            <p class="control">
+              <button class="button is-success">
+                Register
+              </button>
+            </p>
+          </div>
+        </form>
+
+
       </div>
 
     </div>
