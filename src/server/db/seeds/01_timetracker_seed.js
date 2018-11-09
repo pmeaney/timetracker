@@ -90,6 +90,8 @@ exports.seed = function(knex, Promise) {
             { activity_code_id: 8, project_id: 2, emp_assigned_by: 1, emp_assigned_to: 2, activity_notes: 'install drywall in champagne conference room', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z'},
             { activity_code_id: 8, project_id: 3, emp_assigned_by: 1, emp_assigned_to: 2, activity_notes: 'Testing...', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z'},
             { activity_code_id: 8, project_id: 1, emp_assigned_by: 1, emp_assigned_to: 2, activity_notes: 'Testing 2...', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z'},
+            { activity_code_id: 8, project_id: 2, emp_assigned_by: 1, emp_assigned_to: 2, activity_notes: 'Testing 3...', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z'},
+            { activity_code_id: 8, project_id: 2, emp_assigned_by: 1, emp_assigned_to: 2, activity_notes: 'Testing 4...', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z'},
           ])
         ])
     })
@@ -107,7 +109,6 @@ exports.seed = function(knex, Promise) {
             { activity_id: 3, emp_authorized_by: 2, emp_accepted_by: 3, cost_center_id: 1,  timesheet_notes: 'we broke a wheelbarrow', timesheet_submitted_datetime: '2018-02-14T15:02:00.000Z', timesheet_clockin: '2018-02-01T16:05:00.000Z', timesheet_clockout: '2018-02-02T00:05:00.000Z',timesheet_clockin_lat: '37.684310', timesheet_clockin_long: '-122.40293', timesheet_clockout_lat: '37.684136', timesheet_clockout_long: '-122.40240'},
             { activity_id: 4, emp_authorized_by: 3, emp_accepted_by: 4, cost_center_id: 1,  timesheet_notes: 'nothing to report', timesheet_submitted_datetime: '2018-02-14T15:02:00.000Z', timesheet_clockin: '2018-02-03T13:00:00.000Z', timesheet_clockout: '2018-02-02T00:05:00.000Z',     timesheet_clockin_lat: '37.684678', timesheet_clockin_long: '-122.40333', timesheet_clockout_lat: '37.684146', timesheet_clockout_long: '-122.40240'},
             { activity_id: 5, emp_authorized_by: 2, emp_accepted_by: 2, cost_center_id: 1,  timesheet_notes: 'drywall done. sealant needs 48 hours to dry', timesheet_submitted_datetime: '2018-02-04T13:05:00.000Z', timesheet_clockin: '2018-02-04T13:05:00.000Z', timesheet_clockout: null, timesheet_clockin_lat: '37.684518', timesheet_clockin_long: '-122.40103', timesheet_clockout_lat: null, timesheet_clockout_long: null},
-            { activity_id: 6, emp_authorized_by: 2, emp_accepted_by: 3, cost_center_id: 1,  timesheet_notes: 'testing', timesheet_submitted_datetime: '2018-02-04T13:05:00.000Z', timesheet_clockin: '2018-02-04T13:05:00.000Z', timesheet_clockout: null, timesheet_clockin_lat: '37.684518', timesheet_clockin_long: '-122.40103', timesheet_clockout_lat: null, timesheet_clockout_long: null},
           ])
 
         ])

@@ -67,7 +67,8 @@ const post_create_timesheet_toClockIn = (req, res) => {
               longitude
             )
           }).then((response) => {
-            console.log('create timesheet response', response)
+            console.log('Successfully created a timesheet ', response)
+            res.status(200).json(response);
             // Todo: should flash a temporary message to user showing their new timesheet ID & clock in timestamp
           })
 
@@ -82,6 +83,22 @@ const post_create_timesheet_toClockIn = (req, res) => {
 
 const put_update_timesheet_toClockOut = (req, res) => {
 
+  console.log('req.body is', req.body)
+  
+  if (true) {
+    return Promise.try(() => {
+      // (activity_id, clockout_time, latitude, longitude)
+      return Api_fns.updateExistingTimesheet_onClockout(req.body.activity_id, req.body.timesheet_clockout, req.body.latitude, req.body.longitude)
+    })
+    .then((response) => {
+      console.log('successfully updated this object ', response)
+      res.status(200).json(response);
+    })
+
+  } else {
+    res.status(500).json({ error: 'sorry, we were unable to fulfill your request for activity data.' });
+  }
+  
 }
 
 // ********************************************************
