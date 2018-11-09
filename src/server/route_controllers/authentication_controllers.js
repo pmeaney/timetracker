@@ -5,9 +5,9 @@ const Promise = require('bluebird')
 const Auth_fns = require('../lib/authentication_fns')
 
 
-/*##########################################
-##            Registration
-##########################################*/
+// ****************************************
+// ***            Registration
+// ****************************************
 
 const get_RegistrationPage = function (req, res, next) {
   res.render('pages/register', {
@@ -162,9 +162,9 @@ const post_RegistrationPage_createNewUser = (req, res, next) => {
 
 }
 
-/*##########################################
-##            Login
-##########################################*/
+// ****************************************
+// ***            Login
+// ****************************************
 
 const get_LoginPage = function (req, res, next) {
 

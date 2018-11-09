@@ -41,7 +41,7 @@ exports.up = function(knex, Promise) {
 	}),
 
 	knex.schema.createTable('activity_codes', function(table) {
-	  table.increments('activity_code').primary();
+	  table.increments('activity_code_id').primary();
 	  table.text('activity_type'); 
   	  table.timestamps(true, true);// this automatically sets 'created at' and 'updated at' timestamps
 	}),
@@ -76,7 +76,7 @@ exports.up = function(knex, Promise) {
 	// ==> allows for multiple employees per pactivity
 	knex.schema.createTable('activities', function(table) {
 	  table.increments('activity_id').primary();
-	  table.integer('activity_code').references('activity_codes.activity_code'); 
+	  table.integer('activity_code_id').references('activity_codes.activity_code_id'); 
 
 		// emp_assigned_to = the employee it is assigned to. if blank, it's unassigned and multiple employees can view it (based on the activity codes they can view)
 	  table.integer('emp_assigned_to').references('employees.employee_id'); 

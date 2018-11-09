@@ -79,7 +79,25 @@ class TaskList extends Component {
         time
         latitude
         longitude
+
+        to: /timesheets/create
       */
+      console.log('Latitude is ' + latitude + '° Longitude is ' + longitude + '...')
+      console.log('TYPE OF Latitude is ' + typeof latitude + '° Longitude is ' + typeof longitude + '...')
+
+      var clockInTime = new Date()
+      axios.post('http://localhost:3000/emp_api/timesheets/create', {
+        activity_id: activity_id,
+        timesheet_clockin: clockInTime,
+        latitude: latitude,
+        longitude: longitude
+      })
+        .then(function (response) {
+          console.log(response);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
 
     }
 

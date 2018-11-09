@@ -8,6 +8,6 @@ router.get('/', function (req, res, next) {
 
 router.get('/timesheets', AdminAPI_ctrl.get_Timesheets_All);
 
-router.get('/activities/all', AdminAPI_ctrl.get_Activities_All)
+router.get('/activities', AdminAPI_ctrl.get_Activities_All)
 
 module.exports = router;

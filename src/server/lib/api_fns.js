@@ -40,9 +40,9 @@ const getActivity_by_id = (activity_id) => {
     })
 }
 
-const getActivityType_by_activity_code = (activity_code) => {
+const getActivityType_by_activity_code_id = (activity_code_id) => {
 	return Promise.try(() => {
-		return database("activity_codes").where({ activity_code: activity_code });
+		return database("activity_codes").where({ activity_code_id: activity_code_id });
     })
 }
 
@@ -58,7 +58,7 @@ const getActivities_forWhich_timesheetsDoNotExist = (emp_id) => {
 		return database('activities')
 			.select(
 							'activity_id',
-							'activity_code',
+							'activity_code_id',
 							'project_id',
 							'emp_assigned_by',
 							'emp_assigned_to',
@@ -95,7 +95,7 @@ const getTimesheetsAndActivities_forWhich_Timesheets_haveNullClockOut_forEmploye
 						'=',
 						'activities.activity_id'
 						)
-			.select('activities.activity_code',
+			.select('activities.activity_code_id',
 							'activities.project_id',
 							'activities.emp_assigned_by',
 							'activities.emp_assigned_to',
@@ -154,14 +154,16 @@ timesheet object: {
 }
 */
 
-const createNewTimesheet_onClockin = (activity_id, emp_accepted_by, timesheet_clockin, timesheet_clockin_lat, timesheet_clockin_long) => {
+const createNewTimesheet_onClockin = (employee_id_accepted_by, activity_id, clockin_time, latitude, longitude) => {
 	return Promise.try(() => {
-		return database("timesheets").insert({
+		return database("timesheets")
+			.returning(['timesheet_id', 'timesheet_clockin']) // response data to return to user upon insert
+			.insert({
 			activity_id: activity_id,
-			emp_accepted_by: emp_accepted_by,
-			timesheet_clockin: timesheet_clockin,
-			timesheet_clockin_lat: timesheet_clockin_lat,
-			timesheet_clockin_long: timesheet_clockin_long,
+			emp_accepted_by: employee_id_accepted_by,
+			timesheet_clockin: clockin_time,
+			timesheet_clockin_lat: latitude,
+			timesheet_clockin_long: longitude,
 			emp_authorized_by: null,
 			cost_center_id: null,
 			timesheet_notes: null,
@@ -223,7 +225,7 @@ module.exports = {
 	getAllTimesheets,
 	getTimesheet_by_activity_id,
 	createNewTimesheet_onClockin,
-	getActivityType_by_activity_code,
+	getActivityType_by_activity_code_id,
 	getLocation_by_project_id,
 	getProjectMgr_by_project_id,
 	getTimesheetsAndActivities_forWhich_Timesheets_haveNullClockOut_forEmployee,
