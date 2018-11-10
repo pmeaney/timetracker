@@ -86,9 +86,11 @@ exports.seed = function(knex, Promise) {
             { activity_code_id: 1, project_id: 1, emp_assigned_by: 1, emp_assigned_to: 2, activity_notes: 'paint with blue until you run out, then switch to red', activity_datetime_begin: '2018-01-01T16:00:00.000Z', activity_datetime_end: '2018-01-01T21:00:00.000Z'},
             { activity_code_id: 3, project_id: 2, emp_assigned_by: 1, emp_assigned_to: 2, activity_notes: 'work on building shelf in store', activity_datetime_begin: '2018-02-01T13:00:00.000Z', activity_datetime_end: '2018-02-01T21:00:00.000Z'},
             { activity_code_id: 11, project_id: 3, emp_assigned_by: 1, emp_assigned_to: 3, activity_notes: 'demolish and clean up the flagged separating wall in champagne conference room', activity_datetime_begin: '2018-02-01T16:05:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z'},
+         
             { activity_code_id: 11, project_id: 1, emp_assigned_by: 1, emp_assigned_to: 4, activity_notes: 'demolish and clean up the flagged separating wall in champagne conference room', activity_datetime_begin: '2018-02-03T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z'},
             { activity_code_id: 8, project_id: 2, emp_assigned_by: 1, emp_assigned_to: 2, activity_notes: 'install drywall in champagne conference room', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z'},
             { activity_code_id: 8, project_id: 3, emp_assigned_by: 1, emp_assigned_to: 2, activity_notes: 'Testing...', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z'},
+         
             { activity_code_id: 8, project_id: 1, emp_assigned_by: 1, emp_assigned_to: 2, activity_notes: 'Testing 2...', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z'},
             { activity_code_id: 8, project_id: 2, emp_assigned_by: 1, emp_assigned_to: 2, activity_notes: 'Testing 3...', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z'},
             { activity_code_id: 8, project_id: 2, emp_assigned_by: 1, emp_assigned_to: 2, activity_notes: 'Testing 4...', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z'},

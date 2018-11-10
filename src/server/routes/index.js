@@ -6,12 +6,8 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express'});
 });
 
-// router.get('/test', function (req, res, next) {
-//   res.render('reactTesting/test');
-// });
-
-router.get('/test2', function (req, res, next) {
-  res.render('pages/employeeDashboard', { testInfo: 'blah this is a test' });
+router.get('/test_time', function (req, res, next) {
+  res.render('testing/luxon/basicLuxon');
 });
 
 

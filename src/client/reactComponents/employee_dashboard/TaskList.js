@@ -2,7 +2,7 @@ import React, { Component }  from 'react';
 import { toggle_Visibility_Viewport_A } from "./redux/actions"
 import { connect } from 'react-redux'
 import axios from "axios"
-
+import { DateTime } from "luxon"
 
 class TaskList extends Component {
   constructor() {
@@ -47,21 +47,12 @@ class TaskList extends Component {
         })
       })
       .then(() => {
-        console.log('state is', this.state)
-        console.log('first obj employee_data_existingTasks_forClockOut', this.state.employee_data_existingTasks_forClockOut[0])
+        console.log('state was updated after get call, it is now: ', this.state)
+        console.log('############################')
       })
       .catch(function (error) {
         console.log(error);
       });
-       /* To Do:
-           Conditionally display timesheet cards first (if they exist), then activity cards next
-           unclosed Tasks (i.e. timesheet exists but has no clockOut info) -> onClick fn: clockOut of timesheet
-           new tasks (i.e. activity exists but timesheet does not) -> OnClick fn: create new timesheet
-        */
-  }
-
-  componentWillUnmount() {
-    console.log('TaskList is about to unmount.')
   }
 
   HandleClick_VisibilityToggle_Viewort_A(toggleValue, e) {
@@ -74,19 +65,9 @@ class TaskList extends Component {
     e.stopPropagation(); // stop bubbling up to parent div
 
     const SuccessCallback_submitData_ClockIn_newTimesheet = (latitude, longitude) => {
-      console.log('Clocking in...')
-      /* This will contain an http post request with:
-        activity_id
-        time
-        latitude
-        longitude
-
-        to: /timesheets/create
-      */
-      console.log('Latitude is ' + latitude + '° Longitude is ' + longitude + '...')
-      console.log('TYPE OF Latitude is ' + typeof latitude + '° Longitude is ' + typeof longitude + '...')
-
       var clockInTime = new Date()
+      console.log('Clocking In... at time: ', clockInTime, ' and location: ', latitude, ', ', longitude)
+
       axios.post('http://localhost:3000/emp_api/timesheets/create', {
         activity_id: activity_id,
         timesheet_clockin: clockInTime,
@@ -96,21 +77,25 @@ class TaskList extends Component {
       .then((response) => {
         if (response.status == 200) {
           console.log('post (create) response for activity_id: ', response.data[0].activity_id);
-
-          // ? Add new thing to employee_data_existingTasks_forClockOut
+          // console.log('response.data[0].timesheet_clockin', response.data[0].timesheet_clockin)
+          // * Add new thing to employee_data_existingTasks_forClockOut
           const arrayToFilter = this.state.employee_data_newTasks_forClockIn
-          const item_addTo_existingTasks = arrayToFilter.filter(item => item.activity_id === response.data[0].activity_id)
-          console.log('Item to add to existing tasks : ', item_addTo_existingTasks[0])
-          const joined_existingTasks_withNewTask = this.state.employee_data_existingTasks_forClockOut.concat(item_addTo_existingTasks[0])
 
-          // ? Remove thing from employee_data_newTasks_forClockIn
+          // NOTE: need to add clockin time to this object
+          const item_addTo_existingTasks = arrayToFilter.filter(item => item.activity_id === response.data[0].activity_id)
+          // console.log('Item to add to existing tasks : ', item_addTo_existingTasks[0])
+
+          const updated_item_ToAdd = {
+            ...item_addTo_existingTasks[0],
+            timesheet_clockin: response.data[0].timesheet_clockin
+          }
+          console.log('updated_item_ToAdd to existing tasks:', updated_item_ToAdd)
+          const joined_existingTasks_withNewTask = this.state.employee_data_existingTasks_forClockOut.concat(updated_item_ToAdd)
+
+          // * Remove thing from employee_data_newTasks_forClockIn
           const arrayToFilter_removeItem = this.state.employee_data_newTasks_forClockIn
           const itemsToKeep_inNewTasks = arrayToFilter_removeItem.filter(item => item.activity_id !== response.data[0].activity_id)
           console.log('Items to keep in new task (all but the one clicked) :', itemsToKeep_inNewTasks)
-          /* 
-          employee_data_newTasks_forClockIn
-            -> update it to contain the newly clocked in thing.
-            */
 
           this.setState({
             employee_data_existingTasks_forClockOut: joined_existingTasks_withNewTask,
@@ -127,15 +112,10 @@ class TaskList extends Component {
     }
 
     const SuccessCallback_submitData_ClockOut_ActiveTimesheet = (latitude, longitude) => {
-      console.log('Clocking Out...')
-      /* This will contain an http put request with:
-        timesheet_id (could just use activity_id, but I'd rather be explicit)
-        time
-        latitude
-        longitude
-      */
 
       var clockOutTime = new Date()
+      console.log('Clocking Out... at time: ', clockOutTime, ' and location: ', latitude, ', ', longitude)
+
       axios.put('http://localhost:3000/emp_api/timesheets/update', {
         activity_id: activity_id,
         timesheet_clockout: clockOutTime,
@@ -145,16 +125,17 @@ class TaskList extends Component {
         .then((response) => {
           if (response.status == 200) {
             console.log('put (update) response for activity_id: ', response.data[0].activity_id);
-          // ! Add thing to employee_data_recentlyCompletedTasks_clockedOut
+            
+          // * Add thing to employee_data_recentlyCompletedTasks_clockedOut
             const arrayToFilter = this.state.employee_data_existingTasks_forClockOut
             const item_addTo_RecentlyCompletedTasks = arrayToFilter.filter(item => item.activity_id === response.data[0].activity_id)
             console.log('Item to add to recently completed tasks : ', item_addTo_RecentlyCompletedTasks[0])
             const joined_completedTasks_withRecentlyCompletedTask = this.state.employee_data_recentlyCompletedTasks_clockedOut.concat(item_addTo_RecentlyCompletedTasks[0])
 
-          // ! Remove thing from employee_data_existingTasks_forClockOut
+          // * Remove thing from employee_data_existingTasks_forClockOut
             const arrayToFilter_removeItem = this.state.employee_data_existingTasks_forClockOut
             const itemsToKeep_inExistingTasks_forClockout = arrayToFilter_removeItem.filter(item => item.activity_id !== response.data[0].activity_id)
-            console.log('Items to keep in new task (all but the one clicked) :', itemsToKeep_inExistingTasks_forClockout)
+            console.log('Items to keep in existing, unclocked-out-of tasks (all but the one clicked-- because it was clocked out of) :', itemsToKeep_inExistingTasks_forClockout)
 
             this.setState({
                 employee_data_recentlyCompletedTasks_clockedOut: joined_completedTasks_withRecentlyCompletedTask,
@@ -186,6 +167,7 @@ class TaskList extends Component {
       function error() {
         console.log("Unable to retrieve your location")
       }
+      console.log('############################')
       console.log("Locating...")
       navigator.geolocation.getCurrentPosition(success, error);
     }
@@ -193,56 +175,34 @@ class TaskList extends Component {
 
   }
 
-
-  // HandleClick_Task_ClockIn_or_ClockOut(activity_id, e) {
-  //   e.stopPropagation(); // stop bubbling up to parent div
-
-  //   console.log('clicked clockin of card with activity_id of ', activity_id)
-    
-  //   const SuccessCallback_submitData_ClockIn = (latitude, longitude) => {
-  //     console.log('Latitude is ' + latitude + '° Longitude is ' + longitude + '...')
-  //     console.log('TYPE OF Latitude is ' + typeof latitude + '° Longitude is ' + typeof longitude + '...')
-
-  //     var clockInTime = new Date()
-  //     axios.post('http://localhost:3000/emp_api/timesheets/createOrUpdate_timesheet', {
-  //       activity_id: activity_id,
-  //       timesheet_clockin: clockInTime,
-  //       latitude: latitude,
-  //       longitude: longitude
-  //     })
-  //       .then(function (response) {
-  //         console.log(response);
-  //       })
-  //       .catch(function (error) {
-  //         console.log(error);
-  //       });
-
-  //   }
-
-  //   const geoFindMe = () => {
-  //     if (!navigator.geolocation) {
-  //       console.log("Geolocation is not supported by your browser")
-  //       return;
-  //     }
-  //     function success(position) {
-  //       var latitude = position.coords.latitude;
-  //       var longitude = position.coords.longitude;
-  //       SuccessCallback_submitData_ClockIn(latitude, longitude)
-  //     }
-  //     function error() {
-  //       console.log("Unable to retrieve your location")
-  //     }
-  //     console.log("Locating...")
-  //     navigator.geolocation.getCurrentPosition(success, error);
-  //   }
-  //   geoFindMe()
-  // }
-
-
   render() {
 
     // This needs to be setup for Clocking out (change text & create a new onClick function for clockout)
+    const getLuxon_local_DateTime = (js_datetime, value) => {
+      if (value === 'date') {
+      let lux_jsDateTime = DateTime.fromJSDate(new Date(js_datetime))
+      let luxon_formattedDate = lux_jsDateTime.toLocaleString(DateTime.DATE_SHORT)
+      return luxon_formattedDate
+      }
+
+      if (value === 'time') {
+        let lux_jsDateTime = DateTime.fromJSDate(new Date(js_datetime))
+        let luxon_formattedTime = lux_jsDateTime.toLocaleString(DateTime.TIME_SIMPLE)
+        return luxon_formattedTime
+      }
+    }
+
     const existingTaskCards = this.state.employee_data_existingTasks_forClockOut.map((obj, i) => {
+
+      let activity_begin_date = getLuxon_local_DateTime(obj.activity_datetime_begin, 'date')
+      let activity_begin_time = getLuxon_local_DateTime(obj.activity_datetime_begin, 'time')
+
+      let activity_end_date = getLuxon_local_DateTime(obj.activity_datetime_end, 'date')
+      let activity_end_time = getLuxon_local_DateTime(obj.activity_datetime_end, 'time')
+
+      let clockedIn_date = getLuxon_local_DateTime(obj.timesheet_clockin, 'date')
+      let clockedIn_time = getLuxon_local_DateTime(obj.timesheet_clockin, 'time')
+
       return( 
         <div key={i} className="column makeFixedColumnWidth">
           <div className="card">
@@ -254,13 +214,11 @@ class TaskList extends Component {
             <div className="card-content smallSpacing">
               <div className="content">
                 <p>
-                  Date: Need to format date
-                  {/* Date: {obj.activity_readable_date_begin} */}
+                  Begin: { activity_begin_date} at {activity_begin_time }
                   <br />
-                  Time: {obj.activity_datetime_begin }&nbsp;&ndash;&nbsp;
-                        { obj.activity_datetime_end }
+                  End: {activity_end_date} at {activity_end_time}
                   <br />
-                  ClockedIn: { obj.timesheet_clockin }
+                  ClockedIn: { clockedIn_date } at { clockedIn_time }
                   <br />
                   &diams;&nbsp;
                   {obj.activity_notes}
@@ -283,7 +241,16 @@ class TaskList extends Component {
       )
     })
 
+    
+
     const newTaskCards = this.state.employee_data_newTasks_forClockIn.map((obj, i) => {
+
+      let activity_begin_date = getLuxon_local_DateTime(obj.activity_datetime_begin, 'date')
+      let activity_begin_time = getLuxon_local_DateTime(obj.activity_datetime_begin, 'time')
+
+      let activity_end_date = getLuxon_local_DateTime(obj.activity_datetime_end, 'date')
+      let activity_end_time = getLuxon_local_DateTime(obj.activity_datetime_end, 'time')
+
       return (
         <div key={i} className="column makeFixedColumnWidth">
           <div className="card">
@@ -295,11 +262,9 @@ class TaskList extends Component {
             <div className="card-content smallSpacing">
               <div className="content">
                 <p>
-                  Date: Need to format date
-                  {/* Date: {obj.activity_readable_date_begin} */}
+                  Begin: {activity_begin_date} at {activity_begin_time}
                   <br />
-                  Time: {obj.activity_datetime_begin}&nbsp;&ndash;&nbsp;
-                        {obj.activity_datetime_end}
+                  End: {activity_end_date} at {activity_end_time}
                   <br />
                   &diams;&nbsp;
                   {obj.activity_notes}

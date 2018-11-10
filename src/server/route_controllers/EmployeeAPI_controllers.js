@@ -32,6 +32,13 @@ const post_create_timesheet_toClockIn = (req, res) => {
   // datetime validation:
   // check if (Object.prototype.toString.call(date) === '[object Date]')
   //   integer, time, coordinates
+  // if (Object.prototype.toString.call(timesheet_clockin) === '[object Date]') {
+  //   console.log('timesheet_clockin is a date object' )
+  // } else {
+  //   console.log('timesheet_clockin is NOTa date object')
+  // }
+  
+  console.log('what type of object is date', Object.prototype.toString.call(timesheet_clockin))
 
   //   check if: 
   //   has session employee id 

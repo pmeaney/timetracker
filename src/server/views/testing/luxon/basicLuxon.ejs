@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+  <title>Luxon basic testing</title>
+</head>
+<body>
+  <div className="container">
+    <p>Hello from Luxon</p>
+    <div id="output"></div>
+  </div>
+</body>
+<script src="/javascript/forTesting/luxon.min.js"></script>
+<script>
+  /* What to do in react, for example:
+  
+  Clockin:
+  - create JS date (to be logged to server), example: let jsdate = new Date()
+  - create a date with Luxon (to be shown to user) by using: luxon.DateTime.fromJSDate(jsdate)
+  */
+
+
+
+  let output = document.getElementById('output')
+
+  // luxon style datetime
+  // let DateTime = luxon.DateTime
+  // let today = DateTime.local()
+  // let f = { month: 'long', day: '2-digit'}
+  // let m = today.get('month')
+  // let newDt = today.set({ month: 12 })
+
+  // creating luxon datetime from a JS date
+
+  let DateTime = luxon.DateTime
+  let jsdate = new Date()
+  let lux_jsdate = luxon.DateTime.fromJSDate(jsdate)
+  let luxon_formattedDate = lux_jsdate.toLocaleString(DateTime.DATE_HUGE)
+
+  output.textContent = `js date: ${luxon_formattedDate}`
+
+  console.log(today.toISO())
+</script>
+</html>
