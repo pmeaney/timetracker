@@ -129,8 +129,13 @@ class TaskList extends Component {
           // * Add thing to employee_data_recentlyCompletedTasks_clockedOut
             const arrayToFilter = this.state.employee_data_existingTasks_forClockOut
             const item_addTo_RecentlyCompletedTasks = arrayToFilter.filter(item => item.activity_id === response.data[0].activity_id)
-            console.log('Item to add to recently completed tasks : ', item_addTo_RecentlyCompletedTasks[0])
-            const joined_completedTasks_withRecentlyCompletedTask = this.state.employee_data_recentlyCompletedTasks_clockedOut.concat(item_addTo_RecentlyCompletedTasks[0])
+            const updated_item_ToAdd = {
+              ...item_addTo_RecentlyCompletedTasks[0],
+              timesheet_clockout: response.data[0].timesheet_clockout
+            }
+            console.log('Updated Item to add to recently completed tasks : ', updated_item_ToAdd)
+
+            const joined_completedTasks_withRecentlyCompletedTask = this.state.employee_data_recentlyCompletedTasks_clockedOut.concat(updated_item_ToAdd)
 
           // * Remove thing from employee_data_existingTasks_forClockOut
             const arrayToFilter_removeItem = this.state.employee_data_existingTasks_forClockOut
