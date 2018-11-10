@@ -8,7 +8,6 @@ const knex_config = require('../knexfile');
 const database = require('knex')(knex_config[environment]);
 
 const Api_fns = require('../lib/api_fns')
-const General_fns = require('../lib/general_fns')
 
 // ********************************************************
 // ***   TIMESHEETS
@@ -170,106 +169,6 @@ const get_PendingTasks_by_EmployeeID = (req, res) => {
   else {
     res.status(500).json({ error: 'sorry, we were unable to fulfill your request for activity data.' });
   }
-}
-
-
-
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!  FOR DEMO PURPOSES ONLY -- This is an old, simplified version of 'get all tasks by employee ID' which did not take into account unClocked-out timesheets
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-/* With this route, first we get all activities for the particular employee ID with Api_fns.getActivitiesBy_employee_assigned_to().
-    Now we have access to all the employee's activities.
-    With that data, we do other lookups: for employee info, for activity type, location, and project data.
-    Then, those other lookups mentioned above are stitched together as 'finalData'.
-  Now that we have all the data we want (activity & 'finalData'), we merge
-  the data sets into the real final set: perActivity_mergedData and send it to the requestor 
-  
-  Note: Rather than do lookups on tables of specific fields, I simply return the entire set of fields, and
-  then below, when merging data, I use the return statements to specify the particular fields I want to send to the requestor*/
-
-const get_activities_by_EmployeeID = (req, res) => {
-  // Previously I was passing in the mocked employee ID of 2, from the session (set on login)
-  const param_emp_id_asInt = parseInt(req.params.emp_id, 10);
-  // if (req.session.mock_employee_id === param_emp_id_asInt) {  // <-- Previously I was passing in the mocked employee ID of 2, from the session (set on login)
-  if (true) {
-    return Promise.try(() => {
-      // return Api_fns.getActivitiesBy_employee_assigned_to(req.session.mock_employee_id); // <-- Previously I was passing in the mocked employee ID of 2, from the session (set on login)
-      return Api_fns.getActivitiesBy_employee_assigned_to(req.params.emp_id);
-    }).then((activities) => {
-      return Promise.map(activities, (activity) => {
-        return Promise.all([
-          Api_fns.getEmployee_by_id(req.params.emp_id), /*  emp completing the task */
-          Api_fns.getEmployee_by_id(activity['emp_assigned_by']), /*  emp who assigned the task (activity mgr -- above them is project mgr.  We can always add that on later (involved small DB model update) but let's focus on basic activity info for now) */
-          Api_fns.getActivityType_by_activity_code_id(activity['activity_code_id']), /* activity type info: such as 'painting', by code (i.e. activity_code_id is basically activity type's uniqueID)*/
-          Api_fns.getLocation_by_project_id(activity['project_id']), /* work-activity location info by for employee (activity's project id) */
-          Api_fns.getProjectMgr_by_project_id(activity['project_id'])
-        ]).spread((employee_assignedTo_activity, employee_whoIs_activityMgr, activity_type, location, employee_WhoIs_projectMgr) => {
-          return { employee_assignedTo_activity, employee_whoIs_activityMgr, activity_type, location, employee_WhoIs_projectMgr }
-        });
-      }).then((finalData) => {
-
-        var perActivity_mainData = activities.map((currElement, index) => {  // activity set one
-
-          var activity_readable_date_begin = General_fns.get_readable_date(currElement.activity_datetime_begin)
-          var activity_readable_date_end = General_fns.get_readable_date(currElement.activity_datetime_end)
-          var activity_readable_time_begin = General_fns.get_readable_time(currElement.activity_datetime_begin)
-          var activity_readable_time_end = General_fns.get_readable_time(currElement.activity_datetime_end)
-          var activity_notes_summary = General_fns.summarize_string(currElement.activity_notes)
-
-          return {
-            activity__activity_id: currElement.activity_id,
-            activity__emp_id_assigned_to: currElement.emp_assigned_to,
-            activity__emp_id_assigned_by: currElement.emp_assigned_by,
-            activity__project_id: currElement.project_id,
-            activity__activity_notes: currElement.activity_notes,
-            activity__activity_datetime_begin: currElement.activity_datetime_begin,
-            activity__activity_datetime_end: currElement.activity_datetime_end,
-            // processed items
-            activity__activity_notes_summary: activity_notes_summary,
-            activity__activity_readable_date_begin: activity_readable_date_begin,
-            activity__activity_readable_date_end: activity_readable_date_end,
-            activity__activity_readable_time_begin: activity_readable_time_begin,
-            activity__activity_readable_time_end: activity_readable_time_end,
-          }
-        })
-
-        var perActivity_additionalData = finalData.map((currElement, index) => { // activity set two
-
-          return {
-            activity__activity_type: currElement.activity_type[0]['activity_type'],
-
-            activity__location_id: currElement.location[0]['location_id'],
-            activity__location_type: currElement.location[0]['location_type'],
-            activity__location_address: currElement.location[0]['location_address'],
-            activity__location_city: currElement.location[0]['location_city'],
-            activity__location_state: currElement.location[0]['location_state'],
-            activity__location_zip: currElement.location[0]['location_zip'],
-
-            activity__employee_firstName: currElement.employee_assignedTo_activity[0]['firstName'],
-            activity__employee_lastName: currElement.employee_assignedTo_activity[0]['lastName'],
-            activity__mgr_firstName: currElement.employee_whoIs_activityMgr[0]['firstName'],
-            activity__mgr_lastName: currElement.employee_whoIs_activityMgr[0]['lastName'],
-            activity__projMgr_firstName: currElement.employee_WhoIs_projectMgr[0]['firstName'],
-            activity__projMgr_lastName: currElement.employee_WhoIs_projectMgr[0]['lastName'],
-          }
-
-        })
-
-        const perActivity_mergedData = merge(perActivity_mainData, perActivity_additionalData) // combined activity sets
-
-        console.log('perActivity_mergedData', perActivity_mergedData)
-
-        return { perActivity_mergedData }
-
-      }).then((perActivity_mergedData) => {
-        res.status(200).json(perActivity_mergedData);
-      })
-    })
-  }
-  else {
-    res.status(500).json({ error: 'sorry, we were unable to fulfill your request for activity data.' });
-  }
-
 }
 
 

@@ -10,7 +10,9 @@ class TaskList extends Component {
     this.state = {
       employee_data_newTasks_forClockIn: [], // loaded in from first task get call
       employee_data_existingTasks_forClockOut: [], // loaded in as above, but also added to on ClockIn of timesheets
-      employee_data_recentlyCompletedTasks_clockedOut: [] // tasks which have been completed, for temporary retrieval for editing, current browser state
+      employee_data_recentlyCompletedTasks_clockedOut: [], // tasks which have been completed, for temporary retrieval for editing, current browser state
+      loading: false,
+      clicked_activity_id: 0
     }
 
     this.HandleClick_VisibilityToggle_Viewort_A = this.HandleClick_VisibilityToggle_Viewort_A.bind(
@@ -62,12 +64,21 @@ class TaskList extends Component {
 
 
   HandleClick_Task_ClockIn_or_ClockOut(isActiveTimesheet, activity_id, e) {
-    e.stopPropagation(); // stop bubbling up to parent div
+    this.setState({
+      loading: true,
+      clicked_activity_id: activity_id
+    })
 
+    e.stopPropagation(); // stop bubbling up to parent div
+    
     const SuccessCallback_submitData_ClockIn_newTimesheet = (latitude, longitude) => {
+
       var clockInTime = new Date()
       console.log('Clocking In... at time: ', clockInTime, ' and location: ', latitude, ', ', longitude)
 
+      // this.setState({
+      //   loading: true,
+      //   clicked_activity_id: activity_id }, () => {
       axios.post('http://localhost:3000/emp_api/timesheets/create', {
         activity_id: activity_id,
         timesheet_clockin: clockInTime,
@@ -98,6 +109,7 @@ class TaskList extends Component {
           console.log('Items to keep in new task (all but the one clicked) :', itemsToKeep_inNewTasks)
 
           this.setState({
+            loading: false,
             employee_data_existingTasks_forClockOut: joined_existingTasks_withNewTask,
             employee_data_newTasks_forClockIn: itemsToKeep_inNewTasks
           })
@@ -107,12 +119,13 @@ class TaskList extends Component {
       })
       .catch((error) => {
         console.log(error);
-      });
+      })
+    // })
 
     }
 
     const SuccessCallback_submitData_ClockOut_ActiveTimesheet = (latitude, longitude) => {
-
+      
       var clockOutTime = new Date()
       console.log('Clocking Out... at time: ', clockOutTime, ' and location: ', latitude, ', ', longitude)
 
@@ -129,7 +142,7 @@ class TaskList extends Component {
           // * Add thing to employee_data_recentlyCompletedTasks_clockedOut
             const arrayToFilter = this.state.employee_data_existingTasks_forClockOut
             const item_addTo_RecentlyCompletedTasks = arrayToFilter.filter(item => item.activity_id === response.data[0].activity_id)
-            const updated_item_ToAdd = {
+            const updated_item_ToAdd = { // adding on clockout data before we update state
               ...item_addTo_RecentlyCompletedTasks[0],
               timesheet_clockout: response.data[0].timesheet_clockout
             }
@@ -143,6 +156,7 @@ class TaskList extends Component {
             console.log('Items to keep in existing, unclocked-out-of tasks (all but the one clicked-- because it was clocked out of) :', itemsToKeep_inExistingTasks_forClockout)
 
             this.setState({
+                loading: false,
                 employee_data_recentlyCompletedTasks_clockedOut: joined_completedTasks_withRecentlyCompletedTask,
                 employee_data_existingTasks_forClockOut: itemsToKeep_inExistingTasks_forClockout
             })
@@ -164,6 +178,7 @@ class TaskList extends Component {
         var latitude = position.coords.latitude;
         var longitude = position.coords.longitude;
         if (isActiveTimesheet) {
+  
           SuccessCallback_submitData_ClockOut_ActiveTimesheet(latitude, longitude)
         } else {
           SuccessCallback_submitData_ClockIn_newTimesheet(latitude, longitude)
@@ -173,10 +188,12 @@ class TaskList extends Component {
         console.log("Unable to retrieve your location")
       }
       console.log('############################')
-      console.log("Locating...")
+      console.log("Locating... for activity_id: ", activity_id)
+      
       navigator.geolocation.getCurrentPosition(success, error);
     }
-    geoFindMe()
+     
+      geoFindMe()
 
   }
 
@@ -223,7 +240,7 @@ class TaskList extends Component {
                   <br />
                   End: {activity_end_date} at {activity_end_time}
                   <br />
-                  ClockedIn: { clockedIn_date } at { clockedIn_time }
+                  ClockedIn: {clockedIn_date} at {clockedIn_time}
                   <br />
                   &diams;&nbsp;
                   {obj.activity_notes}
@@ -232,12 +249,19 @@ class TaskList extends Component {
             </div>
             <footer className="card-footer">
 
+              {this.state.loading && this.state.clicked_activity_id == obj.activity_id ?
+                <a
+                  href="#"
+                  className="card-footer-item"><b>LOADING</b>
+                </a>
+                :
                 <a
                   href="#"
                   className="card-footer-item"
                   onClick=
                   {e => this.HandleClick_Task_ClockIn_or_ClockOut(true, obj.activity_id, e)}
                 >Clock Out</a>
+              }
 
               <a href="#" className="card-footer-item">More Info</a>
             </footer>
@@ -273,17 +297,26 @@ class TaskList extends Component {
                   <br />
                   &diams;&nbsp;
                   {obj.activity_notes}
+                  
                 </p>
               </div>
             </div>
             <footer className="card-footer">
 
-              <a
-                href="#"
-                className="card-footer-item"
-                onClick=
-                {e => this.HandleClick_Task_ClockIn_or_ClockOut(false, obj.activity_id, e)}
-              >Clock In</a>
+            {this.state.loading && this.state.clicked_activity_id == obj.activity_id ?
+                <a
+                  href="#"
+                  className="card-footer-item"><b>LOADING</b>
+                </a>
+                 :
+                <a
+                  href="#"
+                  className="card-footer-item"
+                  onClick=
+                  {e => this.HandleClick_Task_ClockIn_or_ClockOut(false, obj.activity_id, e)}
+                >Clock In</a>
+            }
+             
 
               <a href="#" className="card-footer-item">More Info</a>
             </footer>
