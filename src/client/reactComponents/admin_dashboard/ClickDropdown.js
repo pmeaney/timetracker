@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { toggle_Visibility_Viewport_TaskList,
-         toggle_Visibility_Viewport_Profile } from "./redux/actions"
+import { toggle_Visibility_Viewport_Maps } from "./redux/actions"
 import { connect } from 'react-redux'
- 
+
 class ClickDropdown extends Component {
   constructor() {
     super()
@@ -13,13 +12,6 @@ class ClickDropdown extends Component {
       onMouseEnter_menu: false,
       onMouseLeave_menu: false,
     }
-
-    this.HandleClick_VisibilityToggle_Viewort_TaskList = this.HandleClick_VisibilityToggle_Viewort_TaskList.bind(
-      this
-    );
-    this.HandleClick_VisibilityToggle_Viewort_Profile = this.HandleClick_VisibilityToggle_Viewort_Profile.bind(
-      this
-    );
   }
 
   Toggle_onMouseLeave_button() {
@@ -58,14 +50,10 @@ class ClickDropdown extends Component {
     }))
   }
 
-  HandleClick_VisibilityToggle_Viewort_TaskList(e) {
+  HandleClick_VisibilityToggle_Viewport_Maps(e) {
     e.stopPropagation(); // stop bubbling up to parent div
-    this.props.toggle_Visibility_Viewport_TaskList(!this.props.visibility_viewport_taskList);
-  }
-
-  HandleClick_VisibilityToggle_Viewort_Profile(e) {
-    e.stopPropagation(); // stop bubbling up to parent div
-    this.props.toggle_Visibility_Viewport_Profile(!this.props.visibility_viewport_profile);
+    console.log('this.props', this.props)
+    this.props.toggle_Visibility_Viewport_Maps(!this.props.visibility_viewport_maps)
   }
 
   render() {
@@ -93,47 +81,33 @@ class ClickDropdown extends Component {
                   <li>
                     <button
                       className="button"
-                      onClick={
-                        e => this.HandleClick_VisibilityToggle_Viewort_TaskList(e)
-                      }
+                      onClick={e => this.HandleClick_VisibilityToggle_Viewport_Maps(e) }
                     >
-                      Task List
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      className="button"
-                      onClick={
-                        e => this.HandleClick_VisibilityToggle_Viewort_Profile(e)
-                      }
-                    >
-                      Profile
+                      Map Viewport
                     </button>
                   </li>
                 </ul>
               </div>
 
             </div>
-          : null
+            : null
         }
-        
+
       </div>
     )
   }
 }
 
+
 const mapStateToProps = store => ({
-    visibility_viewport_taskList: store.visibility_viewport_taskList,
-    visibility_viewport_profile: store.visibility_viewport_profile,
-    
+  visibility_viewport_maps: store.visibility_viewport_maps
 })
 
 const mapDispatchToProps = {
-  toggle_Visibility_Viewport_TaskList,
-  toggle_Visibility_Viewport_Profile
+  toggle_Visibility_Viewport_Maps
 }
 
 export default connect(
-  mapStateToProps, 
+  mapStateToProps,
   mapDispatchToProps
-  )(ClickDropdown);
+)(ClickDropdown);

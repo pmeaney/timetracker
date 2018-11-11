@@ -1,6 +1,14 @@
 const dotenv = require("dotenv").config({ path: '../.env' });
 
-const renderDashboard = function (req, res, next) {
+const get_adminDashboard = function (req, res, next) {
+  res.render('pages/adminDashboard', {
+    errors: {},
+    env: process.env.NODE_ENV
+  })
+
+}
+
+const get_userDashboard_byUserID = function (req, res, next) {
 
   // if there's no user session
   // if (!req.session.user_id) {
@@ -84,5 +92,6 @@ const renderDashboard = function (req, res, next) {
 }
 
 module.exports = {
-  renderDashboard
+  get_userDashboard_byUserID,
+  get_adminDashboard
 }

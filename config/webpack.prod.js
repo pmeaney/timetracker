@@ -15,6 +15,9 @@ module.exports = env => {
       // ],
       'component_modules/employee_dashboard/employee_dashboard': [
         "./src/client/EmployeeDashboard_EntryFile.js"
+      ],
+      'component_modules/admin_dashboard/admin_dashboard': [
+        "./src/client/AdminDashboard_EntryFile.js"
       ]
     },
     mode: "production",

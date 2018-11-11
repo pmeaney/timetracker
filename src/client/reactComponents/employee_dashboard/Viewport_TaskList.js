@@ -1,10 +1,10 @@
 import React, { Component }  from 'react';
-import { toggle_Visibility_Viewport_A } from "./redux/actions"
+import { toggle_Visibility_Viewport_TaskList } from "./redux/actions"
 import { connect } from 'react-redux'
 import axios from "axios"
 import { DateTime } from "luxon"
 
-class TaskList extends Component {
+class Viewport_TaskList extends Component {
   constructor() {
     super();
     this.state = {
@@ -15,7 +15,7 @@ class TaskList extends Component {
       clicked_activity_id: 0
     }
 
-    this.HandleClick_VisibilityToggle_Viewort_A = this.HandleClick_VisibilityToggle_Viewort_A.bind(
+    this.HandleClick_CloseButton_VisibilityToggle_Viewort_TaskList = this.HandleClick_CloseButton_VisibilityToggle_Viewort_TaskList.bind(
       this
     );
     this.HandleClick_Task_ClockIn_or_ClockOut = this.HandleClick_Task_ClockIn_or_ClockOut.bind(
@@ -57,9 +57,9 @@ class TaskList extends Component {
       });
   }
 
-  HandleClick_VisibilityToggle_Viewort_A(toggleValue, e) {
+  HandleClick_CloseButton_VisibilityToggle_Viewort_TaskList(e) {
     e.stopPropagation(); // stop bubbling up to parent div
-    this.props.toggle_Visibility_Viewport_A(toggleValue);
+    this.props.toggle_Visibility_Viewport_TaskList(false); // visibility -> false
   }
 
 
@@ -333,7 +333,7 @@ class TaskList extends Component {
             className="delete" 
             aria-label="delete"
             onClick={
-              e => this.HandleClick_VisibilityToggle_Viewort_A(false, e)
+              e => this.HandleClick_CloseButton_VisibilityToggle_Viewort_TaskList(e)
             }
           ></button>
         </div>
@@ -348,15 +348,16 @@ class TaskList extends Component {
   }
 }
 
-const mapStateToProps = store => ({
-  visibility_viewport_a: store.visibility_viewport_a
-})
+// const mapStateToProps = store => ({
+//   visibility_viewport_taskList: store.visibility_viewport_taskList
+// })
 
 const mapDispatchToProps = {
-  toggle_Visibility_Viewport_A
+  toggle_Visibility_Viewport_TaskList
 }
 
 export default connect(
-  mapStateToProps,
+  // mapStateToProps,
+  null,
   mapDispatchToProps
-)(TaskList);
+)(Viewport_TaskList);

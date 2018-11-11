@@ -49,7 +49,7 @@ exports.seed = function(knex, Promise) {
         { activity_type: 'dry wall installation'},
         { activity_type: 'framing'},
         { activity_type: 'bull dozer driving'},
-        {  activity_type: 'demolition &amp; cleanup'},
+        { activity_type: 'demolition &amp; cleanup'},
       ]),
 
       /* 
@@ -99,7 +99,6 @@ exports.seed = function(knex, Promise) {
     })
     .then(() => {
       return Promise.all([
-          // for coordinates, take first 8 digits supplied
           // note: emp_authorized_by means 'employee ID of employee who approved this timesheet for payroll'
           // note: emp_accepted_by in the future, will be able to differ from activities.emp_assigned_to, because
           // a manager can change activities.emp_assigned_to for an activity, at which point the value would be updated to the new
