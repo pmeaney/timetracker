@@ -17,6 +17,14 @@ class Viewport_Profile extends Component {
 
   render (){
     return(
+      /* Need a form with:
+      Name
+      Address
+      Email address
+      Phone number
+      Profile photo upload
+      Resume upload 
+      */
       <div>
         <article className="message is-info">
           <div className="message-header">

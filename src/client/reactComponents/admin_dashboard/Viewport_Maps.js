@@ -1,6 +1,10 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { toggle_Visibility_Viewport_Maps } from "./redux/actions"
+// import MyMapComponent from './mappingTests/ReactGoogleMap';
+// import StyledMapWithAnInfoBox from './mappingTests/ReactGMapInfoBox';
+// import DemoApp from './mappingTests/ReactGMapMarkerClusterer';
+import Mapper from './mappingTests/Map_1';
 
 
 class Viewport_Maps extends Component {
@@ -28,8 +32,8 @@ class Viewport_Maps extends Component {
           >
           </button>
         </div>
-        <div className="message-body">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. <strong>Pellentesque risus mi</strong>, tempus quis placerat ut, porta nec nulla. Vestibulum rhoncus ac ex sit amet fringilla. Nullam gravida purus diam, et dictum <a>felis venenatis</a> efficitur. Aenean ac <em>eleifend lacus</em>, in mollis lectus. Donec sodales, arcu et sollicitudin porttitor, tortor urna tempor ligula, id porttitor mi magna a neque. Donec dui urna, vehicula et sem eget, facilisis sodales sem.
+        <div className="message-body addHeight">
+          <Mapper />
         </div>
       </article>
     )

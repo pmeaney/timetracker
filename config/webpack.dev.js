@@ -1,5 +1,6 @@
 const path = require("path")
 const webpack = require("webpack")
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
   entry: {
@@ -69,7 +70,8 @@ module.exports = {
       "process.env": {
         NODE_ENV: JSON.stringify("development")
       }
-    })
+    }),
+    new Dotenv()
     // ,
     // new BundleAnalyzerPlugin({
     //   generateStatsFile: true

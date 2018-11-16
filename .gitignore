@@ -8,6 +8,8 @@
 **/.env
 **/config.json
 
+**/testScripts
+
 # ignore file:
 projectNotes.txt
 ircNotes.txt

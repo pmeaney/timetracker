@@ -36,7 +36,17 @@ const getActivitiesBy_employee_assigned_to = (emp_id) => {
 
 const getActivity_by_id = (activity_id) => {
 	return Promise.try(() => {
-		return database("activities").where({ activity_id: activity_id });
+		return database("activities")
+			.where({ activity_id: activity_id })
+			.select('activities.activity_id',
+							'activities.activity_code_id',
+							'activities.emp_assigned_to',
+							'activities.emp_assigned_by',
+							'activities.project_id',
+							'activities.activity_notes',
+							'activities.activity_datetime_begin',
+							'activities.activity_datetime_end',
+			)
     })
 }
 
@@ -180,7 +190,14 @@ const getAllEmployees = () => {
 
 const getEmployee_by_id = (emp_id) => {
 	return Promise.try(() => {
-		return database("employees").where({ employee_id: emp_id });
+		return database("employees")
+			.where({ employee_id: emp_id })
+			.select('employees.employee_id',
+							'employees.firstName',
+							'employees.lastName',
+							'employees.phone',
+							'employees.email',
+							)
     })
 }
 
@@ -188,7 +205,11 @@ const getEmployee_by_id = (emp_id) => {
 const getProjectMgr_by_project_id = (project_id) => {
 	return Promise.try(() => {
 		return database('employees')
-			.select('employees.*')
+			.select('employees.employee_id',
+							'employees.firstName',
+							'employees.lastName',
+							'employees.phone',
+							'employees.email')
 			.join('projects',
 						'employees.employee_id',
 						'=',

@@ -8,13 +8,13 @@ import "../../scss/bulma_sass/bulma.sass"
 
 const AdminDashboard = (props) => {
   return (
-    <div className="container topSpacing">
+    <div>
       <NavigationBar />
-      {props.visibility_viewport_maps ? 
-        <Viewport_Maps /> :
-        null
-       }
-      
+      <div className="container topSpacing">
+        { props.visibility_viewport_maps 
+          ? <Viewport_Maps /> 
+          : null }
+      </div>
     </div>
   )
 }
