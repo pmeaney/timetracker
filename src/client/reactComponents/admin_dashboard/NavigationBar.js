@@ -21,10 +21,10 @@ const NavigationBar = (props) => {
     <div className="navbar-end">
       <div className="navbar-item">
         <div className="buttons">
-          <a className="button is-primary">
-            <strong>Sign up</strong>
+          <a className="button is-primary" href="/auth/register">
+            <strong>Register</strong>
           </a>
-          <a className="button is-light">
+          <a className="button is-light" href="/auth/login">
             Log in
           </a>
         </div>

@@ -16,6 +16,8 @@ const get_RegistrationPage = function (req, res, next) {
     env: process.env.NODE_ENV
   })
 }
+
+
 const post_RegistrationPage_formValidationRequirements = [
   check('email')
     .isEmail()
@@ -108,7 +110,6 @@ const post_RegistrationPage_createNewUser = (req, res, next) => {
                 console.log("Session Before Redirect: ", req.session);
                 // res.redirect('/dashboard/profile/' + req.session.user_id)
                 res.redirect('/dashboard/user/' + req.session.user_id)
-
               });
 
 

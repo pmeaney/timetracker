@@ -4,8 +4,8 @@ import { toggle_Visibility_Viewport_Maps } from "./redux/actions"
 // import MyMapComponent from './mappingTests/ReactGoogleMap';
 // import StyledMapWithAnInfoBox from './mappingTests/ReactGMapInfoBox';
 // import DemoApp from './mappingTests/ReactGMapMarkerClusterer';
-import Mapper from './mappingTests/Map_1';
-
+import MapAndTable from './MapAndTable';
+import List from '../../testing_components/EventSource'
 
 class Viewport_Maps extends Component {
 
@@ -24,7 +24,7 @@ class Viewport_Maps extends Component {
     return (
       <article className="message is-primary">
         <div className="message-header">
-          <p>Primary</p>
+          <p>Timesheet tracker</p>
           <button 
             className="delete" 
             aria-label="delete"
@@ -33,7 +33,8 @@ class Viewport_Maps extends Component {
           </button>
         </div>
         <div className="message-body addHeight">
-          <Mapper />
+            {/* <MapAndTable /> */}
+            <List />
         </div>
       </article>
     )

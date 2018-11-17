@@ -2,7 +2,7 @@ import React, { Component }  from 'react';
 import { toggle_Visibility_Viewport_TaskList } from "./redux/actions"
 import { connect } from 'react-redux'
 import axios from "axios"
-import { DateTime } from "luxon"
+import getLuxon_local_DateTime from "../lib/general_fns"
 
 class Viewport_TaskList extends Component {
   constructor() {
@@ -199,21 +199,6 @@ class Viewport_TaskList extends Component {
 
   render() {
 
-    // This needs to be setup for Clocking out (change text & create a new onClick function for clockout)
-    const getLuxon_local_DateTime = (js_datetime, value) => {
-      if (value === 'date') {
-      let lux_jsDateTime = DateTime.fromJSDate(new Date(js_datetime))
-      let luxon_formattedDate = lux_jsDateTime.toLocaleString(DateTime.DATE_SHORT)
-      return luxon_formattedDate
-      }
-
-      if (value === 'time') {
-        let lux_jsDateTime = DateTime.fromJSDate(new Date(js_datetime))
-        let luxon_formattedTime = lux_jsDateTime.toLocaleString(DateTime.TIME_SIMPLE)
-        return luxon_formattedTime
-      }
-    }
-
     const existingTaskCards = this.state.employee_data_existingTasks_forClockOut.map((obj, i) => {
 
       let activity_begin_date = getLuxon_local_DateTime(obj.activity_datetime_begin, 'date')
@@ -269,8 +254,6 @@ class Viewport_TaskList extends Component {
         </div>
       )
     })
-
-    
 
     const newTaskCards = this.state.employee_data_newTasks_forClockIn.map((obj, i) => {
 
@@ -329,6 +312,7 @@ class Viewport_TaskList extends Component {
       <article className="message topSpacing">
         <div className="message-header">
           <p>Task List</p>
+          {/* New feature idea: Add a button which is a gears icon.  It has dropdown content dropdown showing recently clocked out timesheets, allowing the user to re-open a clockedout timesheet to add a new clockedout time */}
           <button 
             className="delete" 
             aria-label="delete"

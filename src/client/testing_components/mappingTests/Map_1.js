@@ -1,5 +1,5 @@
 import React from "react";
-import MapWithPlaces from "./Map_1b";
+import MapWithPlaces from "./MapWithPlaces";
 // import places from "./Map_1c.json";
 import axios from 'axios'
 
@@ -37,7 +37,7 @@ class Mapper extends React.Component {
       this.state.timesheetData.length ?
          <MapWithPlaces
           center={{ lat: 37.685246, lng: -122.40277 }}
-          zoom={10}
+          zoom={15}
           places={this.state.timesheetData}
         /> : null
     )
