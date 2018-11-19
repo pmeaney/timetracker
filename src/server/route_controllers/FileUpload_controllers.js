@@ -1,5 +1,5 @@
 const multer = require('multer');
-const dotenv = require("dotenv").config({ path: '../.env' });
+// const dotenv = require("dotenv").config({ path: '../.env' });
 
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

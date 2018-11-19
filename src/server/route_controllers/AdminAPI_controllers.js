@@ -2,13 +2,31 @@ const Promise = require('bluebird')
 const merge = require('array-object-merge')
 
 // knex 
-const dotenv = require("dotenv").config({ path: '../.env' });
-const environment = process.env.NODE_ENV
-const knex_config = require('../knexfile');
-const database = require('knex')(knex_config[environment]);
+// const dotenv = require("dotenv").config({ path: '../.env' });
+// const environment = process.env.NODE_ENV
+// const knex_config = require('../knexfile');
+// const database = require('knex')(knex_config[environment]);
 
 const Api_fns = require('../lib/api_fns')
 const General_fns = require('../lib/general_fns')
+
+/*//*###########################################
+//*###          Event emitters & Admin API related lookups
+//*##########################################*/
+
+const internal_EmployeeAPI_EventsEmitter = require('./EmployeeAPI_controllers').internal_EmployeeAPI_EventsEmitter;
+
+internal_EmployeeAPI_EventsEmitter.on('message', data => {
+  console.log('received message in internal_EmployeeAPI_EventsEmitter, with data: ', data)
+  console.log('received message in internal_EmployeeAPI_EventsEmitter, with data.timesheet.timesheet_id: ', data.timesheet.timesheet_id)
+  // res.write(`event: message\n`);
+  // res.write(`data: ${JSON.stringify(data)}\n\n`);
+  // res.status(200).json(data) ;
+});
+
+/*//*###########################################
+//*###          Route controllers
+//*##########################################*/
 
 /*##########################################
 ##            Timesheets
@@ -20,6 +38,9 @@ const get_Timesheets_All = (req, res) => {
       return Api_fns.getAllTimesheets();
     }).then((timesheets) => {
 
+      /* Convert into a function:
+      'AdditionalDataLookup_On_Timesheets_array' */
+      
       return Promise.map(timesheets, (timesheet) => {
         return Promise.all([
           Api_fns.getEmployee_by_id(timesheet['emp_accepted_by']), /*  emp completing the task */
@@ -28,6 +49,7 @@ const get_Timesheets_All = (req, res) => {
 
           let first_mergedData = merge(employee_acceptedBy[0], timesheet_activityData[0])
           let mergedData = merge(first_mergedData, timesheet)
+          // console.log('mergedData', mergedData)
           return { mergedData }
         });
       })
@@ -38,131 +60,55 @@ const get_Timesheets_All = (req, res) => {
       resultData.map((item) => { 
         itemArray.push(item.mergedData)
       })
-
-      console.log('itemArray', itemArray)
-      res.status(200).json(itemArray);
+      return itemArray
     })
+    .then((resultData) => {
+      // console.log('resultData', resultData)
+      return Promise.map(resultData, (datapoint) => {
+        // console.log('datapoint is', datapoint)
+
+        return Promise.all([
+          // console.log('datapoint.final_mergedData.activity_code',datapoint.final_mergedData.activity_code)
+          Api_fns.getActivityType_by_activity_code_id(datapoint.activity_code_id),
+          Api_fns.getLocation_by_project_id(datapoint.project_id),
+          Api_fns.getProjectMgr_by_project_id(datapoint.project_id)
+        ]).spread((activityType_data, location_data, projMgr_emp_data) => {
+
+          //renaming the keys of projMgr_emp_data to add 'projMgr_' prefix to make it more clear what sort of data it is
+          let projMgr_emp_data_updatedKeys = 
+            {
+              projMgr_employee_id: projMgr_emp_data[0].employee_id,
+              projMgr_firstName: projMgr_emp_data[0].firstName,
+              projMgr_lastName: projMgr_emp_data[0].lastName,
+              projMgr_phone: projMgr_emp_data[0].phone,
+              projMgr_email: projMgr_emp_data[0].email
+            }
+
+          // Merging each of the three objects into a single array set of the three objects
+          let merge1 = merge(activityType_data[0], location_data[0])
+          let merge2 = merge(merge1, projMgr_emp_data_updatedKeys)
+          return merge2
+
+        })
+        .then((resultData) => {
+          // Now we merge the resulting array item with the timesheet item.
+          let merge3 = merge(datapoint, resultData)
+          return merge3
+          }) // completion of Promise.all chain
+
+      }) // completion of Promise.map
+      .then((resultData) => {
+        // console.log('resultData', resultData)
+        res.status(200).json(resultData);
+      })
+
+
+      
+    })
+  } else {
+    res.status(500).json({ error: 'sorry, we were unable to fulfill your request for activity data.' });
   }
 }
-
-
-  //     return Promise.map(data, (datapoint) => {
-  //       return Promise.all([
-  //         // console.log('datapoint.final_mergedData.activity_code',datapoint.final_mergedData.activity_code)
-  //         Api_fns.getActivityType_by_activity_code_id(datapoint.final_mergedData.activity_code),
-  //         Api_fns.getLocation_by_project_id(datapoint.final_mergedData.project_id),
-  //         Api_fns.getProjectMgr_by_project_id(datapoint.final_mergedData.project_id)
-  //         // next steps:
-  //         // - Get location by Proj ID (so we can show location name, address, etc. 
-  //         // - Get Proj Mgr by Proj ID. (so we can show proj mgr name)
-
-  //         // Api_fns.getLocation_by_project_id(timesheet['project_id']), /* work-activity location info by for employee (activity's project id) */
-  //         // Api_fns.getProjectMgr_by_project_id(timesheet['project_id'])
-  //       ]).spread((activityType_data, location_data, projMgr_emp_data) => {
-
-  //         /*    next, add into the merged data: the additional data sets )location, projectMgr)  */
-  //         // console.log('location_data[0]', location_data[0])
-
-  //         // console.log('projMgr_emp_data[0]',projMgr_emp_data[0])
-  //         // console.log('activityType_data[0]', activityType_data[0])
-  //         // console.log('datapoint.final_mergedData', datapoint.final_mergedData)
-
-  //         // console.log(projMgr_emp_data[0].employee_id)
-
-
-  //         /*  #############   Set proj mgr data (basically just excluding salary 
-  //           **--> really need to refactor: simply make the query in Knex at the beginning of the lookup function).  
-  //           it'll be less code and cleaner   */
-
-  //         let projMgr_emp_data_set = {
-  //           employee_id: projMgr_emp_data[0].employee_id,
-  //           firstName: projMgr_emp_data[0].firstName,
-  //           lastName: projMgr_emp_data[0].lastName,
-  //           phone: projMgr_emp_data[0].phone,
-  //           email: projMgr_emp_data[0].email
-  //         }
-  //         // console.log('projMgr_emp_data_set',projMgr_emp_data_set)
-
-
-  //         let location_data_set = {
-  //           location_id: location_data[0].location_id,
-  //           location_name: location_data[0].location_name,
-  //           location_address: location_data[0].location_address,
-  //           location_city: location_data[0].location_city,
-  //           location_state: location_data[0].location_state,
-  //           location_zip: location_data[0].location_zip,
-  //           location_type: location_data[0].location_type,
-  //         }
-
-  //         let activityType_data_set = {
-  //           activity_type: activityType_data[0].activity_type
-  //         }
-
-
-
-  //         // let timesheet_clockin_time_readable = General_fns.get_readable_time(datapoint.final_mergedData.timesheet_clockin)
-  //         // let timesheet_clockin_date_readable = General_fns.get_readable_date(datapoint.final_mergedData.timesheet_clockin)
-  //         // let timesheet_notes_summary = General_fns.summarize_string(datapoint.final_mergedData.timesheet_notes)
-
-  //         // let ts_activity_notes_summary = General_fns.summarize_string(datapoint.final_mergedData.activity_notes)
-
-  //         // let ts_activity_begin_time_readable = General_fns.get_readable_time(datapoint.final_mergedData.activity_datetime_begin)
-  //         // let ts_activity_begin_date_readable = General_fns.get_readable_date(datapoint.final_mergedData.activity_datetime_begin)
-
-  //         // let ts_activity_end_time_readable = General_fns.get_readable_time(datapoint.final_mergedData.activity_datetime_end)
-  //         // let ts_activity_end_date_readable = General_fns.get_readable_date(datapoint.final_mergedData.activity_datetime_end)
-
-
-
-  //         // let combo_data_set = {
-  //         //   employee_id: datapoint.final_mergedData.employee_id,
-  //         //   firstName: datapoint.final_mergedData.firstName,
-  //         //   lastName: datapoint.final_mergedData.lastName,
-  //         //   phone: datapoint.final_mergedData.phone,
-  //         //   email: datapoint.final_mergedData.email,
-  //         //   activity_id: datapoint.final_mergedData.activity_id,
-  //         //   emp_assigned_to: datapoint.final_mergedData.emp_assigned_to,
-  //         //   emp_assigned_by: datapoint.final_mergedData.emp_assigned_by,
-  //         //   project_id: datapoint.final_mergedData.project_id,
-  //         //   activity_notes: datapoint.final_mergedData.activity_notes,
-
-  //         //   ts_activity_notes_summary: ts_activity_notes_summary,
-  //         //   ts_activity_begin_time_readable: ts_activity_begin_time_readable,
-  //         //   ts_activity_begin_date_readable: ts_activity_begin_date_readable,
-  //         //   ts_activity_end_time_readable: ts_activity_end_time_readable,
-  //         //   ts_activity_end_date_readable: ts_activity_end_date_readable,
-
-  //         //   timesheet_id: datapoint.final_mergedData.timesheet_id,
-  //         //   emp_authorized_by: datapoint.final_mergedData.emp_authorized_by,
-  //         //   emp_accepted_by: datapoint.final_mergedData.emp_accepted_by,
-  //         //   cost_center_id: datapoint.final_mergedData.cost_center_id,
-  //         //   timesheet_notes: datapoint.final_mergedData.timesheet_notes,
-
-
-  //         //   timesheet_clockin_time_readable: timesheet_clockin_time_readable,
-  //         //   timesheet_clockin_date_readable: timesheet_clockin_date_readable,
-  //         //   timesheet_summary: timesheet_notes_summary,
-
-  //         //   timesheet_clockin_lat: datapoint.final_mergedData.timesheet_clockin_lat,
-  //         //   timesheet_clockin_long: datapoint.final_mergedData.timesheet_clockin_long,
-  //         //   timesheet_clockout_lat: datapoint.final_mergedData.timesheet_clockout_lat,
-  //         //   timesheet_clockout_long: datapoint.final_mergedData.timesheet_clockout_long
-  //         // }
-
-
-  //         let mergedData_LocationAndProjMgr_data = merge(location_data_set, projMgr_emp_data_set)
-  //         let mergedData_ActivityAndTimesheet_data = merge(activityType_data_set, combo_data_set) // combined activity sets
-
-  //         return { mergedData_ActivityAndTimesheet_data, mergedData_LocationAndProjMgr_data }
-  //       });
-  //     })
-  //   }).then((data) => {
-  //     console.log('data', data)
-  //     res.status(200).json(data);
-  //   })
-  // } else {
-  //   res.status(500).json({ error: 'sorry, we were unable to fulfill your request for activity data.' });
-  // }
 
 
 /*##########################################

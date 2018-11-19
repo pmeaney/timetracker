@@ -32,7 +32,7 @@ class Viewport_TaskList extends Component {
       .then((response) => {
         response.data.map((obj,i) => {
           if (Object.keys(obj).includes("timesheet_id")) {
-            console.log('We have a timesheet for this task')
+            console.log('We have an existing timesheet for this task')
             existingTimesheets.push(obj)
           } else {
             console.log('We have a new task')
@@ -89,13 +89,14 @@ class Viewport_TaskList extends Component {
         if (response.status == 200) {
           console.log('post (create) response for activity_id: ', response.data[0].activity_id);
           // console.log('response.data[0].timesheet_clockin', response.data[0].timesheet_clockin)
-          // * Add new thing to employee_data_existingTasks_forClockOut
+          // * Add new timesheetDataItem to employee_data_existingTasks_forClockOut
           const arrayToFilter = this.state.employee_data_newTasks_forClockIn
 
-          // NOTE: need to add clockin time to this object
+          // first, we filter the array by the one we just created, so we can pull it out and add it to the exitingTasks array
           const item_addTo_existingTasks = arrayToFilter.filter(item => item.activity_id === response.data[0].activity_id)
           // console.log('Item to add to existing tasks : ', item_addTo_existingTasks[0])
 
+          // updated item... i.e. the item (aka Task) we "updated" by clocking into it.  Basically, we took an activity and turned it into a timesheet
           const updated_item_ToAdd = {
             ...item_addTo_existingTasks[0],
             timesheet_clockin: response.data[0].timesheet_clockin
@@ -103,7 +104,7 @@ class Viewport_TaskList extends Component {
           console.log('updated_item_ToAdd to existing tasks:', updated_item_ToAdd)
           const joined_existingTasks_withNewTask = this.state.employee_data_existingTasks_forClockOut.concat(updated_item_ToAdd)
 
-          // * Remove thing from employee_data_newTasks_forClockIn
+          // * Remove timesheetDataItem from employee_data_newTasks_forClockIn
           const arrayToFilter_removeItem = this.state.employee_data_newTasks_forClockIn
           const itemsToKeep_inNewTasks = arrayToFilter_removeItem.filter(item => item.activity_id !== response.data[0].activity_id)
           console.log('Items to keep in new task (all but the one clicked) :', itemsToKeep_inNewTasks)
@@ -139,7 +140,7 @@ class Viewport_TaskList extends Component {
           if (response.status == 200) {
             console.log('put (update) response for activity_id: ', response.data[0].activity_id);
             
-          // * Add thing to employee_data_recentlyCompletedTasks_clockedOut
+          // * Add timesheetDataItem to employee_data_recentlyCompletedTasks_clockedOut
             const arrayToFilter = this.state.employee_data_existingTasks_forClockOut
             const item_addTo_RecentlyCompletedTasks = arrayToFilter.filter(item => item.activity_id === response.data[0].activity_id)
             const updated_item_ToAdd = { // adding on clockout data before we update state
@@ -150,7 +151,7 @@ class Viewport_TaskList extends Component {
 
             const joined_completedTasks_withRecentlyCompletedTask = this.state.employee_data_recentlyCompletedTasks_clockedOut.concat(updated_item_ToAdd)
 
-          // * Remove thing from employee_data_existingTasks_forClockOut
+          // * Remove timesheetDataItem from employee_data_existingTasks_forClockOut
             const arrayToFilter_removeItem = this.state.employee_data_existingTasks_forClockOut
             const itemsToKeep_inExistingTasks_forClockout = arrayToFilter_removeItem.filter(item => item.activity_id !== response.data[0].activity_id)
             console.log('Items to keep in existing, unclocked-out-of tasks (all but the one clicked-- because it was clocked out of) :', itemsToKeep_inExistingTasks_forClockout)

@@ -33,8 +33,8 @@ class Viewport_Maps extends Component {
           </button>
         </div>
         <div className="message-body addHeight">
-            {/* <MapAndTable /> */}
-            <List />
+            <MapAndTable />
+            {/* <List /> */}
         </div>
       </article>
     )

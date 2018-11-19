@@ -13,9 +13,15 @@ class List extends React.Component {
 
   componentDidMount() {
     var es = new EventSource('http://localhost:3000/eventstream')
+    
     es.onmessage = (e) => {
+      console.log('data received', e.data)
       this.setState({ data: e.data })
     }
+
+    es.onerror = function (e) {
+      console.log("Error: EventSource failed for url: /eventstream");
+    };
   }
 
   render() {
@@ -26,6 +32,8 @@ class List extends React.Component {
     )
   }
 }
+
+// This version below did not work.  Keeping this temporarily to commit as a note on what not to do.
 // class List extends React.Component {
 //   constructor(props) {
 //     super(props)

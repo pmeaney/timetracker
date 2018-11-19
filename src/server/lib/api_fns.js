@@ -52,7 +52,9 @@ const getActivity_by_id = (activity_id) => {
 
 const getActivityType_by_activity_code_id = (activity_code_id) => {
 	return Promise.try(() => {
-		return database("activity_codes").where({ activity_code_id: activity_code_id });
+		return database("activity_codes")
+			.select('activity_codes.activity_type')
+			.where({ activity_code_id: activity_code_id });
     })
 }
 
@@ -84,7 +86,18 @@ const getActivities_forWhich_timesheetsDoNotExist = (emp_id) => {
 /* #############	Timesheets 	  ################ */
 const getAllTimesheets = () => {
 	return Promise.try(() => {
-		return database("timesheets").select();
+		return database("timesheets")
+			.select('timesheets.activity_id',
+				'timesheets.timesheet_id',
+				'timesheets.emp_accepted_by',
+				'timesheets.cost_center_id',
+				'timesheets.timesheet_notes',
+				'timesheets.timesheet_clockin',
+				'timesheets.timesheet_clockout',
+				'timesheets.timesheet_clockin_lat',
+				'timesheets.timesheet_clockin_long',
+				'timesheets.timesheet_clockout_lat',
+				'timesheets.timesheet_clockout_long');
     })
 }
 
@@ -223,7 +236,13 @@ const getProjectMgr_by_project_id = (project_id) => {
 const getLocation_by_project_id = (project_id) => {
 	return Promise.try(() => {
 		return database('locations')
-			.select('locations.*')
+			.select('locations.location_id',
+							'locations.location_name',
+							'locations.location_address',
+							'locations.location_city',
+							'locations.location_state',
+							'locations.location_zip',
+							'locations.location_type')
 			.join('projects',
 						'locations.location_id',
 						'=',

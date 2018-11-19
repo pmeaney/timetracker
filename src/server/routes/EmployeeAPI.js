@@ -21,4 +21,6 @@ router.put('/timesheets/update', EmployeeAPI_ctrl.put_update_timesheet_toClockOu
 
 router.get('/activities/getPendingTasks/emp/:emp_id', EmployeeAPI_ctrl.get_PendingTasks_by_EmployeeID );
 
+router.get('/eventstream', EmployeeAPI_ctrl.employeeAPI_eventStream );
+
 module.exports = router;

@@ -2,12 +2,54 @@ const Promise = require('bluebird')
 const merge = require('array-object-merge')
 
 // knex 
-const dotenv = require("dotenv").config({ path: '../.env' });
-const environment = process.env.NODE_ENV
-const knex_config = require('../knexfile');
-const database = require('knex')(knex_config[environment]);
+// const dotenv = require("dotenv").config({ path: '../.env' });
+// const environment = process.env.NODE_ENV
+// const knex_config = require('../knexfile');
+// const database = require('knex')(knex_config[environment]);
 
 const Api_fns = require('../lib/api_fns')
+
+/* //* Event Emitters
+  We have two classes (i.e. kinds) of event emitters:
+  1. Client-event-stream updaters:  AKA "serverToClient_MessageEmitter" For updating the 'eventstream' route with server 
+   client messages.  This is because there are client subscribers to updates to employee tables.
+    (E.g. Admin timesheets map&table -- they're updated every time an employee clocks in / clocks out)
+
+  2. Employee event emitters: AKA "internal_EmployeeAPI_EventsEmitter" -- for running tasks after the completion of other tasks.
+    (E.g. Upon updating the timesheets table when a user clocks in, we run an internal event: Do database lookups
+      on that timesheet, to get additionl data about it.  (On completion of those lookups, we then run another event
+        emitter, this time a serverToClient_MessageEmitter to send to the client the data we looked up)
+*/
+
+const EventEmitter = require('events');
+class ServerToClient_Messenger extends EventEmitter { }
+const serverToClient_MessageEmitter = new ServerToClient_Messenger();
+
+class InternalEventsEmitter extends EventEmitter { }
+const internal_EmployeeAPI_EventsEmitter = new InternalEventsEmitter();
+
+// ********************************************************
+// ***  Event data stream:  localhost:3000/emp_api/eventstream
+// ********************************************************
+
+
+const employeeAPI_eventStream = (req, res, next) => {
+  // Sends out messages as they're emitted.  Is subscribed to.
+  res.set({
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive'
+  });
+
+  serverToClient_MessageEmitter.on('message', data => {
+    res.write(`event: message\n`);
+    res.write(`data: ${JSON.stringify(data)}\n\n`);
+    // res.status(200).json(data) ;
+  });
+
+};
+
+
 
 // ********************************************************
 // ***   TIMESHEETS
@@ -74,9 +116,26 @@ const post_create_timesheet_toClockIn = (req, res) => {
             )
           }).then((response) => {
             console.log('Successfully created a timesheet ', response)
+
+            // console.log('emitting an event with this response[0]: ', response[0])
+            // // Emit message to let frontend know
+            // emitter_Employee_Events.emit('message', {
+            //   title: 'New timesheet posted',
+            //   timesheet: response[0]
+            // });
+
             res.status(200).json(response);
             // Todo: should flash a temporary message to user showing their new timesheet ID & clock in timestamp
+          return response
+
+        }).then((response) => {
+          console.log('next step: do a lookup of timesheets with this timesheet data, and after that, emit an event to the eventstream: ', response)
+          console.log('event emitter test-- internal_EmployeeAPI_EventsEmitter')
+          internal_EmployeeAPI_EventsEmitter.emit('message', {
+            title: 'New timesheet posted',
+            timesheet: response[0]
           })
+        })
 
         } else {
           console.log('Error: Cannot create a new timesheet because a timesheet for that activity_id already exists.')
@@ -214,6 +273,8 @@ module.exports = {
   post_create_timesheet_toClockIn,
   put_update_timesheet_toClockOut,
   get_PendingTasks_by_EmployeeID,
+  employeeAPI_eventStream,
+  internal_EmployeeAPI_EventsEmitter
   // get_activities_by_EmployeeID,
   // test_get_project_byID,
   // test_get_Timesheets_All,

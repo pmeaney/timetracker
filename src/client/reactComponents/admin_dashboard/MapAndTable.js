@@ -10,16 +10,18 @@ class MapAndTable extends React.Component {
     super(props);
     
     this.state = {
-      timesheetData: []
+      timesheetData: [],
+      eventStream_logged_timesheetData: []
     }
   }
   
   componentWillMount() {
-    console.log('componentWillMount')
+    console.log('[MapAndTable cWM] -- componentWillMount')
 
     axios.get('http://localhost:3000/admin_api/timesheets')
       .then(response => {
         // console.log('response.data', response.data)
+        console.log('timesheet date received', response.data)
         this.setState({
           timesheetData: response.data
         })
@@ -30,7 +32,23 @@ class MapAndTable extends React.Component {
   }
 
   componentDidMount() {
-    console.log('componentDidMount')
+    console.log('[MapAndTable cDM] -- componentDidMount')
+
+    var es = new EventSource('http://localhost:3000/emp_api/eventstream')
+      es.onmessage = (e) => {
+        console.log('[MapAndTable cDM] e.data', JSON.parse(e.data))
+        // console.log('[MapAndTable cDM] data e.data with JSON.parse', JSON.parse(e.data))
+        // note: what we'd do here concat e.data 
+        // onto the eventStream_logged_timesheetData array
+        // const newItemFromEventStream = e.data
+        // const concatenatedArray_withNewItem = this.state.eventStream_logged_timesheetData.concat(newItemFromEventStream)
+        // this.setState({ eventStream_logged_timesheetData: concatenatedArray_withNewItem})
+      }
+
+      es.onerror = function (e) {
+        console.log("Error: EventSource failed for url: /eventstream (MapAndTable component, ComponentWillMount)");
+      };
+    
   }
 
   render(){

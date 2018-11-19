@@ -1,10 +1,11 @@
-const dotenv = require("dotenv").config({ path: '../.env' });
+// const dotenv = require("dotenv").config({ path: '../.env' });
 
 const get_adminDashboard = function (req, res, next) {
-  res.render('pages/adminDashboard', {
-    errors: {},
-    env: process.env.NODE_ENV
-  })
+  res.render('pages/adminDashboard')
+  // , {
+  //   errors: {},
+  //   env: process.env.NODE_ENV
+  // })
 
 }
 
@@ -80,8 +81,9 @@ const get_userDashboard_byUserID = function (req, res, next) {
 
     res.render('pages/employeeDashboard', {
       data: { user_id: req.session.user_id, user_type: req.session.user_type, user_email: req.session.user_email },
-      errors: {},
-      env: process.env.NODE_ENV
+      errors: {}
+      // ,
+      // env: process.env.NODE_ENV
     })
 
   } else {
