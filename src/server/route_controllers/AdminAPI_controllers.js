@@ -39,72 +39,16 @@ const get_Timesheets_All = (req, res) => {
     }).then((timesheets) => {
 
       /* Convert into a function:
-      'AdditionalDataLookup_On_Timesheets_array' */
+      'AdditionalDataLookup_On_Timesheets_array' as experiementalFn */
       
-      return Promise.map(timesheets, (timesheet) => {
-        return Promise.all([
-          Api_fns.getEmployee_by_id(timesheet['emp_accepted_by']), /*  emp completing the task */
-          Api_fns.getActivity_by_id(timesheet['activity_id']),
-        ]).spread((employee_acceptedBy, timesheet_activityData) => {
-
-          let first_mergedData = merge(employee_acceptedBy[0], timesheet_activityData[0])
-          let mergedData = merge(first_mergedData, timesheet)
-          // console.log('mergedData', mergedData)
-          return { mergedData }
-        });
-      })
-    })
-    .then((resultData) => {
-
-      let itemArray = []
-      resultData.map((item) => { 
-        itemArray.push(item.mergedData)
-      })
-      return itemArray
-    })
-    .then((resultData) => {
-      // console.log('resultData', resultData)
-      return Promise.map(resultData, (datapoint) => {
-        // console.log('datapoint is', datapoint)
-
-        return Promise.all([
-          // console.log('datapoint.final_mergedData.activity_code',datapoint.final_mergedData.activity_code)
-          Api_fns.getActivityType_by_activity_code_id(datapoint.activity_code_id),
-          Api_fns.getLocation_by_project_id(datapoint.project_id),
-          Api_fns.getProjectMgr_by_project_id(datapoint.project_id)
-        ]).spread((activityType_data, location_data, projMgr_emp_data) => {
-
-          //renaming the keys of projMgr_emp_data to add 'projMgr_' prefix to make it more clear what sort of data it is
-          let projMgr_emp_data_updatedKeys = 
-            {
-              projMgr_employee_id: projMgr_emp_data[0].employee_id,
-              projMgr_firstName: projMgr_emp_data[0].firstName,
-              projMgr_lastName: projMgr_emp_data[0].lastName,
-              projMgr_phone: projMgr_emp_data[0].phone,
-              projMgr_email: projMgr_emp_data[0].email
-            }
-
-          // Merging each of the three objects into a single array set of the three objects
-          let merge1 = merge(activityType_data[0], location_data[0])
-          let merge2 = merge(merge1, projMgr_emp_data_updatedKeys)
-          return merge2
-
-        })
-        .then((resultData) => {
-          // Now we merge the resulting array item with the timesheet item.
-          let merge3 = merge(datapoint, resultData)
-          return merge3
-          }) // completion of Promise.all chain
-
+      return Api_fns.AdditionalDataLookup_On_Timesheets_array(timesheets)
+  
       }) // completion of Promise.map
       .then((resultData) => {
-        // console.log('resultData', resultData)
+        console.log('resultData', resultData)
         res.status(200).json(resultData);
       })
-
-
       
-    })
   } else {
     res.status(500).json({ error: 'sorry, we were unable to fulfill your request for activity data.' });
   }
