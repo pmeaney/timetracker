@@ -102,9 +102,40 @@ const getAllTimesheets = () => {
     })
 }
 
+const getTimesheet_by_timesheet_id = (timesheet_id) => {
+	return Promise.try(() => {
+		return database("timesheets")
+			.select('timesheets.activity_id',
+				'timesheets.timesheet_id',
+				'timesheets.emp_accepted_by',
+				'timesheets.cost_center_id',
+				'timesheets.timesheet_notes',
+				'timesheets.timesheet_clockin',
+				'timesheets.timesheet_clockout',
+				'timesheets.timesheet_clockin_lat',
+				'timesheets.timesheet_clockin_long',
+				'timesheets.timesheet_clockout_lat',
+				'timesheets.timesheet_clockout_long')
+			.where({ timesheet_id: timesheet_id });
+			
+	})
+}
+
 const getTimesheet_by_activity_id = (activity_id) => {
 	return Promise.try(() => {
-		return database("timesheets").where({ activity_id: activity_id });
+		return database("timesheets")
+			.select('timesheets.activity_id',
+				'timesheets.timesheet_id',
+				'timesheets.emp_accepted_by',
+				'timesheets.cost_center_id',
+				'timesheets.timesheet_notes',
+				'timesheets.timesheet_clockin',
+				'timesheets.timesheet_clockout',
+				'timesheets.timesheet_clockin_lat',
+				'timesheets.timesheet_clockin_long',
+				'timesheets.timesheet_clockout_lat',
+				'timesheets.timesheet_clockout_long')
+			.where({ activity_id: activity_id });
 	})
 }
 
@@ -319,6 +350,7 @@ module.exports = {
 	getAllEmployees,
 	getEmployee_by_id,
 	getAllTimesheets,
+	getTimesheet_by_timesheet_id,
 	getTimesheet_by_activity_id,
 	createNewTimesheet_onClockin,
 	updateExistingTimesheet_onClockout,

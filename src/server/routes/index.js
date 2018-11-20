@@ -1,16 +1,14 @@
 var express = require('express');
 var router = express.Router();
 
-const EventEmitter = require('events');
-
-class MyEmitter extends EventEmitter { }
-const myEmitter = new MyEmitter();
 
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express'});
 });
+
+
 
 router.get('/eventstream', (req, res, next) => {
   // Sends out messages as they're emitted.  Is subscribed to.

@@ -13,20 +13,68 @@ const General_fns = require('../lib/general_fns')
 /*//*###########################################
 //*###          Event emitters & Admin API related lookups
 //*##########################################*/
+const EventEmitter = require('events');
+class AdminAPI_EventEmitterClass extends EventEmitter { }
+const AdminAPI_EventStream_EventEmitter = new AdminAPI_EventEmitterClass();
 
-const internal_EmployeeAPI_EventsEmitter = require('./EmployeeAPI_controllers').internal_EmployeeAPI_EventsEmitter;
+const EmployeeAPI_EventsEmitter = require('./EmployeeAPI_controllers').EmployeeAPI_EventsEmitter;
 
-internal_EmployeeAPI_EventsEmitter.on('message', data => {
-  console.log('received message in internal_EmployeeAPI_EventsEmitter, with data: ', data)
-  console.log('received message in internal_EmployeeAPI_EventsEmitter, with data.timesheet.timesheet_id: ', data.timesheet.timesheet_id)
-  // res.write(`event: message\n`);
-  // res.write(`data: ${JSON.stringify(data)}\n\n`);
-  // res.status(200).json(data) ;
+EmployeeAPI_EventsEmitter.on('message', data => {
+  // console.log('received message in EmployeeAPI_EventsEmitter, with data: ', data)
+  if (data.timesheet) {
+
+    console.log('[Emitting event:] Step 2 - Clockin data received.  Now going to do some additional lookups on this timesheet, # ', data.timesheet.timesheet_id)
+
+    return Promise.try(() => {
+      return Api_fns.getTimesheet_by_timesheet_id(data.timesheet.timesheet_id);
+    }).then((timesheets) => {
+      return Api_fns.AdditionalDataLookup_On_Timesheets_array(timesheets)
+    }) 
+    .then((resultData) => {
+      console.log('[Emitting event:] Step 3 - Additional lookups successful, now we will emit the final data to Admin API event stream')
+
+      AdminAPI_EventStream_EventEmitter.emit('message', {
+        title: 'timesheet_created_and_info_lookedUp',
+        timesheet: resultData[0]
+      })
+    })
+    
+  } else {
+    console.log('Error: no time sheet exists for that lookup')
+  }
+  // console.log('received message in EmployeeAPI_EventsEmitter, with data.timesheet.timesheet_id: ', data.timesheet.timesheet_id)
+  // do lookup
+  // after lookup, emit message with lookup data to AdminAPI_EventStream_EventEmitter
 });
+
 
 /*//*###########################################
 //*###          Route controllers
 //*##########################################*/
+
+const AdminEventStream = (req, res) => { 
+
+  res.set({
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive'
+  });
+
+  AdminAPI_EventStream_EventEmitter.on('message', data => {
+    console.log('[Emitting event:] Step 4 - Final data received in Admin API event stream.  Sending it into the data stream where the client will find it.')
+
+    if (data.title === 'timesheet_created_and_info_lookedUp') {
+      console.log('heres the data to send to admin eventstream: ', data)
+      res.write(`event: message\n`);
+      res.write(`data: ${JSON.stringify(data)}\n\n`);
+    }
+    // res.write(`event: message\n`);
+    // res.write(`data: ${JSON.stringify(data)}\n\n`);
+    // res.status(200).json(data) ;
+  });
+
+}
+
 
 /*##########################################
 ##            Timesheets
@@ -37,18 +85,12 @@ const get_Timesheets_All = (req, res) => {
     return Promise.try(() => {
       return Api_fns.getAllTimesheets();
     }).then((timesheets) => {
-
-      /* Convert into a function:
-      'AdditionalDataLookup_On_Timesheets_array' as experiementalFn */
-      
-      return Api_fns.AdditionalDataLookup_On_Timesheets_array(timesheets)
-  
+        return Api_fns.AdditionalDataLookup_On_Timesheets_array(timesheets)
       }) // completion of Promise.map
       .then((resultData) => {
-        console.log('resultData', resultData)
+        // console.log('resultData', resultData)
         res.status(200).json(resultData);
       })
-      
   } else {
     res.status(500).json({ error: 'sorry, we were unable to fulfill your request for activity data.' });
   }
@@ -137,6 +179,7 @@ const get_Activities_All = (req, res) => {
 }
 
 module.exports = { 
+  AdminEventStream,
   get_Timesheets_All,
   get_Activities_All
 }
