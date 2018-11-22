@@ -106,9 +106,10 @@ const post_create_timesheet_toClockIn = (req, res) => {
 
         }).then((response) => {
           // console.log('next step: do a lookup of timesheets with this timesheet data, and after that, emit an event to the eventstream: ', response)
-          console.log('[Emitting event:] Step 1 - An employee just Clocked in, notifying Admin API')
+          console.log('[Emitting event: new timesheet clockin] Step 1 - An employee just Clocked in, notifying Admin API')
           EmployeeAPI_EventsEmitter.emit('message', {
-            title: 'timesheet_created',
+            title: 'timesheet',
+            timesheet_type: 'new_timesheet',
             timesheet: response[0]
           })
         })
@@ -134,8 +135,16 @@ const put_update_timesheet_toClockOut = (req, res) => {
     .then((response) => {
       console.log('successfully updated this object ', response)
       res.status(200).json(response);
-    })
 
+      console.log('[Emitting event: updated timesheet -- clockout] Step 1 - An employee just Clocked in, notifying Admin API')
+      EmployeeAPI_EventsEmitter.emit('message', {
+        title: 'timesheet',
+        timesheet_type: 'updated_timesheet',
+        timesheet: response[0]
+      })
+      
+    })
+   
   } else {
     res.status(500).json({ error: 'sorry, we were unable to fulfill your request for activity data.' });
   }

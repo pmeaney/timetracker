@@ -297,10 +297,7 @@ const AdditionalDataLookup_On_Timesheets_array = (timesheets) => {
 			return { mergedData }
 		});
 	})
-
-// }) <-- imported when pasting code, maybe can delete
 	.then((resultData) => {
-
 		let itemArray = []
 		resultData.map((item) => {
 			itemArray.push(item.mergedData)

@@ -21,22 +21,61 @@ const EmployeeAPI_EventsEmitter = require('./EmployeeAPI_controllers').EmployeeA
 
 EmployeeAPI_EventsEmitter.on('message', data => {
   // console.log('received message in EmployeeAPI_EventsEmitter, with data: ', data)
-  if (data.timesheet) {
+  if (data.title === 'timesheet') {
 
-    console.log('[Emitting event:] Step 2 - Clockin data received.  Now going to do some additional lookups on this timesheet, # ', data.timesheet.timesheet_id)
+    console.log('[Emitting event: new timesheet clockin] Step 2 - Clockin data received.  Now going to do some additional lookups on this timesheet, # ', data.timesheet.timesheet_id)
 
     return Promise.try(() => {
       return Api_fns.getTimesheet_by_timesheet_id(data.timesheet.timesheet_id);
     }).then((timesheets) => {
       return Api_fns.AdditionalDataLookup_On_Timesheets_array(timesheets)
     }) 
-    .then((resultData) => {
-      console.log('[Emitting event:] Step 3 - Additional lookups successful, now we will emit the final data to Admin API event stream')
+    .then((resultDataFromLookup) => {
+      console.log('[Emitting event: new timesheet -- clockin] Step 3 - Additional lookups successful, now we will emit the final data to Admin API event stream')
 
-      AdminAPI_EventStream_EventEmitter.emit('message', {
-        title: 'timesheet_created_and_info_lookedUp',
-        timesheet: resultData[0]
-      })
+      console.log('resultDataFromLookup for sending to thru event stream', resultDataFromLookup[0])
+
+      
+
+      if (data.timesheet_type === 'new_timesheet') {
+        console.log('new_timesheet received')
+        AdminAPI_EventStream_EventEmitter.emit('message', {
+          ...resultDataFromLookup[0],
+          timesheet_main_type: 'livestream_timesheet',
+          timesheet_sub_type: 'new_timesheet',
+        })
+      }
+
+      if (data.timesheet_type === 'updated_timesheet') {
+        console.log('updated_timesheet received')
+
+        AdminAPI_EventStream_EventEmitter.emit('message', {
+          ...resultDataFromLookup[0],
+          timesheet_main_type: 'livestream_timesheet',
+          timesheet_sub_type: 'updated_timesheet',
+        })
+      }
+
+      // if (data.timesheet_type === 'new_timesheet'){
+      //   console.log('new_timesheet received')
+      //   AdminAPI_EventStream_EventEmitter.emit('message', {
+      //     title: 'livestream_timesheet',
+      //     timesheet_type: 'new_timesheet',
+      //     timesheet: resultDataFromLookup[0]
+      //   })
+      // }
+
+      // if (data.timesheet_type === 'updated_timesheet') {
+      //   console.log('updated_timesheet received')
+
+      //   AdminAPI_EventStream_EventEmitter.emit('message', {
+      //     title: 'livestream_timesheet',
+      //     timesheet_type: 'updated_timesheet',
+      //     timesheet: resultDataFromLookup[0]
+      //   })
+      // }
+
+
     })
     
   } else {
@@ -61,10 +100,11 @@ const AdminEventStream = (req, res) => {
   });
 
   AdminAPI_EventStream_EventEmitter.on('message', data => {
-    console.log('[Emitting event:] Step 4 - Final data received in Admin API event stream.  Sending it into the data stream where the client will find it.')
+    console.log('[Emitting event: new timesheet clockin] Step 4 - Final data received in Admin API event stream.  Sending it into the data stream where the client will find it.')
 
-    if (data.title === 'timesheet_created_and_info_lookedUp') {
-      console.log('heres the data to send to admin eventstream: ', data)
+    console.log('data in step 4 is', data)
+    if (data.timesheet_main_type === 'livestream_timesheet') {
+      // The string-type data to send to admin eventstream:
       res.write(`event: message\n`);
       res.write(`data: ${JSON.stringify(data)}\n\n`);
     }
@@ -92,13 +132,13 @@ const get_Timesheets_All = (req, res) => {
         res.status(200).json(resultData);
       })
   } else {
-    res.status(500).json({ error: 'sorry, we were unable to fulfill your request for activity data.' });
+    res.status(500).json({ error: 'sorry, we were unable to fulfill your request for timesheet data.' });
   }
 }
 
 
 /*##########################################
-##            Activities
+##            Activities //! Unused. This is just for reference
 ##########################################*/
 const get_Activities_All = (req, res) => {
 
