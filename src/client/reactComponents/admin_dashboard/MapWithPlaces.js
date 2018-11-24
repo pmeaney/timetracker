@@ -9,9 +9,9 @@ import {
   GoogleMap,
   withScriptjs,
   Marker,
-  InfoWindow,
+  InfoWindow
 } from "react-google-maps";
-import { compose, withProps, withStateHandlers, lifecycle, setStatic} from "recompose";
+import { compose, withProps, withStateHandlers, lifecycle, shouldUpdate } from "recompose";
 
 const apiKey = process.env.GMAPS_API.toString()
 
@@ -48,8 +48,17 @@ const MapWithPlaces = compose(
     componentDidMount() {
       console.log('[cDM] Inside the map, props are:', this.props)
     },
-    
-    getDerivedStateFromProps (nextProps, prevState) {
+    // This is deprecated, but it does work-- it shows nextProps.  I would want to use it to overwrite props 
+    // componentWillReceiveProps(nextProps){
+    //   console.log('[cWRP] Inside the map, props are:', this.props)
+    //   console.log('[cWRP] Inside the map, next props are:', nextProps)
+    // },
+
+    // This results in error:
+    /* Warning: lifecycle(withScriptjs(withGoogleMap(Component))): getDerivedStateFromProps() 
+    is defined as an instance method and will be ignored. Instead, declare it as a 
+    static method. */
+    getDerivedStateFromProps(nextProps, prevState) {
       console.log('[gDSFP] Inside the map, next props are:', nextProps)
     }
 
