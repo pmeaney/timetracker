@@ -9,9 +9,9 @@ import {
   GoogleMap,
   withScriptjs,
   Marker,
-  InfoWindow
+  InfoWindow,
 } from "react-google-maps";
-import { compose, withProps, withStateHandlers } from "recompose";
+import { compose, withProps, withStateHandlers, lifecycle, setStatic} from "recompose";
 
 const apiKey = process.env.GMAPS_API.toString()
 
@@ -43,6 +43,17 @@ const MapWithPlaces = compose(
       })
     }
   ),
+  lifecycle({
+
+    componentDidMount() {
+      console.log('[cDM] Inside the map, props are:', this.props)
+    },
+    
+    getDerivedStateFromProps (nextProps, prevState) {
+      console.log('[gDSFP] Inside the map, next props are:', nextProps)
+    }
+
+  }),
   withScriptjs,
   withGoogleMap
 )(props => (

@@ -46,36 +46,6 @@ class MapAndTable extends React.Component {
           timesheetData: concattedState
         })
       
-
-      
-        // if (es_data.timesheet_sub_type === 'new_timesheet') {
-        //   console.log('timesheet of type:', es_data.timesheet_sub_type, 'found.')
-          
-        // }
-
-        // if (es_data.timesheet_sub_type === 'updated_timesheet') {
-        //   console.log('timesheet of type:', es_data.timesheet_sub_type, 'found.')
-        // }
-        /* 
-        
-        if new timesheet, add it to new timesheets array.
-        if it's a clocking out timesheet, remove it from 'existingTimesheets' and add it to recently clockedout timesheets
-
-        So, we're already pulling existing timesheets (within a specific timezone => todo).
-        To this array (timesheet data we pulled), we'll concatenate the new timesheets from event stream.
-
-        And from this array (timesheet data we pulled), we'll filter out the timeshets which match 'updated timesheets',
-        so we can override them with the new timeshet data for that timesheet_id which will have their clocked out data. 
-
-        Then, we can have a 'view currently clocked in only' checkbox which removes all clocked out timesheets from view (i.e. if map thru state.timesheets and only show current item where current item does not have clockout data)
-        */
-
-        // console.log('[MapAndTable cDM] data e.data with JSON.parse', JSON.parse(e.data))
-        // note: what we'd do here concat e.data 
-        // onto the eventStream_logged_timesheetData array
-        // const newItemFromEventStream = e.data
-        // const concatenatedArray_withNewItem = this.state.eventStream_logged_timesheetData.concat(newItemFromEventStream)
-        // this.setState({ eventStream_logged_timesheetData: concatenatedArray_withNewItem})
       }
 
       es.onerror = function (e) {
