@@ -32,6 +32,12 @@ const MapWithPlaces = compose(
         return { isOpen: false };
       })
     }),
+    props => ({
+      infoWindows: [
+        ...props.places.map(p => ({ isOpen: false }),
+        {isOpen: false})
+      ]
+    }),
     {
       onToggleOpen: ({ infoWindows }) => selectedIndex => ({
         infoWindows: infoWindows.map((iw, i) => {
@@ -62,7 +68,6 @@ const MapWithPlaces = compose(
   withGoogleMap
 )(props => (
   <GoogleMap defaultZoom={props.zoom} defaultCenter={props.center}>
-
     {
       props.places &&
       props.places.map((place, i) => {
@@ -70,6 +75,9 @@ const MapWithPlaces = compose(
       let lat = parseFloat(place.timesheet_clockin_lat, 10);
       let lng = parseFloat(place.timesheet_clockin_long, 10);
 
+      // console.log('place is', place)
+      // console.log('lat is', lat)
+      // console.log('lng is', lng)
         return (
           <Marker
             id={place.timesheet_id}
