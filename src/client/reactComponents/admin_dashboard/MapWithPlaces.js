@@ -26,12 +26,12 @@ const MapWithPlaces = compose(
   withStateHandlers(
     // stateHandlers allows us to add on additional props and prop-updating functions. 
     // as a result of the below statements, infoWindows becomes a prop, and onToggleOpen is the corresponding updater function
-    props => ({
-      infoWindows: props.places.map(p => {
-        // for each item in the places array, create a corresponding 'isOpen' state
-        return { isOpen: false };
-      })
-    }),
+    // props => ({
+    //   infoWindows: props.places.map(p => {
+    //     // for each item in the places array, create a corresponding 'isOpen' state
+    //     return { isOpen: false };
+    //   })
+    // }),
     {
       onToggleOpen: ({ infoWindows }) => selectedIndex => ({
         infoWindows: infoWindows.map((iw, i) => {
@@ -43,21 +43,21 @@ const MapWithPlaces = compose(
       })
     }
   ),
-  setStatic('getDerivedStateFromProps', (nextProps, prevState) => { 
+  // setStatic('getDerivedStateFromProps', (nextProps, prevState) => { 
     
-    console.log('[gDSFP] Inside the map, next props are:', nextProps)
+  //   console.log('[gDSFP] Inside the map, next props are:', nextProps)
 
-    var newInfoWindows = nextProps.infoWindows.concat({ isOpen: false})
+  //   var newInfoWindows = nextProps.infoWindows.concat({ isOpen: false})
 
-    var nextProps = {
-      ...nextProps,
-      infoWindows: newInfoWindows
-    }
+  //   var nextProps = {
+  //     ...nextProps,
+  //     infoWindows: newInfoWindows
+  //   }
 
-    console.log('[gDSFP] now nextProps is', nextProps)
+  //   console.log('[gDSFP] now nextProps is', nextProps)
 
-    return nextProps
-  }),
+  //   return nextProps
+  // }),
   withScriptjs,
   withGoogleMap
 )(props => (

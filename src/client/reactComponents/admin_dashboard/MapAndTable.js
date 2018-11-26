@@ -10,7 +10,8 @@ class MapAndTable extends React.Component {
     super(props);
     
     this.state = {
-      timesheetData: []
+      timesheetData: [],
+      infoWindows: []
     }
   }
   
@@ -20,10 +21,26 @@ class MapAndTable extends React.Component {
     axios.get('http://localhost:3000/admin_api/timesheets')
       .then(response => {
         // console.log('response.data', response.data)
-        console.log('timesheet date received', response.data)
+        // console.log('timesheet date received', response.data)
+        // console.log('timesheet date length', response.data.length)
+
+        var dataLength = response.data.length
+        var infoWindowObj = {isOpen: false}
+        var infoWindowsObjSet = fillArray(infoWindowObj, dataLength)
+        
+          function fillArray(value, len) {
+            var arr = [];
+            for (var i = 0; i < len; i++) {
+              arr.push(value);
+            }
+            return arr;
+          }
         this.setState({
-          timesheetData: response.data
+          timesheetData: response.data,
+          infoWindows: infoWindowsObjSet
         })
+
+        console.log('state is now', this.state)
       })
       .catch(error => {
         console.log("Error during http get request for timesheet coordinate data: " + error)
@@ -39,12 +56,18 @@ class MapAndTable extends React.Component {
         console.log('[MapAndTable cDM] admin event stream data', es_data)
 
         console.log()
-        var concattedState = this.state.timesheetData.concat(es_data)
-        console.log('concattedState', concattedState)
+        var concat_timesheet = this.state.timesheetData.concat(es_data)
+        console.log('concat_timesheet', concat_timesheet)
+
+        var infoWindowObj = { isOpen: false }
+        var concat_infoWindowObj = this.state.infoWindows.concat(infoWindowObj)
 
         this.setState({
-          timesheetData: concattedState
+          timesheetData: concat_timesheet,
+          infoWindows: concat_infoWindowObj
         })
+
+        console.log('Event received -- state is now:', this.state)
       
       }
 
@@ -68,6 +91,7 @@ class MapAndTable extends React.Component {
               center={{ lat: 37.685246, lng: -122.40277 }}
               zoom={15}
               places={this.state.timesheetData}
+              infoWindows={this.state.infoWindows}
             />
           </div>
         </div> : null
