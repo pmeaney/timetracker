@@ -18,8 +18,8 @@ import { connect } from 'react-redux'
 const apiKey = process.env.GMAPS_API.toString()
 
 
-const MapWithPlaces = (props) => {
-  return(
+const MapWithPlaces = Component => (props) => {
+
   <GoogleMap defaultZoom={props.zoom} defaultCenter={props.center}>
 
     {
@@ -53,7 +53,6 @@ const MapWithPlaces = (props) => {
 
       }
   </GoogleMap>
-  )
   
 };
 
@@ -76,7 +75,7 @@ const ComposedMapWrapper = compose(
   withScriptjs,
   withGoogleMap,
   connect(mapStateToProps, mapDispatchToProps),
-  
+  MapWithPlaces
 )
 
-export default ComposedMapWrapper(MapWithPlaces)
+export default ComposedMapWrapper
