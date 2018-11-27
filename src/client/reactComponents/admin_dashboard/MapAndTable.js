@@ -1,46 +1,59 @@
 import React from "react";
-import MapWithPlaces from "./MapWithPlaces";
+import ComposedMapWrapper from "./MapWithPlaces";
 import DataTableTimesheets from './DataTableTimesheets'
-// import places from "./Map_1c.json";
 import axios from 'axios'
+
+import { connect } from 'react-redux'
+import { setup_Initial_Map_Data, concat_Additional_Map_Data } from './redux/actions'
 
 class MapAndTable extends React.Component {
 
   constructor(props) {
     super(props);
     
-    this.state = {
-      timesheetData: [],
-      infoWindows: []
-    }
+    // this.state = {
+    //   timesheetData: [],
+    //   infoWindows: []
+    // }
   }
+
+
+  /* 
+  MapAndTable ------
+    I dont need props here, just the dispatch functions
+  cWM --
+    load the state into redux.
+    This means we pass redux two types of data in an action:
+      - timesheet array
+      - infoWindow array
+
+    reducers then create a new state with the data passed in.
+
+  cWM --
+    pretty much the same: pass two arrays in the action,
+    but in the reducer, the arrays are concatenated to state
+
+  MapWithPlaces  ------ AND  DataTableTimesheets  ---
+  (needs props & dispatch)
+
+  Needs to be able to select & set infoWindows[i] onClick of marker (MapWithPlaces) / datatable row (DataTableTimesheets)
+    i.e. toggle open 
+
+    For this one, payload is the index to toggle.
+
+    in Reducer, select that object with index, and flip its boolean.
+
+   */
   
   componentWillMount() {
     console.log('[MapAndTable cWM] -- componentWillMount')
 
     axios.get('http://localhost:3000/admin_api/timesheets')
       .then(response => {
-        // console.log('response.data', response.data)
-        // console.log('timesheet date received', response.data)
-        // console.log('timesheet date length', response.data.length)
-
         var dataLength = response.data.length
         var infoWindowObj = {isOpen: false}
-        var infoWindowsObjSet = fillArray(infoWindowObj, dataLength)
-        
-          function fillArray(value, len) {
-            var arr = [];
-            for (var i = 0; i < len; i++) {
-              arr.push(value);
-            }
-            return arr;
-          }
-        this.setState({
-          timesheetData: response.data,
-          infoWindows: infoWindowsObjSet
-        })
-
-        console.log('state is now', this.state)
+        var infoWindowsObjSet = Array(dataLength).fill(infoWindowObj)
+        this.props.setup_Initial_Map_Data(response.data, infoWindowsObjSet)
       })
       .catch(error => {
         console.log("Error during http get request for timesheet coordinate data: " + error)
@@ -54,21 +67,8 @@ class MapAndTable extends React.Component {
       es.onmessage = (e) => {
         const es_data = JSON.parse(e.data)
         console.log('[MapAndTable cDM] admin event stream data', es_data)
-
-        console.log()
-        var concat_timesheet = this.state.timesheetData.concat(es_data)
-        console.log('concat_timesheet', concat_timesheet)
-
-        var infoWindowObj = { isOpen: false }
-        var concat_infoWindowObj = this.state.infoWindows.concat(infoWindowObj)
-
-        this.setState({
-          timesheetData: concat_timesheet,
-          infoWindows: concat_infoWindowObj
-        })
-
-        console.log('Event received -- state is now:', this.state)
-      
+        var infoWindowObj = {isOpen: false}
+        this.props.concat_Additional_Map_Data(es_data, infoWindowObj)
       }
 
       es.onerror = function (e) {
@@ -78,25 +78,40 @@ class MapAndTable extends React.Component {
   }
 
   render(){
+    
     return (
-      this.state.timesheetData.length ? 
+      this.props.timesheetData.length ? 
         <div >
           <div className="overflowXYScroll box dataTableBox">
             <DataTableTimesheets 
-              timesheets={this.state.timesheetData}
+              timesheets={this.props.timesheetData}
             />
           </div>
+
           <div className="mapWithplaces">
-            <MapWithPlaces
+            <ComposedMapWrapper
+
               center={{ lat: 37.685246, lng: -122.40277 }}
               zoom={15}
-              places={this.state.timesheetData}
-              infoWindows={this.state.infoWindows}
+              places={this.props.timesheetData}
+              infoWindows={this.props.infoWindows}
             />
           </div>
+          
         </div> : null
     )
   }
 }
 
-export default MapAndTable
+
+const mapStateToProps = (store) => ({
+  timesheetData: store.timesheetData,
+  infoWindows: store.infoWindows
+})
+
+const mapDispatchToProps = {
+  setup_Initial_Map_Data,
+  concat_Additional_Map_Data
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(MapAndTable);

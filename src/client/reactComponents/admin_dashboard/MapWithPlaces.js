@@ -11,56 +11,15 @@ import {
   Marker,
   InfoWindow
 } from "react-google-maps";
-import { compose, withProps, withStateHandlers, setStatic } from "recompose";
+import { compose, withProps } from "recompose";
+
+import { connect } from 'react-redux'
 
 const apiKey = process.env.GMAPS_API.toString()
 
-const MapWithPlaces = compose(
-  withProps({
-    googleMapURL:
-      "https://maps.googleapis.com/maps/api/js?key=" + apiKey + "&libraries=geometry,drawing,places",
-    loadingElement: <div style={{ height: `100%` }} />,
-    containerElement: <div style={{ height: "56vh", width: "100%" }} />,
-    mapElement: <div style={{ height: "100%" }} />
-  }),
-  withStateHandlers(
-    // stateHandlers allows us to add on additional props and prop-updating functions. 
-    // as a result of the below statements, infoWindows becomes a prop, and onToggleOpen is the corresponding updater function
-    // props => ({
-    //   infoWindows: props.places.map(p => {
-    //     // for each item in the places array, create a corresponding 'isOpen' state
-    //     return { isOpen: false };
-    //   })
-    // }),
-    {
-      onToggleOpen: ({ infoWindows }) => selectedIndex => ({
-        infoWindows: infoWindows.map((iw, i) => {
-          // if the thing selected (the marker = selectedIndex = the 'this' passed in.. I think) has an index which matches the infoWindows item we're currently on, then we have a match for toggling open.
-          // the match's value is true.  So, we set the current info window item to 'true', and return it so that that single item which was clicked is now updated.
-          iw.isOpen = selectedIndex === i;
-          return iw;
-        })
-      })
-    }
-  ),
-  // setStatic('getDerivedStateFromProps', (nextProps, prevState) => { 
-    
-  //   console.log('[gDSFP] Inside the map, next props are:', nextProps)
 
-  //   var newInfoWindows = nextProps.infoWindows.concat({ isOpen: false})
+const MapWithPlaces = Component => (props) => {
 
-  //   var nextProps = {
-  //     ...nextProps,
-  //     infoWindows: newInfoWindows
-  //   }
-
-  //   console.log('[gDSFP] now nextProps is', nextProps)
-
-  //   return nextProps
-  // }),
-  withScriptjs,
-  withGoogleMap
-)(props => (
   <GoogleMap defaultZoom={props.zoom} defaultCenter={props.center}>
 
     {
@@ -76,10 +35,12 @@ const MapWithPlaces = compose(
             key={place.timesheet_id}
             position={{ lat: lat, lng: lng }}
             title="Click to zoom"
-            onClick={props.onToggleOpen.bind(this, i)}
+            // onClick={props.onToggleOpen.bind(this, i)}  <-- Need to replace with our toggle method
           >
             {props.infoWindows[i].isOpen && (
-              <InfoWindow onCloseClick={props.onToggleOpen.bind(i)}>
+              <InfoWindow 
+                // onCloseClick={props.onToggleOpen.bind(i)} <-- Need to replace with our toggle method
+              >
                 <div style={{ width: '10rem' }}><img style={{float: 'left'}} src="https://placekitten.com/56/56" alt=""/>
                   <div style={{ float: 'right', margin: '0 0 0 1rem'}}>{place.firstName} {place.lastName}</div>
                 </div>
@@ -92,6 +53,29 @@ const MapWithPlaces = compose(
 
       }
   </GoogleMap>
-));
+  
+};
 
-export default MapWithPlaces;
+const mapStateToProps = (store) => ({
+  timesheetData: store.timesheetData,
+  infoWindows: store.infoWindows
+})
+
+const mapDispatchToProps = {}
+
+// export default MapWithPlaces;
+const ComposedMapWrapper = compose(
+  withProps({
+    googleMapURL:
+      "https://maps.googleapis.com/maps/api/js?key=" + apiKey + "&libraries=geometry,drawing,places",
+    loadingElement: <div style={{ height: `100%` }} />,
+    containerElement: <div style={{ height: "56vh", width: "100%" }} />,
+    mapElement: <div style={{ height: "100%" }} />
+  }),
+  withScriptjs,
+  withGoogleMap,
+  connect(mapStateToProps, mapDispatchToProps),
+  MapWithPlaces
+)
+
+export default ComposedMapWrapper

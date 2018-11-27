@@ -1,5 +1,6 @@
 import React from "react";
 import getLuxon_local_DateTime from "../lib/general_fns"
+import { connect } from 'react-redux'
 
 const DataTableTimesheets = (props) => {
   
@@ -46,4 +47,11 @@ const DataTableTimesheets = (props) => {
   )
 }
 
-export default DataTableTimesheets
+const mapStateToProps = (store) => ({
+  timesheetData: store.timesheetData,
+  infoWindows: store.infoWindows
+})
+
+const mapDispatchToProps = {}
+
+export default connect(mapStateToProps, mapDispatchToProps)(DataTableTimesheets);
