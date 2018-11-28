@@ -5,7 +5,6 @@ import { toggle_Visibility_Viewport_Maps } from "./redux/actions"
 // import StyledMapWithAnInfoBox from './mappingTests/ReactGMapInfoBox';
 // import DemoApp from './mappingTests/ReactGMapMarkerClusterer';
 import MapAndTable from './MapAndTable';
-import List from '../../testing_components/EventSource'
 
 class Viewport_Maps extends Component {
 

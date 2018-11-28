@@ -15,8 +15,8 @@ export const concat_Additional_Map_Data = (value1, value2) => ({
   payload2: value2
 })
 
-// export const toggle_InfoWindow_isOpen_State = (value) => ({
-//   type: "TOGGLE_INFOWINDOW_IS_OPEN_STATE",
-//   payload: value,
-// })
+export const toggle_InfoWindow_isOpen_State = (value) => ({
+  type: "TOGGLE_INFOWINDOW_IS_OPEN_STATE",
+  payload: value,
+})
 

@@ -90,11 +90,10 @@ class MapAndTable extends React.Component {
 
           <div className="mapWithplaces">
             <ComposedMapWrapper
-
               center={{ lat: 37.685246, lng: -122.40277 }}
               zoom={15}
-              places={this.props.timesheetData}
-              infoWindows={this.props.infoWindows}
+              // places={this.props.timesheetData}
+              // infoWindows={this.props.infoWindows}
             />
           </div>
           

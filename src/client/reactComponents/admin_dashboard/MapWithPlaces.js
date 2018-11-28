@@ -14,35 +14,37 @@ import {
 import { compose, withProps } from "recompose";
 
 import { connect } from 'react-redux'
+import { toggle_InfoWindow_isOpen_State } from './redux/actions'
 
 const apiKey = process.env.GMAPS_API.toString()
 
 
 const MapWithPlaces = (props) => {
+  console.log('props is', props)
   return(
   <GoogleMap defaultZoom={props.zoom} defaultCenter={props.center}>
 
     {
-      props.places &&
-      props.places.map((place, i) => {
+      props.timesheetData &&
+      props.timesheetData.map((timesheet, i) => {
 
-      let lat = parseFloat(place.timesheet_clockin_lat, 10);
-      let lng = parseFloat(place.timesheet_clockin_long, 10);
+      let lat = parseFloat(timesheet.timesheet_clockin_lat, 10);
+      let lng = parseFloat(timesheet.timesheet_clockin_long, 10);
 
         return (
           <Marker
-            id={place.timesheet_id}
-            key={place.timesheet_id}
+            id={timesheet.timesheet_id}
+            key={timesheet.timesheet_id}
             position={{ lat: lat, lng: lng }}
             title="Click to zoom"
-            // onClick={props.onToggleOpen.bind(this, i)}  <-- Need to replace with our toggle method
+            onClick={props.toggle_InfoWindow_isOpen_State.bind(this,i)} 
           >
             {props.infoWindows[i].isOpen && (
               <InfoWindow 
-                // onCloseClick={props.onToggleOpen.bind(i)} <-- Need to replace with our toggle method
+                onCloseClick={props.toggle_InfoWindow_isOpen_State.bind(i)} 
               >
                 <div style={{ width: '10rem' }}><img style={{float: 'left'}} src="https://placekitten.com/56/56" alt=""/>
-                  <div style={{ float: 'right', margin: '0 0 0 1rem'}}>{place.firstName} {place.lastName}</div>
+                  <div style={{ float: 'right', margin: '0 0 0 1rem'}}>{timesheet.firstName} {timesheet.lastName}</div>
                 </div>
               </InfoWindow>
             )}
@@ -62,7 +64,9 @@ const mapStateToProps = (store) => ({
   infoWindows: store.infoWindows
 })
 
-const mapDispatchToProps = {}
+const mapDispatchToProps = {
+  toggle_InfoWindow_isOpen_State
+}
 
 // export default MapWithPlaces;
 const ComposedMapWrapper = compose(
@@ -76,7 +80,6 @@ const ComposedMapWrapper = compose(
   withScriptjs,
   withGoogleMap,
   connect(mapStateToProps, mapDispatchToProps),
-  
 )
 
 export default ComposedMapWrapper(MapWithPlaces)

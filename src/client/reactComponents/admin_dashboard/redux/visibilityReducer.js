@@ -1,5 +1,4 @@
-import { TOGGLE_VISIBILITY_VIEWPORT_MAPS } from "./actions"
-
+import { toggle_Visibility_Viewport_Maps } from "./actions"
 const initialState = {
   visibility_viewport_maps: false,
   timesheetData: [],
@@ -29,22 +28,30 @@ const visibilityToggler = (state = initialState, action) => {
     case "CONCAT_ADDITIONAL_MAP_DATA":
       return (state = {
         ...state,
-        timesheetData: timesheetData.concat(action.payload1),
-        infoWindows: infoWindows.concat(action.payload2)
+        timesheetData: state.timesheetData.concat(action.payload1),
+        infoWindows: state.infoWindows.concat(action.payload2)
       })
 
     case "TOGGLE_INFOWINDOW_IS_OPEN_STATE":
+      // return (state = {
+      //   console.log('state is', state)
+      //   console.log('action.payload is', action.payload)
+        
+      // )
       return (state = { 
         ...state,
         infoWindows: state.infoWindows.map((infoWindow, index) => {
         if (index === action.payload) {
-          return Object.assign({}, infoWindow, {
-            isOpen: !infoWindow[index].isOpen
-          })
+          console.log('Match found', index, action.payload)
+
+          return { isOpen: !state.infoWindows[index].isOpen }
+          // return Object.assign({}, infoWindow, {
+          //   isOpen: !infoWindow.isOpen
+          // })
         }
-        return infoWindow
-      }) 
+      return infoWindow
     })
+  })
     default:
       return state
   }
