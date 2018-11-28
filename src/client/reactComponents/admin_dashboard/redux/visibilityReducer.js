@@ -1,4 +1,5 @@
 import { toggle_Visibility_Viewport_Maps } from "./actions"
+
 const initialState = {
   visibility_viewport_maps: false,
   timesheetData: [],
@@ -9,23 +10,21 @@ const visibilityToggler = (state = initialState, action) => {
   console.log("Reduce: ", action);
 
   switch (action.type) {
+
     case "TOGGLE_VISIBILITY_VIEWPORT_MAPS":
       return (state = {
         ...state,
         visibility_viewport_maps: action.payload
       })
 
-      /* Receiving two arrays of multiple objects: Timesheet data, and infoWindows  */
-    case "LOAD_INITIAL_MAP_DATA":
+    case "SETUP_INITIAL_TIMESHEET_DATA":
       return (state = {
         ...state,
         timesheetData: action.payload1,
         infoWindows: action.payload2,
       })
 
-      /* Concatenating two objects: Timesheet data, and infoWindows, onto their respective arrays  
-      */
-    case "CONCAT_ADDITIONAL_MAP_DATA":
+    case "CONCAT_ADDITIONAL_TIMESHEET_DATA":
       return (state = {
         ...state,
         timesheetData: state.timesheetData.concat(action.payload1),
@@ -33,25 +32,39 @@ const visibilityToggler = (state = initialState, action) => {
       })
 
     case "TOGGLE_INFOWINDOW_IS_OPEN_STATE":
-      // return (state = {
-      //   console.log('state is', state)
-      //   console.log('action.payload is', action.payload)
-        
-      // )
       return (state = { 
         ...state,
         infoWindows: state.infoWindows.map((infoWindow, index) => {
-        if (index === action.payload) {
-          console.log('Match found', index, action.payload)
+          if (index === action.payload) {
+            console.log('Marker clicked, will toggle corresponding InfoWindow', index, action.payload)
+            return { isOpen: !state.infoWindows[index].isOpen }
+          }
+          return infoWindow
+        })
+      })
+    
+    case "UPDATE_CLOCKED_OUT_TIMESHEET_DATA":
+      return (state = {
+        ...state,
+        timesheetData: state.timesheetData.map((timesheet, index) => {
 
-          return { isOpen: !state.infoWindows[index].isOpen }
-          // return Object.assign({}, infoWindow, {
-          //   isOpen: !infoWindow.isOpen
-          // })
-        }
-      return infoWindow
-    })
-  })
+          // console.log('timesheet', timesheet)
+          // console.log('index', index)
+          if (timesheet.timesheet_id === action.payload1) {
+
+            return {
+              ...timesheet,
+              timesheet_clockout:  action.payload2.timesheet_clockout,
+              timesheet_clockout_lat:  action.payload2.timesheet_clockout_lat,
+              timesheet_clockout_long:  action.payload2.timesheet_clockout_long,
+              timesheet_sub_type: action.payload2.timesheet_sub_type
+            }
+          }
+
+          return timesheet
+        })
+      })
+
     default:
       return state
   }

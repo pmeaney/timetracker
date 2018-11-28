@@ -4,19 +4,17 @@ import DataTableTimesheets from './DataTableTimesheets'
 import axios from 'axios'
 
 import { connect } from 'react-redux'
-import { setup_Initial_Map_Data, concat_Additional_Map_Data } from './redux/actions'
+import { 
+  setup_Initial_Timesheet_Data, 
+  concat_Additional_Timesheet_Data, 
+  update_ClockedOut_Timesheet_Data } from './redux/actions'
 
 class MapAndTable extends React.Component {
 
   constructor(props) {
     super(props);
-    
-    // this.state = {
-    //   timesheetData: [],
-    //   infoWindows: []
-    // }
-  }
 
+  }
 
   /* 
   MapAndTable ------
@@ -40,8 +38,10 @@ class MapAndTable extends React.Component {
     i.e. toggle open 
 
     For this one, payload is the index to toggle.
-
     in Reducer, select that object with index, and flip its boolean.
+
+   *  --> Ok, now just need to setup DataTableTimesheets with an onClick method 
+   * to open corresponding google-map's timesheet infowindow when a row is clicked.
 
    */
   
@@ -53,7 +53,7 @@ class MapAndTable extends React.Component {
         var dataLength = response.data.length
         var infoWindowObj = {isOpen: false}
         var infoWindowsObjSet = Array(dataLength).fill(infoWindowObj)
-        this.props.setup_Initial_Map_Data(response.data, infoWindowsObjSet)
+        this.props.setup_Initial_Timesheet_Data(response.data, infoWindowsObjSet)
       })
       .catch(error => {
         console.log("Error during http get request for timesheet coordinate data: " + error)
@@ -67,8 +67,25 @@ class MapAndTable extends React.Component {
       es.onmessage = (e) => {
         const es_data = JSON.parse(e.data)
         console.log('[MapAndTable cDM] admin event stream data', es_data)
-        var infoWindowObj = {isOpen: false}
-        this.props.concat_Additional_Map_Data(es_data, infoWindowObj)
+
+        if (es_data.timesheet_sub_type === "new_timesheet") {
+          var infoWindowObj = {isOpen: false}
+          this.props.concat_Additional_Timesheet_Data(es_data, infoWindowObj)
+        }
+
+        if (es_data.timesheet_sub_type === "updated_timesheet") {
+          var clockOutData = {
+            timesheet_clockout: es_data.timesheet_clockout,
+            timesheet_clockout_lat: es_data.timesheet_clockout_lat,
+            timesheet_clockout_long: es_data.timesheet_clockout_long,
+            timesheet_sub_type: es_data.timesheet_sub_type // this simply overwrites "new_timesheet" with "updated_timesheet"
+          }
+          
+          var timesheet_id = es_data.timesheet_id
+
+          this.props.update_ClockedOut_Timesheet_Data(timesheet_id, clockOutData)
+        }
+
       }
 
       es.onerror = function (e) {
@@ -83,17 +100,13 @@ class MapAndTable extends React.Component {
       this.props.timesheetData.length ? 
         <div >
           <div className="overflowXYScroll box dataTableBox">
-            <DataTableTimesheets 
-              timesheets={this.props.timesheetData}
-            />
+            <DataTableTimesheets />
           </div>
 
           <div className="mapWithplaces">
             <ComposedMapWrapper
               center={{ lat: 37.685246, lng: -122.40277 }}
               zoom={15}
-              // places={this.props.timesheetData}
-              // infoWindows={this.props.infoWindows}
             />
           </div>
           
@@ -109,8 +122,9 @@ const mapStateToProps = (store) => ({
 })
 
 const mapDispatchToProps = {
-  setup_Initial_Map_Data,
-  concat_Additional_Map_Data
+  setup_Initial_Timesheet_Data,
+  concat_Additional_Timesheet_Data,
+  update_ClockedOut_Timesheet_Data
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MapAndTable);
