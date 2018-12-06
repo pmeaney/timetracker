@@ -94,6 +94,8 @@ class MapAndTable extends React.Component {
     
   }
 
+
+
   render(){
     
     return (

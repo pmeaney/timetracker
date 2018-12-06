@@ -1,9 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { toggle_Visibility_Viewport_Maps } from "./redux/actions"
-// import MyMapComponent from './mappingTests/ReactGoogleMap';
-// import StyledMapWithAnInfoBox from './mappingTests/ReactGMapInfoBox';
-// import DemoApp from './mappingTests/ReactGMapMarkerClusterer';
 import MapAndTable from './MapAndTable';
 
 class Viewport_Maps extends Component {
@@ -16,7 +13,7 @@ class Viewport_Maps extends Component {
 
   HandleClick_CloseButton_VisibilityToggle_Viewport_Maps(e){
     e.stopPropagation();
-    this.props.toggle_Visibility_Viewport_Maps(false) // visibility -> false
+    this.props.toggle_Visibility_Viewport_Maps(false)
   }
 
   render(){
@@ -33,13 +30,11 @@ class Viewport_Maps extends Component {
         </div>
         <div className="message-body addHeight">
             <MapAndTable />
-            {/* <List /> */}
         </div>
       </article>
     )
   }
 }
-
 
 const mapDispatchToProps = {
   toggle_Visibility_Viewport_Maps

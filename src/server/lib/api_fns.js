@@ -204,24 +204,6 @@ const updateExistingTimesheet_onClockout = (activity_id, clockout_time, latitude
 				timesheet_clockout_long: longitude
 			})
 	})
-
-	// 	return database("timesheets")
-	// 		.returning(['timesheet_id', 'timesheet_clockout']) // response data to return to user upon insert
-	// 		.insert({
-	// 			activity_id: activity_id,
-	// 			emp_accepted_by: employee_id_accepted_by,
-	// 			timesheet_clockin: clockin_time,
-	// 			timesheet_clockin_lat: latitude,
-	// 			timesheet_clockin_long: longitude,
-	// 			emp_authorized_by: null,
-	// 			cost_center_id: null,
-	// 			timesheet_notes: null,
-	// 			timesheet_submitted_datetime: null,
-	// 			timesheet_clockout: null,
-	// 			timesheet_clockout_lat: null,
-	// 			timesheet_clockout_long: null
-	// 		})
-	// })
 }
 
 
@@ -340,6 +322,77 @@ const AdditionalDataLookup_On_Timesheets_array = (timesheets) => {
 	})
 }
 
+const postEmployeeProfileFormData = (dataObject) => {
+	console.log('[lib/Api_fns.js] data obj posted', dataObject)
+	return Promise.try(() => {
+		return database("employees")
+			.where({ employee_id: dataObject.user_id  })
+			.update({
+				phone: dataObject.phoneNumber,
+				email: dataObject.email,
+				address: dataObject.address
+			})
+			.returning(['employee_id', 'phone', 'email', 'address']) // response data to return to user upon insert
+	})
+}
+
+const populateTestUserData = (testUserID_forRepopulation) => {
+	return Promise.try(() => {
+		return Promise.all([
+			// note: UTC is 7 hours ahead of PST
+			//  2018-01-01T00:00:00.000Z
+			// NEED TO FIX:  Add in 'activity manager', stop using 'emp_assigned_by' as default for activity mgr
+			database('activities').insert([
+				{ activity_code_id: 1, project_id: 1, emp_assigned_by: 1, emp_assigned_to: testUserID_forRepopulation, activity_notes: 'paint with blue until you run out, then switch to red', activity_datetime_begin: '2018-01-01T16:00:00.000Z', activity_datetime_end: '2018-01-01T21:00:00.000Z' },
+				{ activity_code_id: 3, project_id: 2, emp_assigned_by: 1, emp_assigned_to: testUserID_forRepopulation, activity_notes: 'work on building shelf in store', activity_datetime_begin: '2018-02-01T13:00:00.000Z', activity_datetime_end: '2018-02-01T21:00:00.000Z' },
+				{ activity_code_id: 8, project_id: 2, emp_assigned_by: 1, emp_assigned_to: testUserID_forRepopulation, activity_notes: 'install drywall in champagne conference room', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z' },
+				{ activity_code_id: 8, project_id: 3, emp_assigned_by: 1, emp_assigned_to: testUserID_forRepopulation, activity_notes: 'Testing...', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z' },
+
+				{ activity_code_id: 8, project_id: 1, emp_assigned_by: 1, emp_assigned_to: testUserID_forRepopulation, activity_notes: 'Testing 2...', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z' },
+				{ activity_code_id: 8, project_id: 2, emp_assigned_by: 1, emp_assigned_to: testUserID_forRepopulation, activity_notes: 'Testing 3...', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z' },
+				{ activity_code_id: 8, project_id: 2, emp_assigned_by: 1, emp_assigned_to: testUserID_forRepopulation, activity_notes: 'Testing 4...', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z' },
+			])
+		])
+	})
+}
+
+
+
+const checkIfNeedToRepopulateTaskQueue = (employee_id_repopTaskQueue, newInterval) => {
+
+	var interval = 30000
+
+	setInterval(() => {
+		console.log('[lib/Api_fns.js] running checkIfNeedToRepopulateTaskQueue with emp id', employee_id_repopTaskQueue)
+		return Promise.try(() => {
+			return Promise.all([
+				getTimesheetsAndActivities_forWhich_Timesheets_haveNullClockOut_forEmployee(employee_id_repopTaskQueue),
+				getActivities_forWhich_timesheetsDoNotExist(employee_id_repopTaskQueue)
+			])
+				.then((result) => {
+					// flatten the nested array which was returned  -- source: https://stackoverflow.com/questions/10865025/merge-flatten-an-array-of-arrays-in-javascript
+					const array_task_list = [].concat.apply([], result)
+
+					// console.log('array_task_list within empty task queue checker', array_task_list)
+
+					/* Is it empty and needs population? */
+					if (array_task_list.length === 0) {
+						console.log('[lib/Api_fns.js] task list array is empty for test user-- will re-populate')
+						return Promise.try(() => {
+							populateTestUserData(employee_id_repopTaskQueue)
+						})
+					} else {
+						console.log('[lib/Api_fns.js] no need to repopulate activities-- the queue is not empty. Gonna set timer to 2 minutes instead of 30 seconds')
+						// if function isnt run, lets make the timer last longer 
+						interval = newInterval
+
+					}
+				})
+		})
+	}, interval)
+
+}
+
 module.exports = {
 	getAllActivities,
 	getActivity_by_id,
@@ -356,5 +409,8 @@ module.exports = {
 	getProjectMgr_by_project_id,
 	getTimesheetsAndActivities_forWhich_Timesheets_haveNullClockOut_forEmployee,
 	getActivities_forWhich_timesheetsDoNotExist,
-	AdditionalDataLookup_On_Timesheets_array
+	AdditionalDataLookup_On_Timesheets_array,
+	postEmployeeProfileFormData,
+	populateTestUserData,
+	checkIfNeedToRepopulateTaskQueue
 };

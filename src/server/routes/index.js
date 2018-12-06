@@ -1,12 +1,13 @@
 var express = require('express');
 var router = express.Router();
-
+var WebpageContent_ctrl = require('../route_controllers/RegularWebpageContent_controllers')
 
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express'});
-});
+router.get('/', WebpageContent_ctrl.get_indexPage)
+router.get('/stats_data/assault', WebpageContent_ctrl.local_data_statsProject)
+router.get('/stats_data_remote/assault', WebpageContent_ctrl.remote_data_statsProject)
+
 
 
 

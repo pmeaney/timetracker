@@ -1,0 +1,32 @@
+<!-- this file is simply for pointing to my custom JS scripts -->
+
+<!-- NOTE: I need to check if environment is production or development,
+so that the right jquery is used (b/c its get requests must point to either live or local dev URLs ) -->
+
+<script>
+// gets set to either production or development
+// depending on process.env.NODE_ENV
+var env = '<%= env %>';
+
+// console.log('env is', env);
+
+if (env == 'development') {
+var env_root_url = 'http://localhost:3000'
+}
+
+if (env == 'production') {
+var env_root_url = 'https://pmeaney.com'
+}
+
+</script>
+
+
+<!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAmNMvEqTv1T8fs4SrMPDAmfszA-iTZ1RE"></script>
+ -->
+
+<script src="/javascripts/mycustom_js_assets/employee_compiled_jquery.js"></script>
+
+
+<!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAmNMvEqTv1T8fs4SrMPDAmfszA-iTZ1RE&callback=initMap"></script> -->
+<!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAmNMvEqTv1T8fs4SrMPDAmfszA-iTZ1RE"></script> -->
+

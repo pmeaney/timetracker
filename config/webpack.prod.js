@@ -6,6 +6,7 @@ const UglifyJsPlugin = require("uglifyjs-webpack-plugin")
 const CompressionPlugin = require("compression-webpack-plugin")
 const BrotliPlugin = require("brotli-webpack-plugin")
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
+const Dotenv = require('dotenv-webpack');
 
 module.exports = env => {
   return {
@@ -24,7 +25,8 @@ module.exports = env => {
     output: {
       filename: "[name].js",
       path: path.resolve(__dirname, "../src/server/public/reactBundles"),
-      publicPath: "/"
+      // publicPath: "/"
+      publicPath: "./../src/server/public/reactBundles"
     },
     optimization: {
       splitChunks: {

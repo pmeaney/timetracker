@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { toggle_Visibility_Viewport_Profile } from "./redux/actions"
+import ProfileForm from './profile_form/Form_profileSimple'
 
 class Viewport_Profile extends Component {
 
@@ -36,7 +37,7 @@ class Viewport_Profile extends Component {
             ></button>
           </div>
           <div className="message-body">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. <strong>Pellentesque risus mi</strong>, tempus quis placerat ut, porta nec nulla. Vestibulum rhoncus ac ex sit amet fringilla. Nullam gravida purus diam, et dictum <a>felis venenatis</a> efficitur. Aenean ac <em>eleifend lacus</em>, in mollis lectus. Donec sodales, arcu et sollicitudin porttitor, tortor urna tempor ligula, id porttitor mi magna a neque. Donec dui urna, vehicula et sem eget, facilisis sodales sem.
+            <ProfileForm />
           </div>
         </article>
       </div>

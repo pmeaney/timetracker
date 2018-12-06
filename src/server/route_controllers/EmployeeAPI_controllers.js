@@ -26,7 +26,6 @@ const EventEmitter = require('events');
 class EmployeeAPI_EventEmitterClass extends EventEmitter {}
 const EmployeeAPI_EventsEmitter = new EmployeeAPI_EventEmitterClass();
 
-
 // ********************************************************
 // ***   TIMESHEETS
 // ********************************************************
@@ -155,15 +154,19 @@ const put_update_timesheet_toClockOut = (req, res) => {
 // ***   GET PENDING TASKS
 // ********************************************************
 
+
+
 const get_PendingTasks_by_EmployeeID = (req, res) => {
 
   const param_emp_id_asInt = parseInt(req.params.emp_id, 10);
+  console.log('getting pending tasks for employee_id', param_emp_id_asInt)
 
   if (true) {
+
     return Promise.try(() => {
       return Promise.all([
         Api_fns.getTimesheetsAndActivities_forWhich_Timesheets_haveNullClockOut_forEmployee(param_emp_id_asInt),
-        Api_fns.getActivities_forWhich_timesheetsDoNotExist(param_emp_id_asInt)
+        Api_fns.getActivities_forWhich_timesheetsDoNotExist(param_emp_id_asInt),
       ])
         .then((result) => {
           // flatten the nested array which was returned  -- source: https://stackoverflow.com/questions/10865025/merge-flatten-an-array-of-arrays-in-javascript
@@ -206,18 +209,63 @@ const get_PendingTasks_by_EmployeeID = (req, res) => {
               // return merged_Task_Project_Location_data
               res.status(200).json(merged_Task_Project_Location_data);
 
+              /* //*: This is to repopulate the test user's timesheet/activity queue. */
+              // the numeric value is the new interval, which gets set if the check runs as false
+              Api_fns.checkIfNeedToRepopulateTaskQueue(param_emp_id_asInt, 120000)
             })
         })
     })
+
+
+
+
+
   }
   else {
     res.status(500).json({ error: 'sorry, we were unable to fulfill your request for activity data.' });
   }
 }
 
+// ********************************************************
+// ***   POST PROFILE CONTACT INFO
+// ***   Note: Profile form module is unlocked once user type reflects that they are hired
+// ********************************************************
+
+const post_Profile_ContactInfo_by_EmployeeID = (req, res) => {
+  console.log('request body is', req.body)
+  const phoneNumber_escaped = escape(req.body.phoneNumber)
+  const email_escaped = escape(req.body.email)
+  const address_escaped = escape(req.body.address)
+  const user_id = req.session.user_id
+  // ** Once we're into production mode, we need to check for proper user type in order to receive form data
+  // const user_type = req.session.user_type  
+ 
+  const address_fix1 = address_escaped.replace(/%20/g, " ") // fix spaces
+  const address_fix2 = address_fix1.replace(/%2C/g, ",")    // fix commas
+  const address_fix3 = address_fix2.replace(/%23/g, "#")    // fix pound sign
+  const address_fix4 = address_fix3.replace(/%2E/g, ".")    // fix period
+
+
+  const dataToPost = {
+    phoneNumber: phoneNumber_escaped,
+    email: email_escaped,
+    address: address_fix4,
+    user_id: user_id
+  }
+
+  // insert the data into employees
+
+  return Promise.try(() => {
+
+    return Api_fns.postEmployeeProfileFormData(dataToPost)
+
+  }).then((response) => {
+    console.log('response is ', response)
+  })
+}
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!! FOR DEMO PURPOSES ONLY -- Super basic version of DB access (without promises)
+// !!! Just some extra code for demo/testing
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 const test_get_project_byID = (req, res) => {
@@ -258,7 +306,8 @@ module.exports = {
   post_create_timesheet_toClockIn,
   put_update_timesheet_toClockOut,
   get_PendingTasks_by_EmployeeID,
-  EmployeeAPI_EventsEmitter
+  EmployeeAPI_EventsEmitter,
+  post_Profile_ContactInfo_by_EmployeeID
   // get_activities_by_EmployeeID,
   // test_get_project_byID,
   // test_get_Timesheets_All,

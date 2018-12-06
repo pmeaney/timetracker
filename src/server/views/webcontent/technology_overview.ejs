@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Portfolio - Patrick Meaney</title>
+
+    <% include ../webcontent_partials/html_head %>
+    
+
+    <script>
+      // gets set to either production or development
+      // depending on process.env.NODE_ENV
+      var env = '<%= env %>';
+
+      // console.log('env is', env);
+
+      if (env == 'development') {
+        var env_root_url = 'http://localhost:3000'
+      }
+
+      if (env == 'production') {
+        var env_root_url = 'https://pmeaney.com'
+      }
+
+    </script>
+    
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand ml-5 pl-5" href="https://www.pmeaney.com/">Portfolio of Patrick Meaney</a>
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="/my-resume/Resume of Patrick Meaney.pdf"  download>Résumé</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="http://www.linkedin.com/in/pmeaney" target="_blank">LinkedIn</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="http://www.github.com/pmeaney" target="_blank">Github</a>
+        <li class="nav-item">
+          <a class="nav-link">meaney.patrick@gmail.com &mdash; 210-865-3684</a>
+        </li>
+        </li>
+      </ul>
+    </nav>
+
+
+    <!-- Page Content -->
+    <div class="container mt-5">
+
+      <!-- Page Heading -->
+<!--       <div class="row">
+          <div class="col-12">
+              <div class="alert alert-warning" role="alert">blah</div>
+          </div>
+        </div> -->
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12">
+          <p>
+            <h3>Well hello.</h3>
+            <p><strong>I'm Patrick, a Business Systems Analyst and Business-minded NodeJS developer</strong> with experience in Enterprise Application API Integration, Web Application Development, and Business Consulting with corporate and small business executives.</p>
+        </div>
+      </div>
+      <div class="row  h-100 justify-content-center align-items-center">
+        <div class="col-sm-3 col-md-3 col-lg-2">
+            <img class="img-fluid rounded" src="/my-resume/alaska_trail.png" alt=""">
+        </div>
+        <div class="col-sm-9 col-md-9 col-lg-10">
+              <ul><strong>My technology skillset includes:</strong> <a href="#" data-toggle="modal" data-target=".biz-skills">(view additional business skills)</a>
+                <a href="#" data-toggle="modal" data-target=".tech-interests">(view personal tech interests)</a>
+                <li>NodeJS Web Devleopment
+                  <ul>
+                    <li>Serverside: NodeJS, ExpressJS (REST API), Enterprise App API integration (CRM, ERP)</li>
+                    <li>Clientside: Dashboards with D3, jQuery, Boostrap4, scss, (customized, responsive web design)</li>
+                  </ul>
+                </li>
+                <li>Systems Analysis & Design (Including design of various systems diagrams)</li>
+                <li>SQL / Relational Database design, querying and application integration</li>
+                <li>Statistical analysis in R and Python, including MANOVA, Multivariate linear regression, applied predictive regression modeling, descriptive statistics, visualizations of distributions etc. with visualization in D3</li>
+                <li>Git & Linux + nginx for versioning & server management</li>
+              </ul>
+          </div>
+
+        </div>
+        <div class="row">
+          <div class="col-sm-12 col-md-12 col-lg-12">
+            <p>Here's an introduction to one of my favorite projects.
+              <br><strong>It's a predictive model</strong>, in an R script, sitting on my server.  <strong>When you click this button, it samples a set of data</strong> (crime in 36 zip codes in Austin, TX) <strong>and generates a trained model with 80% of the data-- visualized as a predicted confidence interval</strong> (upper limit, lower limit, and average prediction), which <strong>it then applies test data</strong> (the remaining 20% of the data) <strong>to see how accurately the model (which is randomly calibrated&mdash; "trained" with a randomly selected 80% of the crime-correlated data&mdash; when you click) predicts real data</strong>.  
+
+              <br>
+              <h6>Please be patient as it might take a few moments to load.  And if you refresh, you can click again for a new prediction.</h6>
+              
+          </p>
+          <button type="button" class="btn btn-primary assault-button" data-toggle="statsData" data-target="assault">Activate predictive model for "Assault per 1000 capita per year" in six randomly chosen Austin, TX zipcodes</button>&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" href="#" data-toggle="modal" data-target=".project-three">Learn about this project</a>
+        </div>
+      </div>
+       <div class="row mb-4">
+
+        <div class="col-sm-6 col-md-6 col-lg-6 card graph-assault"></div>
+        <div class="col-sm-6 col-md-6 col-lg-6 card">
+          <h6>Data:</h6>
+          <table id="target">
+            <thead>
+              <tr>
+                <th style="color:lightgreen">Upper</th>
+                <th style="color:red">Fit</th>
+                <th style="color:lightgreen">Lower</th>
+                <th style="color:black">Actual</th>
+              </tr>
+            </thead>
+            <tbody id="target">
+              
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+          <h3>Here are a some recent projects:</h3>
+        </div>
+      </div>
+
+  
+
+      <!-- Project One -->
+      <div class="row h-100 justify-content-center align-items-center">
+        <div class="col-md-5">
+            <img class="img-fluid rounded mb-3 mb-md-0" src="/images/portfolio/api_project/marketo-livechat.png" alt="">
+        </div>
+        <div class="col-md-7">
+          <h3>Marketo LiveChat API Project (NodeJS)</h3>
+          <p>While at Pulse Secure, the Director of Marketing requested that I complete a data integration project, which I successfully completed according to both his requirements and the IT Director's requirements.  (Technically though, I worked in Operations, as a direct report to VP of Operations.)
+          <br>
+          The solution: I wrote a script in NodeJS to migrate data from a webchat application (LiveChat) to a marketing application (Marketo), once hourly, (based on a conditional decision model) and log any errors encountered. Then, once per day, a second script  would email the admin about any new errors.</p>
+          <a class="btn btn-primary" href="#" data-toggle="modal" data-target=".project-one">Learn about this project</a>
+          
+        </div>
+      </div>
+      <!-- /.row -->
+
+      <hr>
+
+      <!-- Project Two -->
+      <div class="row h-100 justify-content-center align-items-center">
+        <div class="col-md-5">
+            <img class="img-fluid rounded mb-3 mb-md-0" src="/images/portfolio/app_project/timertracker_app_screenshots.png" alt="timetracker app with nodejs">
+        </div>
+        <div class="col-md-7">
+          <h3>Timetracker web app (NodeJS, PostgreSQL, jQuery)</h3>
+          <p>In May 2018 I decided to start building a simplified, minimalist timetracker app for managing a small workforce (for any service company, such as one which employs contractors or hourly workers).  It has been a great sandbox for me to polish javascript and SQL skills.</p>
+          <a class="btn btn-primary" href="#" data-toggle="modal" data-target=".project-two">Learn about this project</a>
+        </div>
+      </div>
+      <!-- /.row -->
+
+      <hr>
+
+      <!-- Project Three -->
+      <div class="row h-100 justify-content-center align-items-center">
+        <div class="col-md-5">
+            <img class="img-fluid rounded mb-3 mb-md-0" src="/images/portfolio/stats_project/stats_icon_500x225.png" alt="">
+        </div>
+        <div class="col-md-7">
+          <h3>Predicting rates of crime based on economic indicators (R &mdash; statistical computing)</h3>
+          <p>As part of my graduate statistics course "Advanced Statistical Methods", using R, I data-engineered a dataset from public datasets, then tested various economic factors for their usefulness in contributing to a predictive model.  After finding the right model, I demonstrate a training model and test real data against it. Similar methodology, on a larger scale, could be replicated to attempt to predict business outcomes. (In fact, one project I would like to work on is a web dashboard for statistically derived business metrics)</p>
+          <a class="btn btn-primary" href="#" data-toggle="modal" data-target=".project-three">Learn about this project</a>
+        </div>
+      </div>
+      <!-- /.row -->
+
+      <hr>
+
+    </div>
+    <!-- /.container -->
+
+    <!-- Footer -->
+    <footer class="py-5 bg-dark">
+      <div class="container">
+        <p class="m-0 text-center text-white">Patrick Meaney &mdash; meaney.patrick@gmail.com &mdash; 210-865-3684</p>
+      </div>
+      <!-- /.container -->
+    </footer>
+
+    <!-- #################################################################################### -->
+    <!-- #################################################################################### -->
+    <!-- Modal content -- project one -->
+    <!-- #################################################################################### -->
+    <!-- #################################################################################### -->
+    <div class="modal fade project-one" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+                  <h5 class="modal-title">Automated Enterprise API Integration</h5>
+                  <button type="button" class="close-bs4" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+          <div class="modal-body">
+            <div class="container-fluid">
+
+              <div class="row">
+                <div class="col-md-12">
+
+                    <h3>Marketo LiveChat API Project (NodeJS)</h3>
+                    <p>While at Pulse Secure I wrote a script in NodeJS to migrate data from a webchat application (LiveChat) to a marketing application (Marketo), once hourly, (based on a conditional decion model) and log any errors encountered. Then, once per day, a second script  would email the admin about any new errors.</p>
+                    <h6>Here's a simple visual explanation of how the project worked, at a high level.</h6>
+                  </div>
+                </div>
+
+              <div class="row">
+                <div class="col-12">
+                  <img src="/images/portfolio/api_project/marketo-liveChat-basic-diagram.png" alt="markto livechat project diagram" style="width:100%">
+                </div>
+              </div>
+              
+              <div class="row">
+                <div class="col-md-12"><p>The purpose of the project was to assist in keeping all marketing data in one place: in Marketo's database.  However, I could easily do the same sort of API integration project with applications such as Salesforce, Netsuite, or SAP.  It's simply a matter of using the API endpoints to return to you the data that you're looking for.</p>
+                <p>APIs often have constraints though&mdash; in order to make sure their services don't get overburdened by requests to the point that they shut down under the heavy load.  In the case of Marketo, it has a few constraints which my project needed to stay within the confines of.</p>
+                <p>Since Marketo's API constraints are what really made project interesting, I thought share with you an overview of how the script overcame these constraints (really, they're more like project criteria, to be rolled up with system requriements as part of systems analysis)</p>
+
+  
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-12">
+                  <h6>Marketo's API Limits</h6>
+                  <img src="/images/portfolio/api_project/marketo_api_limits.png" alt="marketo api constraints" style="width:75%">
+                </div>
+              </div>
+
+
+              <div class="row">
+                
+                <div class="col-12">
+
+                <h5>The constraints were interesting because adhering to the constraints required control mechanisms which moderated the speed & volume of the flow of data, regarding both get (data download) & post (data upload) requests:</h5>
+                
+
+                  <p><h6>Batching get requests:</h6> The script begins by checking the date of the last time it ran, and uses this date timeframe in its search for LiveChat data.  It also does a refresh of its Marketo API key.  Once it does that, it's ready to roll, and the first real step in the data flow is to get LiveChat data.  LiveChat's API doesn't really have many constraints to worry about.  So, once we have that data, we can compare it to Marketo's data.  But first we have to get the data from Marketo in a way which optimizes API usage efficiency.
+                    <br><br>
+                  The script needed to limit get requests for Marketo data into groups of up to 300.  This means it can return up to 300 rows of Marketo data-- based on the 300 email addresses from LiveChat, passed into Marketo for looking up the rows.  (Once I had the LiveChat visitor data, then I needed to cross reference which of the visitors are already listed in our marekto instance, by looking them up by email (used as a unique id), which required batching into groups of 300)
+                  </p>
+                  <p><h6>Batching post requests:</h6>Once the LiveChat data was compared to the Marketo data, and I knew which data needed to float up to Marekto (based on certain conditions, for example: if their geographical data already existed in Marketo, do not overwrite it. If it does not exist though, add it to the data object for upload.)
+                    There's a limit of 10 concurrent API requests per second.  NodeJS is asynchronous though.  Which makes it very fast.  But it's also a bit tricky to control.  The problem is that without controlling the stream of post requests-- for example, let's say there were 100 visitors in the past hour-- the API constraints would be quickly overwhelmed and marketo would refuse to accept all of our post requests.  <br><br>That is, uploading those 100 units of visitor data to Marketo at full speed (thanks to asynchronicity) would be delivered within perhaps half a second or so.  The problem is that Marketo doesn't want to be pinged so many times, so quickly.  It wants some breathing space.
+                      <br><br>
+                       The way I ended up controlling these batches of post requests so that all 100 data objects both don't fire all at once, immediately, is by using the NodeJS <strong><a href="https://github.com/yongzhihuang/PentaCode/blob/master/AsyncJs/asyncQueue.js" target="_blank">async library's queue() function</a></strong>, which allows the developer to issue the post calls in small batches (adjustable) and at throttled increments (also adjustable).  This allowed me to overcome the Rate limit and the Concurrency limit
+                       <br><br>
+                       Basically, with asynchronous functions, they all fire immediately.  With a get request function though, two main things happen: we fire our function (the "request"), and then we receive a response from the server we're communicating with. This entire process is one concurrent API call.  With asynchronous function calls though, the speed of the request/response cycle depends a lot on just internet latency speeds. This means it's hard to predict how long the request will take.  
+                       <br><br>Now, the concurrency limit says there's a max of 10 per second.  So, what we could do is say, run one batch of 10 per second, right?  Wrong.  Unfortunately, it's very possible that one or some of those requests will take a little longer than others.  So, I had to adjust the batches to something like two batches of four per second, just as an example, which adds up to eight per second.  Another example that could work is one batch of seven per 750ms.  
+                       <br><br>But again, it the success of these depends in part on internet latency, hence it's wise to err on the side of being conservative, and reducing the API calls per second to whatever amount makes sense, to ensure that it's very unlikely that we surpass the limit.  This is why asynchronous programming is challenging, fun, and interesting: because it is sometimes difficult to control precisely.
+
+                  </p>
+                </div>
+
+                </div>
+
+            </div>
+          </div>
+
+
+          
+        </div>
+      </div>
+    </div>
+
+    <!-- #################################################################################### -->
+    <!-- #################################################################################### -->
+    <!-- Modal content -- project two -->
+    <!-- #################################################################################### -->
+    <!-- #################################################################################### -->
+    <div class="modal fade project-two" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+                  <h5 class="modal-title">Custom workforce management web app (in progress)</h5>
+                  <button type="button" class="close-bs4" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+          <div class="modal-body">
+            <div class="container-fluid">
+
+              <div class="row">
+                <div class="col-md-12">
+
+                    <h3>Timetracker web app (NodeJS, PostgreSQL, jQuery)</h3>
+                    <p>In May 2018 I decided to start building a simplified, minimalist timetracker app for managing a small workforce (for any service company, such as one which employs contractors or hourly workers).  It has been a great sandbox for me to polish javascript and SQL skills.</p>
+                    <h6>Here is the database design.</h6>
+                    <p>You can <a style="font-weight: bold;" href="https://www.pmeaney.com/admin_dash/" target="_blank">view the administrator dashboard here</a>, and you can also create a user account (by default, your user account will be represented as employee #2's account.)  This app is essentially still in test mode and needs several improvements to get ready for its first productive version.  My next goal is to get proficient at ReactJS and use it to completely re-do the frontend (which is currently in jQuery).</p>
+                  </div>
+                </div>
+
+              <div class="row">
+                <div class="col-12">
+                  <img src="/images/portfolio/app_project/timetracker_ERD.png" alt="timetracker app database design" style="width:100%">
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-12">
+
+                    <h6>  The thing I really appreciate about database designs is that they're essentially business designs&mdash;they govern how data is stored and managed within a company and therefore they are the basis for the company's information about the state of company.</h6>
+
+                    <h6>Database design is crucial for a cohesive web application.</h6><p>I started building this project, and recreated it three times until I got the database design right, with the help of a database model I found online, and have since added to it.</p>
+                    <p>Now that the database design is working well, and I've developed the front end a bit with jQuery, I've decided to start learning something more modern: React.  I will also put D3 to work, in the administrator and manager dashboards.</p>
+                    <p>
+                    At the moment though, all that is happening is that the user is able to view some data which is pulled out of the database.  The next steps will be creating various forms for posting new data objects into the database (such as for new employees, new activities, new timesheets, etc).  I will either create these with jQuery once I finish my job hunt and can re-focus on the app, or I might restart the application's front end from scratch with React.</p>
+                    <p>Eventually, the app will involve use of the following API:
+                      <ul>
+                        <li>Google maps (for tracking employee clockin/clockout locations across various projects)</li>
+                        <li>Google calendars (for keeping track of employee schedules)</li>
+                        <li>Twilio (for text messaging employees about schedule)</li>
+                      </ul>
+                    </p>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-3">
+                    <img src="/images/portfolio/app_project/2000px-Node.js_logo_2015.png" alt="nodeJS logo" style="width:100%">
+                </div>
+                <div class="col-3">
+                    <img src="/images/portfolio/app_project/postgresql-logo.png" alt="postgresql logo" style="width:100%">
+                </div>
+                <div class="col-3">
+                    <img src="/images/portfolio/app_project/NGINX_logo_rgb-01.png" alt="nginx logo" style="width:100%">
+                </div>
+                <div class="col-3">
+                    <img src="/images/portfolio/app_project/ubuntulogo_1.png" alt="ubuntu logo" style="width:100%">
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+
+          
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- #################################################################################### -->
+    <!-- #################################################################################### -->
+    <!-- Modal content -- project three -->
+    <!-- #################################################################################### -->
+    <!-- #################################################################################### -->
+    <div class="modal fade project-three" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+                  <h5 class="modal-title">Predictive &amp; Descriptive Statistical Analysis</h5>
+                  <button type="button" class="close-bs4" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+          <div class="modal-body">
+            <div class="container-fluid">
+
+              <div class="row">
+                <div class="col-md-2">
+                  <img src="/images/portfolio/stats_project/r_logo.jpg" alt="logo for R statistical computing language" style="width:100%">
+                  <br><br>
+                  <img src="/images/portfolio/stats_project/d3.png" alt="logo for R statistical computing language" style="width:100%">
+                </div>
+                <div class="col-md-10">
+                    <h3>Predicting rates of crime based on economic indicators (R &mdash; statistical computing)</h3>
+                    <p>As part of my graduate statistics course "Advanced Statistical Methods", using R, I data-engineered a dataset from public datasets, then tested various predictive models for their accuracy.  After finding the right model, I demonstrate a training model and test real data against it. Similar methodology, on a larger scale, could be replicated to make predictions of business outcomes. (In fact, one project I would like to work on is a <a href="https://d3js.org/">D3</a> web dashboard for business metrics statistically derived with <a href="https://www.r-project.org/">R</a> or Python).</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                    <h6>Here is the model I settled on: (note: each datapoint is per zipcode)</h6>
+                    <h5>[Crime] per Capita prediction = [% of Population Below Poverty Level] * [Median Household Income] * [Median Rent price]</h5>
+                    <p>Where Crime = Assault, Robbery, Burglary, or Theft, and * = interaction effects</p>
+
+                    <p>Here are three examples of trained models tested with actual data.  It's a multivariate linear regression model trained with 80% of the dataset, and tested with 20%.  Each time I test the model, a new randomly selected training model is created.</p>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-12">
+                  <h5>Test 1 of Assault, Robbery, Burglary and Theft models</h5>
+                  <img src="/images/portfolio/stats_project/test1.png" alt="statistics predictive model with multilinear regression" style="width:100%">
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-12">
+                  <h5>Test 2 of Assault, Robbery, Burglary and Theft models</h5>
+                  <img src="/images/portfolio/stats_project/test2.png" alt="statistics predictive model with multilinear regression" style="width:100%">
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-12">
+                   <h5>Test 3 of Assault, Robbery, Burglary and Theft models</h5>
+                  <img src="/images/portfolio/stats_project/test3.png" alt="statistics predictive model with multilinear regression" style="width:100%">
+                </div>
+              </div>
+
+
+              <div class="row">
+                <div class="col-12">
+                  <h6>I aggregated data from the following datasets:</h6>
+                  <ul>
+                    <li><a href="https://data.austintexas.gov/Building-and-Development/2014-Housing-Market-Analysis-Data-by-Zip-Code/hcnj-rei3/6">2014 Housing Market Analysis Dataset (Government Open Data initiative for Austin, TX)</a>: Source of % of Population Below Poverty Level, Median Household Income, Median Rent price</li>
+                    <li><a href="https://data.austintexas.gov/dataset/Annual-Crime-2014/7g8v-xxja/about">2014 Crime dataset (Government Open Data initiative for Austin, TX)</a>: 40,000 rows -- I aggregated & simplified variations of crime names using regex</li>
+                    <li><a href="https://www.rdocumentation.org/packages/choroplethrZip/versions/1.5.0/topics/df_pop_zip">2012 US Population Per Zipcode dataset</a>: R's local data library to access 2012 population statistics, using the following command: data(df_pop_zip)</li>
+                    <li><a href="https://www.census.gov/geo/maps-data/data/gazetteer2015.html">2015 U.S. Gazetteer Map Data / US Census Department Geographic dataset:</a> Although I aggregated this data into the final data table, it did not go into the final model</li>
+                  </ul>
+
+                  <h6>Here is the final data table</h6>
+
+                  <% include ../webcontent_partials/homepage/statsProject_data_table.ejs %>
+
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-12">
+                  <h3>One of my favorite data visualizations is the "choropleth map", i.e. heatmap.</h3>
+                  <h6>Here's a choropleth map of Assault frequency for zipcodes in Austin, TX (data is annual assaults reported in 2014).</h6>
+
+                  <img src="/images/portfolio/stats_project/austin assault choropleth map.png" alt="statistics predictive model with multilinear regression" style="width:100%">
+
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-12">
+                  
+                  <h4>The process:</h4>
+                  <br>I collected datasets for zipcodes in Austin showing the economic indicators mentioned above for each zipcode (the median income, median rent, and percentage of residents in poverty for 36 Austin, Texas zipcodes).  I then cross-referenced these zipcodes with a dataset of about 40,000 crimes that occured in Austin in a particular year.  I excluded all zipcodes except those for which I had data for both economic indicators and crimes.  I then counted up crimes per category (6 categories total, after similfying category names: Assault, Burglary, Robbery, Theft, Homicide, and Rape), per zipcode.  With these two datasets showing economic &amp; crime data for particular zipdoes, we are able to produce an equation showing the degree of confidence with which we can predict rates of crime based on the chosen economic indicators.
+                  <br><br>
+                  <b>The results:</b>
+                  <b>According to coefficient of determination for the various models, we can say that about 70%-80% of the variability in these crimes&mdash;Assault, Burglary, and Robbery (for the zip codes examined) can be explained by the variability in the selected economic indicators.</b>  That's a pretty strong connection which means that these three types of crimes can be relatively well explained based on these three economic indicators (income, rent, and % of population below poverty)! Based on this study, the other types of crimes examined (homicide and rape) cannot be reliably predicted based on economic indicators&ndash; this means they're less determined by economic health of a neighborhood, and more by other unknown/non-analyzed factors.
+                  <br><br>The ultimate purpose of the project was to create a statistical model from the "training" dataset &ndash; i.e. a model that explains the data &ndash; and then to test the "test" dataset upon the training model, to check how well the model can be used to predict crime rates based on the economic factors studied.  Below are some graphics showing how well the model predicts crime based on the economic factor inputs from the training dataset. <b>The green lines</b> show the boundaries of a 95% confidence interval (we can be "95% certain" that this interval contains the true mean of the population, which we use the data in the test group to simulate a sample of.), with <b>the redline</b> being the predicted average.  <b>The black line</b> represents the actual test data used.  As you can see, the green lines capture the majority of the datapoints from the test data, showing that this model (using economic data to explain crimes) does quite a good job of some of these predicting specific crimes (assault, robbery, and especially burglary).<br><br>
+                  I did most of the programming for the project, and the final script can be viewed <a href="https://github.com/pmeaney/r_projects/blob/master/vFinalVersion_projectScript.R">here</a>.  
+                  </p>
+
+
+                </div>
+              </div>
+
+    
+
+
+              <div class="row">
+                <div class="col-12">
+                  <h3>Why do I enjoy statistical analysis?</h3>
+                  <p class="lead">I enjoy statistical analysis because it is a creative, fun, puzzle-solving way of thinking which allows us to explain the world through data in meaningful, measurable ways.<br><br>Throughout this particular statistics course ("Advanced Statistical Methods"), I noticed my thought processes changing.  I noticed this especially while working on my statistics project, and for me, I think I really changed between the day I walked into the class, and the day class ended. I realized then that I had began to think more analytically and from a more data-driven, input-output, and equation-based perspective.  Crafting equations from data is solving a puzzle&ndash; a puzzle where you can produce real and fascinating answers from apparently unrelated datasets! It's quite fun once you get into it!
+                  </p>
+                  <p>
+                  In addition to changing the way you think, and having fun analyzing a real life puzzle... practicing statistics via scripting will improve your programming abilities!  Learning R really helped me become a better programmer because before I could start playing with data, I spent plenty of time learning R's data types and data structures, which was useful when it came time to produce an analysis project and is applicable to programming.</p>
+                  <h6>I really like statistics in general for the contribution that the multivariate analysis makes when analyzing any kind of ideas, really. It is quite handy for empirically analyzing all sorts of ideas: whether business decisions, scientific & engineering projects, economic theories, or policy arguments.  Being able to formulate an equation or model based on data is a skill in its own right.<h6>
+                </div>
+              </div>
+
+    
+    
+
+            </div>
+          </div>
+
+
+          
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- #################################################################################### -->
+    <!-- #################################################################################### -->
+    <!-- Modal content -- biz-skills -->
+    <!-- #################################################################################### -->
+    <!-- #################################################################################### -->
+
+    <div class="modal fade biz-skills" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content p-3">
+          <div class="modal-header">
+                  <h5 class="modal-title quotation-header">Hey, he's got business skills!</h5>
+                  <button type="button" class="close-bs4" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+          <p>In addition to my technology skills, I also offer the following business skills:</p>
+          <ul>
+            <li>CRM & ERP Software</li>
+            <li>Accounting statements and budgets</li>
+            <li>Marketing Strategy planning & management</li>
+            <li>Microsoft Office: SQL Server, Excel, SharePoint, Visio</li>
+            <li>Adobe CS6: Illustrator, Photoshop (great for designing systems diagrams)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+
+    <!-- #################################################################################### -->
+    <!-- #################################################################################### -->
+    <!-- Modal content -- tech-interests -->
+    <!-- #################################################################################### -->
+    <!-- #################################################################################### -->
+
+    <div class="modal fade tech-interests" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content p-3">
+          <div class="modal-header">
+                  <h5 class="modal-title quotation-header">A smattering of personal technology goals</h5>
+                  <button type="button" class="close-bs4" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <p>Here are some of my personal technology interests.</p>
+          <ul>
+            <li>Force Directed visualizations with D3 for exploring business data (such as customer hierarchies from Dun & Bradstreet data)</li>
+            <li>React for frontend development</li>
+            <li>Sensor system dashboards in D3 (micropython on ESP wifi microcomputers, with an express/psql backend and react/d3 frontend)</li>
+            <li>Basic computer vision for visual predictions (statistics & computer vision in python)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+  </body>
+
+
+
+  <% include ../webcontent_partials/included_prefab_js_assets.ejs %>
+
+<!-- <script src="https://d3js.org/d3.v4.min.js"></script> -->
+
+  
+
+    <script>
+    $(document).ready(()=>{
+
+  
+
+// "[data-toggle='statsData']"
+     $('.assault-button').one("click", function() {
+
+        // selected item will be the type of crime within button
+        var selected_item = $(this).data("target");
+
+
+        launchDataGet(selected_item)
+
+        //     // temp
+        //     var data = [ { fit: 0.0015,
+        //   lwr: 0.0003,
+        //   upr: 0.0027,
+        //   'AustinTestDataset.assaultPerCapita': 0.0023 },
+        // { fit: 0.0035,
+        //   lwr: 0.0019,
+        //   upr: 0.0051,
+        //   'AustinTestDataset.assaultPerCapita': 0.0022 },
+        // { fit: 0.0023,
+        //   lwr: 0.0011,
+        //   upr: 0.0034,
+        //   'AustinTestDataset.assaultPerCapita': 0 },
+        // { fit: 0.005,
+        //   lwr: 0.0027,
+        //   upr: 0.0073,
+        //   'AustinTestDataset.assaultPerCapita': 0 },
+        // { fit: 0.0062,
+        //   lwr: 0.0041,
+        //   upr: 0.0083,
+        //   'AustinTestDataset.assaultPerCapita': 0.0044 },
+        // { fit: 0.0027,
+        //   lwr: 0.0017,
+        //   upr: 0.0036,
+        //   'AustinTestDataset.assaultPerCapita': 0.0031 } ]
+
+            //   for(i = 0; i < data.length; i++ ){
+            // // console.log('data[i] is', data[i])
+
+            //   var upr_adjusted =  (+data[i].upr * 1000)
+            //   var fit_adjusted = (+data[i].fit * 1000)
+            //   var lwr_adjusted = (+data[i].lwr * 1000)
+            //   var test_adjusted = (+data[i]['AustinTestDataset.assaultPerCapita'] * 1000)
+
+
+            //   var row = 
+            //   `<tr>
+            //     <td>${ upr_adjusted }</td>
+            //     <td>${ fit_adjusted }</td>
+            //     <td>${ lwr_adjusted }</td>
+            //     <td>${ test_adjusted }</td>
+            //     </tr>
+            //   `
+
+            //   $('#target').append(row)
+            // }
+      });
+
+    })
+
+
+    var launchDataGet = function(dataCategory){
+
+      var get_call_url_location;
+      if (env_root_url=='http://localhost:3000') {
+        get_call_url_location = 'http://localhost:3000/stats_data/'
+      } else {
+        get_call_url_location = 'https://pmeaney.com/stats_data_remote/'
+      }
+
+
+      $.get(get_call_url_location + dataCategory, function( data ) {
+
+        launchDataRender(data, dataCategory)
+
+         for(i = 0; i < data.length; i++ ){
+            // console.log('data[i] is', data[i])
+
+              var upr_adjusted =  (+data[i].upr * 1000)
+              var fit_adjusted = (+data[i].fit * 1000)
+              var lwr_adjusted = (+data[i].lwr * 1000)
+              var test_adjusted = (+data[i]['AustinTestDataset.assaultPerCapita'] * 1000)
+
+              var row = 
+              `<tr>
+                <td>${ upr_adjusted }</td>
+                <td>${ fit_adjusted }</td>
+                <td>${ lwr_adjusted }</td>
+                <td>${ test_adjusted }</td>
+                </tr>
+              `
+              $('#target').append(row)
+            }
+
+      })
+    }
+
+    var launchDataRender = function(jsonData, dataCategory){
+
+    var selectedSpaceToFill = '.graph-' + dataCategory + ''
+
+    // console.log('using d3 - max', d3.max(jsonData.map(function(d){return d.fit;})) );
+
+    // var fit_max = d3.max(jsonData.map(function(d){return d.fit;}))
+    // var fit_min = d3.max(jsonData.map(function(d){return d.fit;}))
+
+    // var lwr_max = d3.max(jsonData.map(function(d){return d.fit;}))
+    // var fit_min = d3.max(jsonData.map(function(d){return d.fit;}))
+    
+    // var fit_max = d3.max(jsonData.map(function(d){return d.fit;}))
+    // var fit_min = d3.max(jsonData.map(function(d){return d.fit;}))
+    
+    // var fit_max = d3.max(jsonData.map(function(d){return d.fit;}))
+    // var fit_min = d3.max(jsonData.map(function(d){return d.fit;}))
+    
+    // Extent -- looks potentially useful for determining scale of Y graph
+    // console.log('using d3 - extent', d3.extent(jsonData.map(function(d){return d.fit;})) );
+    // console.log('using d3 - min', d3.min(jsonData.map(function(d){return d.fit;})) );
+
+    var svgContainerWidth = 550
+    var svgContainerHeight = 450
+
+    var svgContainer = d3.select(selectedSpaceToFill).append("svg")
+      .attr("width", svgContainerWidth)
+      .attr("height", svgContainerHeight)
+      .style("border", "1px solid black");
+
+      var X_axis = d3.scaleLinear()
+                         .domain([1, 6])
+                         .range([0, 500]);
+
+
+      var Y_axis = d3.scaleLinear()
+                         .domain([10, 0])
+                         .range([0, 400]);
+      
+
+      var xAxisGroup = svgContainer.append("g")
+              .attr("transform", "translate (" + 20 + " 420)")
+                              .call(d3.axisBottom(X_axis));
+
+
+      var yAxisGroup = svgContainer.append("g")
+                      .attr("transform", "translate (" + 20 + " 20)")
+                              .call(d3.axisLeft(Y_axis));
+
+                    /* looks like x says: start 20 px right of axis, plus
+                     i * 100 px    (note: i is simply the datapoint index, 1 - 6)
+                     */
+      var lineFunction_fit = d3.line()
+                  .x(function(d,i) { return (20 + (i * 100)); })
+                  .y(function(d) { return d.fit * 6000 * 6.7; });
+            
+
+      /* 
+      Found this on stack overflow.. helped me figure out how to experiment with scale.  
+      (instead of -1, i started with -0.1 to try to keep the visual object in view)
+      this also helped: https://stackoverflow.com/questions/44022332/jquery-css-transform-scale-property-not-working?rq=1
+      $('.sc-bar').css('transform','scaleY(0.5)'); 
+
+      Need to change the line graph to someting like this:
+      $('#picture', svg.root()).attr('transform', 'scale(-1 1) translate(-200 0)'); // Flip along vertical axis
+      $('#picture', svg.root()).attr('transform', 'scale(1 -1) translate(0 -200)'); // Flip along horizontal axis
+       */
+              //The line SVG Path we draw
+      var lineGraph_fit = svgContainer.append("path")
+                                .attr("d", lineFunction_fit(jsonData))
+                                  .attr("stroke", "red")
+                                  .attr("stroke-width", 2)
+                                  .attr("fill", "none")
+                                  /* here, I begin experimenting with negative scale.  
+                                   However, it was important to keep the line in view by adjusting the translate
+                                   It was awesome to realize how this horizontal vs vertical reflection stuff works
+                                   hence, I wanted to commit this code so I remember how I figured this out... just by experimenting
+                                   */
+                                  // .attr("transform", "translate (" + 300 + " 150) scale(-0.3,0.3)")
+                                  // .attr("transform", "translate (" + 400 + " 350) scale(0.5,-0.5)")
+                                  // .attr("transform", "translate (" + 200 + " 350) scale(0.6,-0.6)")
+                                  // .attr("transform", "translate (" + 20 + " 350) scale(0.8,-0.8)")
+                                  .attr("transform", "translate (" + 0 + " 420) scale(1,-1)")
+
+      var lineFunction_lwr = d3.line()
+            .x(function(d,i) { return (20 + (i * 100)); })
+            .y(function(d) { return d.lwr * 6000 * 6.7; });
+      
+      //The line SVG Path we draw
+      var lineGraph_lwr = svgContainer.append("path")
+                                .attr("d", lineFunction_lwr(jsonData))
+                                  .attr("stroke", "lightgreen")
+                                  .attr("stroke-width", 2)
+                                  .attr("fill", "none")
+                                  .attr("transform", "translate (" + 0 + " 420) scale(1,-1)")
+
+      var lineFunction_upr = d3.line()
+            .x(function(d,i) { return (20 + (i * 100)); })
+            .y(function(d) { return d.upr * 6000 * 6.7; });
+      
+      //The line SVG Path we draw
+      var lineGraph_upr = svgContainer.append("path")
+                                .attr("d", lineFunction_upr(jsonData))
+                                  .attr("stroke", "lightgreen")
+                                  .attr("stroke-width", 2)
+                                  .attr("fill", "none")
+                                  .attr("transform", "translate (" + 0 + " 420) scale(1,-1)")
+
+       var lineFunction_test = d3.line()
+            .x(function(d,i) { return (20 + (i * 100)); })
+            .y(function(d) { return d['AustinTestDataset.assaultPerCapita'] * 6000 * 6.7; });
+      
+      //The line SVG Path we draw
+      var lineGraph_test = svgContainer.append("path")
+                                .attr("d", lineFunction_test(jsonData))
+                                  .attr("stroke", "black")
+                                  .attr("stroke-width", 2)
+                                  .attr("fill", "none")
+                                  .attr("transform", "translate (" + 0 + " 420) scale(1,-1)")
+
+
+              
+
+// this helped me understand... https://bl.ocks.org/pstuffa/26363646c478b2028d36e7274cedefa6
+
+
+
+}
+</script>
+</html>

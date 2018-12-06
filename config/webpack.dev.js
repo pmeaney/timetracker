@@ -72,9 +72,9 @@ module.exports = {
       }
     }),
     new Dotenv()
-    // ,
-    // new BundleAnalyzerPlugin({
-    //   generateStatsFile: true
-    // })
+    ,
+    new BundleAnalyzerPlugin({
+      generateStatsFile: true
+    })
   ]
 }

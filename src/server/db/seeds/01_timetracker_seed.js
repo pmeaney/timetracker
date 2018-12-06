@@ -10,13 +10,6 @@ timesheets,
 users, --> user instantiated
 user_profiles, --> user instantiated
 
-from node.js IRC - 05/15/2018 @ ~6pm
-shoky_ pdub: you need the insert to 'employees' to complete before inserting to 'projects' with the foreign key.  so you'd need to insert into 'projects' in a .then()
-shoky_ e.g. .then(() => Promise.all([... your inserts except to 'projects' here ...])).then(() => Promise.all([ knex('projects').insert(...) ]))
-shoky_ same for any other foreign key
-
---> i.e. he's saying 2 separate rounds of promises (assuming 1st round = no dependencies.  2nd round = those with dependencies on first round, etc.)
-
 */
 
 exports.seed = function(knex, Promise) {
@@ -62,10 +55,10 @@ exports.seed = function(knex, Promise) {
       ]),
 
       knex('employees').insert([
-        { firstName: 'George', lastName: 'Jefferson', phone: "123-456-7890", email: "email@gmail.com", pay: "20" },
-        { firstName: 'Bill', lastName: 'Smith', phone: "123-456-7890", email: "email@gmail.com", pay: "20" },
-        { firstName: 'James', lastName: 'Bond', phone: "123-456-7890", email: "email@gmail.com", pay: "20" },
-        { firstName: 'Sam', lastName: 'Anderson', phone: "123-456-7890", email: "email@gmail.com", pay: "20" },
+        { firstName: 'George', lastName: 'Jefferson', phone: "123-456-7890", email: "email@gmail.com", pay: "20", address: "testingUser default address" },
+        { firstName: 'Bill', lastName: 'Smith', phone: "123-456-7890", email: "email@gmail.com", pay: "20", address: "testingUser default address" },
+        { firstName: 'James', lastName: 'Bond', phone: "123-456-7890", email: "email@gmail.com", pay: "20", address: "testingUser default address" },
+        { firstName: 'Sam', lastName: 'Anderson', phone: "123-456-7890", email: "email@gmail.com", pay: "20", address: "testingUser default address" },
       ])
     ]) // end first promise.all
     .then(() => {

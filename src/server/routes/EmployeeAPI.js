@@ -14,11 +14,12 @@ router.get('/', function (req, res, next) {
 
 // router.post('/test_post', EmployeeAPI_ctrl.test_post);
 
-// This route is for creating new timesheets, based on data from a selected activity.
 router.post('/timesheets/create', EmployeeAPI_ctrl.post_create_timesheet_toClockIn);
 
 router.put('/timesheets/update', EmployeeAPI_ctrl.put_update_timesheet_toClockOut);
 
 router.get('/activities/getPendingTasks/emp/:emp_id', EmployeeAPI_ctrl.get_PendingTasks_by_EmployeeID );
+
+router.post('/profile/uploadContactInfo', EmployeeAPI_ctrl.post_Profile_ContactInfo_by_EmployeeID);
 
 module.exports = router;

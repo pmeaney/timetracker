@@ -1,6 +1,7 @@
 import React from "react";
 import getLuxon_local_DateTime from "../lib/general_fns"
 import { connect } from 'react-redux'
+import { toggle_InfoWindow_isOpen_State } from './redux/actions'
 
 const DataTableTimesheets = (props) => {
   
@@ -16,7 +17,10 @@ const DataTableTimesheets = (props) => {
   const timesheet_end_date = item.timesheet_clockout ? getLuxon_local_DateTime(item.timesheet_clockout, 'date') : null
 
     return (
-      <tr key={item.timesheet_id}>
+      <tr 
+        key={item.timesheet_id}
+        onClick={props.toggle_InfoWindow_isOpen_State.bind(this, i)}
+      >
         <td>{item.timesheet_id}</td>
         <td>{item.firstName} {item.lastName}</td>
         <td>{activity_begin_time} {activity_begin_date}</td>
@@ -25,6 +29,8 @@ const DataTableTimesheets = (props) => {
       </tr>
     )
   })
+
+  // onClick = { props.toggle_InfoWindow_isOpen_State.bind(this, i) } 
 
 
   return (
@@ -52,6 +58,8 @@ const mapStateToProps = (store) => ({
   infoWindows: store.infoWindows
 })
 
-const mapDispatchToProps = {}
+const mapDispatchToProps = {
+  toggle_InfoWindow_isOpen_State
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(DataTableTimesheets);

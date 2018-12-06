@@ -36,7 +36,7 @@ const visibilityToggler = (state = initialState, action) => {
         ...state,
         infoWindows: state.infoWindows.map((infoWindow, index) => {
           if (index === action.payload) {
-            console.log('Marker clicked, will toggle corresponding InfoWindow', index, action.payload)
+            console.log('Click received, will toggle corresponding InfoWindow', index, action.payload)
             return { isOpen: !state.infoWindows[index].isOpen }
           }
           return infoWindow
@@ -48,10 +48,7 @@ const visibilityToggler = (state = initialState, action) => {
         ...state,
         timesheetData: state.timesheetData.map((timesheet, index) => {
 
-          // console.log('timesheet', timesheet)
-          // console.log('index', index)
           if (timesheet.timesheet_id === action.payload1) {
-
             return {
               ...timesheet,
               timesheet_clockout:  action.payload2.timesheet_clockout,
@@ -60,7 +57,6 @@ const visibilityToggler = (state = initialState, action) => {
               timesheet_sub_type: action.payload2.timesheet_sub_type
             }
           }
-
           return timesheet
         })
       })

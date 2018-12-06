@@ -58,6 +58,7 @@ exports.up = function(knex, Promise) {
 	  table.text('lastName'); 
 	  table.text('phone'); 
 	  table.text('email'); 
+	  table.text('address'); 
 	  table.integer('pay'); 
 	  table.timestamps(true, true);// this automatically sets 'created at' and 'updated at' timestamps
 	}),

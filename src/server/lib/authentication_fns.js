@@ -1,7 +1,6 @@
 
 const Promise = require('bluebird');
 
-// knex
 const dotenv = require("dotenv").config({ path: '../.env'}); // access .env dotfile settings
 const environment = process.env.NODE_ENV;
 const knex_config = require('../knexfile');
@@ -22,7 +21,7 @@ const hashPassword = (password) => {
 	return bcrypt.hash(password, saltRounds)
 }
 
-// this shows useful example:
+// this shows useful examples of promise chaining:
 // https://gist.github.com/joepie91/4c3a10629a4263a522e3bc4839a28c83
 
 const getUserByEmail = (email) => {
@@ -30,7 +29,6 @@ const getUserByEmail = (email) => {
 	        return database("users").where({ user_email: email });
     })
 }
-
 
 const createUser = (email, hashed_password) => {
 
@@ -45,13 +43,7 @@ const createUser = (email, hashed_password) => {
 	})
 }
 
-
-
-// try this function
-// https://www.abeautifulsite.net/hashing-passwords-with-nodejs-and-bcrypt
 const checkPasswordForEmail = (password, email)=> {
-
-	// return Promise.try((email) => {
 	return Promise.try(() => {
 	        return database("users").where({ user_email: email });
 	}).then((user)=>{
@@ -61,51 +53,21 @@ const checkPasswordForEmail = (password, email)=> {
 			return false
 		} else {
 
-		console.log('user from user_fns of user lookup is ', user)
-		// compare hashed version of the password input via the form
-		// with the [looked-up-by-email] user's hashed password
+			console.log('user from user_fns of user lookup is ', user)
+			// compare hashed version of the password input via the form
+			// with the [looked-up-by-email] user's hashed password
 
-		return Promise.try(() => {
-
-			return bcrypt.compare(password, user[0]["hashed_password"])
-
-			  if(res) {
-			   // Passwords match
-			   console.log('[Msg from user_fns.js] we have a match')
-			   return true
-			  } else {
-			   // Passwords don't match
-			   console.log('[Msg from user_fns.js] we do not have a match')
-			   return false
-			  } 
-
-		})
+			return Promise.try(() => {
+				return bcrypt.compare(password, user[0]["hashed_password"])
+			})
 		}
-
 	})
 }
 
 // need to do the same with the resume filename   !!!!!!!  #  # # # # #
 const uploadProfilePhoto_filename = (user_id, user_profile_imageFilename) => {
 
-// // Just need to: 1. lookup by user_id from session, and B. insert/update
-
-/* 
-
-prob need to "insert" . "where" thing = thing
-
-	return Promise.try(() => {
-	        return database("user_profiles").where({ user_id: user_id });
-	    }).then  .... not sure yet
-
-
-	return Promise.try(() => {
-		return database('user_profiles').insert([
-			{	user_profile_imageFilename: user_profile_imageFilename	}
-		])
-	})
-
-*/
+ // Just need to: 1. lookup by user_id from session, and B. insert filename string (will need another version for updating)
 
 }
 
