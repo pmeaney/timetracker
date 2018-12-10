@@ -8,6 +8,9 @@ const BrotliPlugin = require("brotli-webpack-plugin")
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const Dotenv = require('dotenv-webpack');
 
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+
+
 module.exports = env => {
   return {
     entry: {
@@ -91,11 +94,14 @@ module.exports = env => {
         }
       }),
       // new UglifyJsPlugin(),
-      new CompressionPlugin({
-        algorithm: "gzip"
-      }),
-      new BrotliPlugin(),
-      new Dotenv()
+      // new CompressionPlugin({
+      //   algorithm: "gzip"
+      // }),
+      // new BrotliPlugin(),
+    //   new Dotenv(),
+    //       new BundleAnalyzerPlugin({
+    //   generateStatsFile: true
+    // })
     ]
   }
 }

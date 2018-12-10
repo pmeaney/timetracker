@@ -2,10 +2,10 @@ const Promise = require('bluebird')
 const merge = require('array-object-merge')
 
 // knex 
-// const dotenv = require("dotenv").config({ path: '../.env' });
-// const environment = process.env.NODE_ENV
-// const knex_config = require('../knexfile');
-// const database = require('knex')(knex_config[environment]);
+const dotenv = require("dotenv").config({ path: '../.env' });
+const environment = process.env.NODE_ENV
+const knex_config = require('../knexfile');
+const database = require('knex')(knex_config[environment]);
 
 const Api_fns = require('../lib/api_fns')
 
@@ -211,7 +211,7 @@ const get_PendingTasks_by_EmployeeID = (req, res) => {
 
               /* //*: This is to repopulate the test user's timesheet/activity queue. */
               // the numeric value is the new interval, which gets set if the check runs as false
-              Api_fns.checkIfNeedToRepopulateTaskQueue(param_emp_id_asInt, 120000)
+              Api_fns.checkIfNeedToRepopulateTaskQueue(param_emp_id_asInt)
             })
         })
     })

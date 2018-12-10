@@ -1,15 +1,19 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 const validator = require('express-validator');
+const helmet = require('helmet')
 const flash = require('express-flash');
-const dotenv = require('dotenv').config();
 const multer = require('multer'); // file storing middleware
 
+const dotenv = require('dotenv').config({ path: './.env' });
+
 // ############## Knex #####################
-const knex = require('knex');
+// const knex = require('knex');
+console.log('environment will be', process.env.NODE_ENV)
+console.log('current time is', new Date())
 const environment = process.env.NODE_ENV;
 const knex_config = require('./knexfile');
 const database = require('knex')(knex_config[environment]);
@@ -18,6 +22,7 @@ const database = require('knex')(knex_config[environment]);
 const session = require('express-session');
 const KnexSessionStore = require('connect-session-knex')(session);
 
+console.log('environment is', environment)
 const config = require("./config.json");
 
 // ############## Router  #####################
@@ -85,6 +90,7 @@ if (!isProd) {
 // end: stuff for frontend development (webpack)
 
 const middleware = [
+  helmet(),
   logger('dev'),
   express.json(),
   express.urlencoded({ extended: false }),
@@ -92,6 +98,9 @@ const middleware = [
   validator(),
   express.static(path.join(__dirname, 'public')),
   session({
+    secure: true,
+    httpOnly: true,
+    domain: 'pmeaney.com',
     secret: config.sessions.secret,
     resave: false,
     saveUninitialized: false,
@@ -122,7 +131,8 @@ app.use(function(req, res, next) {
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  // res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.error = req.app.get('env') === 'development' ? err : err;
 
   // render the error page
   res.status(err.status || 500);

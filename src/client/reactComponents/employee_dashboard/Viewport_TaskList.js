@@ -3,6 +3,14 @@ import { toggle_Visibility_Viewport_TaskList } from "./redux/actions"
 import { connect } from 'react-redux'
 import axios from "axios"
 import getLuxon_local_DateTime from "../lib/general_fns"
+import ModalAddNewActivity from './ModalAddNewActivity'
+
+// import { library } from '@fortawesome/fontawesome-svg-core';
+// import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// library.add(faPlusCircle);
+
 
 class Viewport_TaskList extends Component {
   constructor() {
@@ -21,6 +29,9 @@ class Viewport_TaskList extends Component {
     this.HandleClick_Task_ClockIn_or_ClockOut = this.HandleClick_Task_ClockIn_or_ClockOut.bind(
       this
     );
+    this.HandleClick_Create_UnscheduledTimesheet = this.HandleClick_Create_UnscheduledTimesheet.bind(
+      this
+    );
   }
   
   componentWillMount() {
@@ -28,7 +39,8 @@ class Viewport_TaskList extends Component {
     const existingTimesheets = []
     const newTasks = []
 
-    axios.get('http://localhost:3000/emp_api/activities/getPendingTasks/emp/2')
+      // Going to be working with employee_id 2, as the test employee user account
+    axios.get('/emp_api/activities/getPendingTasks/emp/2')
       .then((response) => {
         response.data.map((obj,i) => {
           if (Object.keys(obj).includes("timesheet_id")) {
@@ -62,6 +74,11 @@ class Viewport_TaskList extends Component {
     this.props.toggle_Visibility_Viewport_TaskList(false); // visibility -> false
   }
 
+  HandleClick_Create_UnscheduledTimesheet(e) {
+    // e.stopPropagation(); // stop bubbling up to parent div
+    console.log('clicked HandleClick_Create_UnscheduledTimesheet')
+  }
+
 
   HandleClick_Task_ClockIn_or_ClockOut(isActiveTimesheet, activity_id, e) {
     this.setState({
@@ -79,7 +96,7 @@ class Viewport_TaskList extends Component {
       // this.setState({
       //   loading: true,
       //   clicked_activity_id: activity_id }, () => {
-      axios.post('http://localhost:3000/emp_api/timesheets/create', {
+      axios.post('/emp_api/timesheets/create', {
         activity_id: activity_id,
         timesheet_clockin: clockInTime,
         latitude: latitude,
@@ -130,7 +147,7 @@ class Viewport_TaskList extends Component {
       var clockOutTime = new Date()
       console.log('Clocking Out... at time: ', clockOutTime, ' and location: ', latitude, ', ', longitude)
 
-      axios.put('http://localhost:3000/emp_api/timesheets/update', {
+      axios.put('/emp_api/timesheets/update', {
         activity_id: activity_id,
         timesheet_clockout: clockOutTime,
         latitude: latitude,
@@ -312,11 +329,14 @@ class Viewport_TaskList extends Component {
     return (
       <article className="message topSpacing">
         <div className="message-header">
-          <p>Task List</p>
+          <span className="customPaddingForText">Task List</span>
+          <span className="customSpan">
           {/* New feature idea: Add a button which is a gears icon.  It has dropdown content dropdown showing recently clocked out timesheets, allowing the user to re-open a clockedout timesheet to add a new clockedout time */}
+            <ModalAddNewActivity />
+          </span>
           <button 
             className="delete" 
-            aria-label="delete"
+            aria-label="close_viewport"
             onClick={
               e => this.HandleClick_CloseButton_VisibilityToggle_Viewort_TaskList(e)
             }

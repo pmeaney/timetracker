@@ -15,9 +15,11 @@ import { compose, withProps } from "recompose";
 
 import { connect } from 'react-redux'
 import { toggle_InfoWindow_isOpen_State } from './redux/actions'
+import { GMAPS_API } from "babel-dotenv"
 
-const apiKey = process.env.GMAPS_API.toString()
-
+// const apiKey = process.env.GMAPS_API.toString()
+const apiKey = GMAPS_API.toString()
+console.log('google maps api key is', apiKey)
 
 const MapWithPlaces = (props) => {
   console.log('props is', props)

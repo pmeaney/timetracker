@@ -7,12 +7,15 @@ const DataTableTimesheets = (props) => {
   
   const list = props.timesheetData.map((item, i) => {
 
-  const activity_begin_time = getLuxon_local_DateTime(item.activity_datetime_begin, 'time')
-  const activity_begin_date = getLuxon_local_DateTime(item.activity_datetime_begin, 'date')
+  // if timesheet's scheduled activity has a start time, display that scheduled start time in a readable format.  otherwise, display null
+  const activity_begin_time = item.activity_datetime_begin ? getLuxon_local_DateTime(item.activity_datetime_begin, 'time') : null
+  const activity_begin_date = item.activity_datetime_begin ? getLuxon_local_DateTime(item.activity_datetime_begin, 'date') : null
 
+  // timesheet must have a start time, so no conditional check is necessary
   const timesheet_begin_time = getLuxon_local_DateTime(item.timesheet_clockin, 'time')
   const timesheet_begin_date = getLuxon_local_DateTime(item.timesheet_clockin, 'date')
 
+  // if timesheet's has an end time (in which case it is clocked out), display that end time in a readable format.  otherwise, display null
   const timesheet_end_time = item.timesheet_clockout ? getLuxon_local_DateTime(item.timesheet_clockout, 'time') : null
   const timesheet_end_date = item.timesheet_clockout ? getLuxon_local_DateTime(item.timesheet_clockout, 'date') : null
 

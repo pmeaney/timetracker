@@ -6,6 +6,7 @@
 **/.Rhistory
 
 **/.env
+**/.pgpass
 **/config.json
 
 **/testScripts

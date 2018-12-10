@@ -2,10 +2,10 @@ const Promise = require('bluebird')
 const merge = require('array-object-merge')
 
 // knex 
-// const dotenv = require("dotenv").config({ path: '../.env' });
-// const environment = process.env.NODE_ENV
-// const knex_config = require('../knexfile');
-// const database = require('knex')(knex_config[environment]);
+const dotenv = require("dotenv").config({ path: '../.env' });
+const environment = process.env.NODE_ENV
+const knex_config = require('../knexfile');
+const database = require('knex')(knex_config[environment]);
 
 const Api_fns = require('../lib/api_fns')
 const General_fns = require('../lib/general_fns')
@@ -55,29 +55,7 @@ EmployeeAPI_EventsEmitter.on('message', data => {
           timesheet_sub_type: 'updated_timesheet',
         })
       }
-
-      // if (data.timesheet_type === 'new_timesheet'){
-      //   console.log('new_timesheet received')
-      //   AdminAPI_EventStream_EventEmitter.emit('message', {
-      //     title: 'livestream_timesheet',
-      //     timesheet_type: 'new_timesheet',
-      //     timesheet: resultDataFromLookup[0]
-      //   })
-      // }
-
-      // if (data.timesheet_type === 'updated_timesheet') {
-      //   console.log('updated_timesheet received')
-
-      //   AdminAPI_EventStream_EventEmitter.emit('message', {
-      //     title: 'livestream_timesheet',
-      //     timesheet_type: 'updated_timesheet',
-      //     timesheet: resultDataFromLookup[0]
-      //   })
-      // }
-
-
     })
-    
   } else {
     console.log('Error: no time sheet exists for that lookup')
   }
@@ -93,7 +71,7 @@ EmployeeAPI_EventsEmitter.on('message', data => {
 
 const AdminEventStream = (req, res) => { 
 
-  res.set({
+  res.status(200).set({
     'Content-Type': 'text/event-stream',
     'Cache-Control': 'no-cache',
     'Connection': 'keep-alive'
@@ -105,14 +83,14 @@ const AdminEventStream = (req, res) => {
     console.log('data in step 4 is', data)
     if (data.timesheet_main_type === 'livestream_timesheet') {
       // The string-type data to send to admin eventstream:
-      res.write(`event: message\n`);
-      res.write(`data: ${JSON.stringify(data)}\n\n`);
+      // res.write(`event: message\n`);
+      // res.write(`data: ${JSON.stringify(data)}\n\n`);
+      res.write(`data: ${JSON.stringify(data)}\r\n`);
     }
     // res.write(`event: message\n`);
     // res.write(`data: ${JSON.stringify(data)}\n\n`);
     // res.status(200).json(data) ;
   });
-
 }
 
 

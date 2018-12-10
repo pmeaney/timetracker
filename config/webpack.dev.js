@@ -1,6 +1,7 @@
 const path = require("path")
 const webpack = require("webpack")
-const Dotenv = require('dotenv-webpack');
+const Dotenv = require('dotenv-webpack')
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 module.exports = {
   entry: {
@@ -73,8 +74,11 @@ module.exports = {
     }),
     new Dotenv()
     ,
-    new BundleAnalyzerPlugin({
-      generateStatsFile: true
-    })
+    // import at top:
+    // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+    // new BundleAnalyzerPlugin({
+    //   generateStatsFile: true
+    // })
+    
   ]
 }

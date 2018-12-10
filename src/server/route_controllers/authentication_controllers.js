@@ -4,6 +4,12 @@ const Promise = require('bluebird')
 
 const Auth_fns = require('../lib/authentication_fns')
 
+// knex 
+const dotenv = require("dotenv").config({ path: '../.env' });
+const environment = process.env.NODE_ENV
+const knex_config = require('../knexfile');
+const database = require('knex')(knex_config[environment]);
+
 
 // ****************************************
 // ***            Registration

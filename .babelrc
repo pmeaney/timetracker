@@ -11,7 +11,23 @@
     ],
     "@babel/preset-react"
   ],
-  "plugins": ["@babel/transform-runtime",
+  "plugins": [[
+      "babel-plugin-dotenv",
+      {
+        "replacedModuleName": "babel-dotenv"
+      }
+    ],
+    "@babel/transform-runtime",
               "react-hot-loader/babel",
-            "@babel/plugin-proposal-class-properties"]
+            "@babel/plugin-proposal-class-properties",
+          [
+            "transform-imports",
+            {
+              "@fortawesome/free-solid-svg-icons": {
+                "transform": "@fortawesome/free-solid-svg-icons/${member}",
+                "skipDefaultConversion": true
+              }
+            }
+          ]
+        ]
 }

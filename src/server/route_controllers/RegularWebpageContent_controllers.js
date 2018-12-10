@@ -1,4 +1,4 @@
-
+var R = require("r-script");
 /* 
   ! Need to add the R script route and make sure it gets pinged corectly on front end
  */

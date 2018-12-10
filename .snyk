@@ -1,0 +1,33 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.13.1
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  'npm:braces:20180219':
+    - babel-cli > chokidar > anymatch > micromatch > braces:
+        reason: None given
+        expires: '2019-01-08T02:54:00.573Z'
+  'npm:chownr:20180731':
+    - npm > chownr:
+        reason: None given
+        expires: '2019-01-08T02:54:00.574Z'
+    - npm > tar > chownr:
+        reason: None given
+        expires: '2019-01-08T02:54:00.574Z'
+    - webpack-dev-server > chokidar > fsevents > node-pre-gyp > tar > chownr:
+        reason: None given
+        expires: '2019-01-08T02:54:00.574Z'
+    - babel-cli > chokidar > fsevents > node-pre-gyp > tar > chownr:
+        reason: None given
+        expires: '2019-01-08T02:54:00.574Z'
+    - webpack > watchpack > chokidar > fsevents > node-pre-gyp > tar > chownr:
+        reason: None given
+        expires: '2019-01-08T02:54:00.574Z'
+  'npm:mem:20180117':
+    - npm > libnpx > yargs > os-locale > mem:
+        reason: None given
+        expires: '2019-01-08T02:54:00.574Z'
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  'npm:lodash:20180130':
+    - ejs-loader > lodash:
+        patched: '2018-12-09T02:49:44.996Z'

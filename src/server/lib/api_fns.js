@@ -358,9 +358,9 @@ const populateTestUserData = (testUserID_forRepopulation) => {
 
 
 
-const checkIfNeedToRepopulateTaskQueue = (employee_id_repopTaskQueue, newInterval) => {
+const checkIfNeedToRepopulateTaskQueue = (employee_id_repopTaskQueue) => {
 
-	var interval = 30000
+	var interval = 180000
 
 	setInterval(() => {
 		console.log('[lib/Api_fns.js] running checkIfNeedToRepopulateTaskQueue with emp id', employee_id_repopTaskQueue)
@@ -382,9 +382,8 @@ const checkIfNeedToRepopulateTaskQueue = (employee_id_repopTaskQueue, newInterva
 							populateTestUserData(employee_id_repopTaskQueue)
 						})
 					} else {
-						console.log('[lib/Api_fns.js] no need to repopulate activities-- the queue is not empty. Gonna set timer to 2 minutes instead of 30 seconds')
+						console.log('[lib/Api_fns.js] no need to repopulate activities-- the queue is not empty.')
 						// if function isnt run, lets make the timer last longer 
-						interval = newInterval
 
 					}
 				})

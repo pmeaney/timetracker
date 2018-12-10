@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { toggle_Visibility_Viewport_Profile } from "./redux/actions"
-import ProfileForm from './profile_form/Form_profileSimple'
+import FormEmployeeProfile from './forms/Form_profile'
 
 class Viewport_Profile extends Component {
 
@@ -37,7 +37,7 @@ class Viewport_Profile extends Component {
             ></button>
           </div>
           <div className="message-body">
-            <ProfileForm />
+            <FormEmployeeProfile />
           </div>
         </article>
       </div>

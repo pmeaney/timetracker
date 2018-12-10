@@ -81,7 +81,7 @@ const get_userDashboard_byUserID = function (req, res, next) {
       data: { user_id: req.session.user_id, user_type: req.session.user_type, user_email: req.session.user_email },
       errors: {},
       // env: process.env.NODE_ENV,
-      gmaps_api_key: process.env.GMAPS_API.toString()
+      // gmaps_api_key: process.env.GMAPS_API.toString()
     })
 
   } else {

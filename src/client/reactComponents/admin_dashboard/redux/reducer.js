@@ -6,7 +6,7 @@ const initialState = {
   infoWindows: []
 }
 
-const visibilityToggler = (state = initialState, action) => {
+const reducer = (state = initialState, action) => {
   console.log("Reduce: ", action);
 
   switch (action.type) {
@@ -66,4 +66,4 @@ const visibilityToggler = (state = initialState, action) => {
   }
 }
 
-export default visibilityToggler
+export default reducer

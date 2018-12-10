@@ -7,7 +7,7 @@ import PlacesAutocomplete, {
   getLatLng,
 } from 'react-places-autocomplete';
 
-class Viewport_Profile extends Component {
+class FormContactInfo extends Component {
   constructor(props) {
     super(props);
 
@@ -156,7 +156,7 @@ class Viewport_Profile extends Component {
             </div>
 
             <div className="column">
-              <p>Space for image upload or additional profile info</p>
+              <p>[ image upload ]</p>
 
             </div>
 
@@ -168,4 +168,4 @@ class Viewport_Profile extends Component {
   }
 }
 
-export default Viewport_Profile
+export default FormContactInfo

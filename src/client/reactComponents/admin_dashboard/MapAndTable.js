@@ -17,6 +17,13 @@ class MapAndTable extends React.Component {
   }
 
   /* 
+
+  try this:
+  https://auth0.com/blog/developing-real-time-web-applications-with-server-sent-events/
+  it uses "eventsource.onmessage"
+  however, it has this.SomeFn instead of just SomeFn
+  (i.e. maybe I need some 'this' binding)
+  
   MapAndTable ------
     I dont need props here, just the dispatch functions
   cWM --
@@ -48,7 +55,7 @@ class MapAndTable extends React.Component {
   componentWillMount() {
     console.log('[MapAndTable cWM] -- componentWillMount')
 
-    axios.get('http://localhost:3000/admin_api/timesheets')
+    axios.get('/admin_api/timesheets')
       .then(response => {
         var dataLength = response.data.length
         var infoWindowObj = {isOpen: false}
@@ -63,35 +70,46 @@ class MapAndTable extends React.Component {
   componentDidMount() {
     console.log('[MapAndTable cDM] -- componentDidMount')
 
-    var es = new EventSource('http://localhost:3000/admin_api/eventstream')
-      es.onmessage = (e) => {
-        const es_data = JSON.parse(e.data)
-        console.log('[MapAndTable cDM] admin event stream data', es_data)
 
-        if (es_data.timesheet_sub_type === "new_timesheet") {
-          var infoWindowObj = {isOpen: false}
-          this.props.concat_Additional_Timesheet_Data(es_data, infoWindowObj)
-        }
+    const es = new EventSource('/admin_api/eventstream')
 
-        if (es_data.timesheet_sub_type === "updated_timesheet") {
-          var clockOutData = {
-            timesheet_clockout: es_data.timesheet_clockout,
-            timesheet_clockout_lat: es_data.timesheet_clockout_lat,
-            timesheet_clockout_long: es_data.timesheet_clockout_long,
-            timesheet_sub_type: es_data.timesheet_sub_type // this simply overwrites "new_timesheet" with "updated_timesheet"
-          }
-          
-          var timesheet_id = es_data.timesheet_id
+    es.onopen = (e) => {
+      console.log('event source connection opened')
+    }
+    
+    // es.addEventListener('message',  (e) => {
 
-          this.props.update_ClockedOut_Timesheet_Data(timesheet_id, clockOutData)
-        }
+    //   const es_data = JSON.parse(e.data)
+    //   console.log('[MapAndTable cDM] [addEventHandler] admin event stream data', es_data)
+    // })
 
+    es.onmessage = (e) => {
+      const es_data = JSON.parse(e.data)
+      console.log('[MapAndTable cDM] admin event stream data', es_data)
+      if (es_data.timesheet_sub_type === "new_timesheet") {
+        // creates a new info window on the map, with default isOpen as false (meaning that its closed)
+        var infoWindowObj = {isOpen: false}
+        this.props.concat_Additional_Timesheet_Data(es_data, infoWindowObj)
       }
 
-      es.onerror = function (e) {
-        console.log("Error: EventSource failed for url: /eventstream (MapAndTable component, ComponentWillMount)");
-      };
-    
+      if (es_data.timesheet_sub_type === "updated_timesheet") {
+        var clockOutData = {
+          timesheet_clockout: es_data.timesheet_clockout,
+          timesheet_clockout_lat: es_data.timesheet_clockout_lat,
+          timesheet_clockout_long: es_data.timesheet_clockout_long,
+          timesheet_sub_type: es_data.timesheet_sub_type // this simply overwrites "new_timesheet" with "updated_timesheet"
+        }
+        
+        var timesheet_id = es_data.timesheet_id
+
+        this.props.update_ClockedOut_Timesheet_Data(timesheet_id, clockOutData)
+      }
+      es.close()
+    }
+
+    es.onerror = function (e) {
+      console.log("Error: EventSource failed for url: /eventstream (MapAndTable component, ComponentWillMount)");
+    };
   }
 
 
