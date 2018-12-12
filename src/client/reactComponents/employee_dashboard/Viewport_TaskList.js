@@ -40,7 +40,7 @@ class Viewport_TaskList extends Component {
     const newTasks = []
 
       // Going to be working with employee_id 2, as the test employee user account
-    axios.get('/emp_api/activities/getPendingTasks/emp/2')
+    axios.get('/emp_api/activities/getPendingTasks/')
       .then((response) => {
         response.data.map((obj,i) => {
           if (Object.keys(obj).includes("timesheet_id")) {

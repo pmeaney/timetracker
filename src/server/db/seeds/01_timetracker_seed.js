@@ -84,9 +84,9 @@ exports.seed = function(knex, Promise) {
             { activity_code_id: 8, project_id: 2, emp_assigned_by: 1, emp_assigned_to: 2, activity_notes: 'install drywall in champagne conference room', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z'},
             { activity_code_id: 8, project_id: 3, emp_assigned_by: 1, emp_assigned_to: 2, activity_notes: 'Testing...', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z'},
          
-            { activity_code_id: 8, project_id: 1, emp_assigned_by: 1, emp_assigned_to: 2, activity_notes: 'Testing 2...', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z'},
-            { activity_code_id: 8, project_id: 2, emp_assigned_by: 1, emp_assigned_to: 2, activity_notes: 'Testing 3...', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z'},
-            { activity_code_id: 8, project_id: 2, emp_assigned_by: 1, emp_assigned_to: 2, activity_notes: 'Testing 4...', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z'},
+            { activity_code_id: 8, project_id: 1, emp_assigned_by: 1, emp_assigned_to: 2, activity_notes: 'Testing 2...', activity_datetime_begin: '2018-03-07T16:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z'},
+            { activity_code_id: 8, project_id: 2, emp_assigned_by: 1, emp_assigned_to: 2, activity_notes: 'Testing 3...', activity_datetime_begin: '2018-03-06T15:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z'},
+            { activity_code_id: 8, project_id: 2, emp_assigned_by: 1, emp_assigned_to: 2, activity_notes: 'Testing 4...', activity_datetime_begin: '2018-03-05T14:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z'},
           ])
         ])
     })

@@ -36,7 +36,7 @@ const post_create_timesheet_toClockIn = (req, res) => {
   console.log('req.session', req.session)
   console.log('req.session.mock_employee_id', req.session.mock_employee_id)
 
-  // ! Getting a Mocked employee ID from session -- In production, change to actual employee ID from session
+  // ! Taking a Mocked employee ID from session -- In production, change to actual employee ID from session
 
   const employee_id_asInt = parseInt(req.session.mock_employee_id, 10)
   const activity_id_For_Timesheets_Lookup = parseInt(req.body.activity_id, 10)
@@ -73,9 +73,8 @@ const post_create_timesheet_toClockIn = (req, res) => {
 
         if (timesheets_per_activity_id.length < 1) {
           console.log('A timesheet for that activity_id does not exist in timesheets table')
-          /* ########### Here, we CREATE a new row in timesheets ############# */
+          /* ########### Here, we CREATE a new row in timesheets, since one does not yet exist for the specified activity_id  ############# */
           // ! PRODUCTION FLAG: use something like this  version of this constant in production:
-          // const param_emp_id_asInt = parseInt(req.params.emp_id, 10); 
           const mock_employee_id = 2
           const employee_id_asInt = parseInt(mock_employee_id, 10);
 
@@ -91,26 +90,18 @@ const post_create_timesheet_toClockIn = (req, res) => {
             )
           }).then((response) => {
             console.log('Successfully created a timesheet ', response)
-
-            // console.log('emitting an event with this response[0]: ', response[0])
-            // // Emit message to let frontend know
-            // emitter_Employee_Events.emit('message', {
-            //   title: 'New timesheet posted',
-            //   timesheet: response[0]
-            // });
-
+            
+            console.log('[Emitting event: new timesheet clockin] Step 1 - An employee just Clocked in, notifying Admin API')
+            EmployeeAPI_EventsEmitter.emit('message', {
+              title: 'timesheet',
+              timesheet_type: 'new_timesheet',
+              timesheet: response[0]
+            })
+          
             res.status(200).json(response);
             // Todo: should flash a temporary message to user showing their new timesheet ID & clock in timestamp
           return response
 
-        }).then((response) => {
-          // console.log('next step: do a lookup of timesheets with this timesheet data, and after that, emit an event to the eventstream: ', response)
-          console.log('[Emitting event: new timesheet clockin] Step 1 - An employee just Clocked in, notifying Admin API')
-          EmployeeAPI_EventsEmitter.emit('message', {
-            title: 'timesheet',
-            timesheet_type: 'new_timesheet',
-            timesheet: response[0]
-          })
         })
 
         } else {
@@ -133,7 +124,6 @@ const put_update_timesheet_toClockOut = (req, res) => {
     })
     .then((response) => {
       console.log('successfully updated this object ', response)
-      res.status(200).json(response);
 
       console.log('[Emitting event: updated timesheet -- clockout] Step 1 - An employee just Clocked in, notifying Admin API')
       EmployeeAPI_EventsEmitter.emit('message', {
@@ -141,6 +131,8 @@ const put_update_timesheet_toClockOut = (req, res) => {
         timesheet_type: 'updated_timesheet',
         timesheet: response[0]
       })
+
+      res.status(200).json(response);
       
     })
    
@@ -153,20 +145,21 @@ const put_update_timesheet_toClockOut = (req, res) => {
 // ********************************************************
 // ***   GET PENDING TASKS
 // ********************************************************
-
-
-
 const get_PendingTasks_by_EmployeeID = (req, res) => {
 
-  const param_emp_id_asInt = parseInt(req.params.emp_id, 10);
-  console.log('getting pending tasks for employee_id', param_emp_id_asInt)
+  // ! Taking a Mocked employee ID from session -- In production, change to actual employee ID from session
+  console.log('req.session.mock_employee_id', req.session.mock_employee_id)
+  const employee_id_asInt = parseInt(req.session.mock_employee_id, 10)
+
+
+  console.log('getting pending tasks for employee_id', employee_id_asInt)
 
   if (true) {
 
     return Promise.try(() => {
       return Promise.all([
-        Api_fns.getTimesheetsAndActivities_forWhich_Timesheets_haveNullClockOut_forEmployee(param_emp_id_asInt),
-        Api_fns.getActivities_forWhich_timesheetsDoNotExist(param_emp_id_asInt),
+        Api_fns.getTimesheetsAndActivities_forWhich_Timesheets_haveNullClockOut_forEmployee(employee_id_asInt),
+        Api_fns.getActivities_forWhich_timesheetsDoNotExist(employee_id_asInt),
       ])
         .then((result) => {
           // flatten the nested array which was returned  -- source: https://stackoverflow.com/questions/10865025/merge-flatten-an-array-of-arrays-in-javascript
@@ -211,7 +204,7 @@ const get_PendingTasks_by_EmployeeID = (req, res) => {
 
               /* //*: This is to repopulate the test user's timesheet/activity queue. */
               // the numeric value is the new interval, which gets set if the check runs as false
-              Api_fns.checkIfNeedToRepopulateTaskQueue(param_emp_id_asInt)
+              Api_fns.checkIfNeedToRepopulateTaskQueue(employee_id_asInt)
             })
         })
     })
@@ -254,9 +247,7 @@ const post_Profile_ContactInfo_by_EmployeeID = (req, res) => {
   }
 
   // insert the data into employees
-
   return Promise.try(() => {
-
     return Api_fns.postEmployeeProfileFormData(dataToPost)
 
   }).then((response) => {
@@ -264,42 +255,28 @@ const post_Profile_ContactInfo_by_EmployeeID = (req, res) => {
   })
 }
 
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!! Just some extra code for demo/testing
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-const test_get_project_byID = (req, res) => {
-  database('projects').where('project_id', req.params.id).select()
-    .then(project => {
-      if (project.length) {
-        // if it exists, send: 200 Status, and JSON data
-        res.status(200).json(project)
-      } else {
-        res.status(404).json({
-          error: `Could not find project with project_id ${req.params.id}`
-        })
-      }
-    })
-    .catch(error => {
-      res.status(500).json({ error })
-    })
+
+const get_RecentWorkActivityInfo_ByEmpID = (req, res) => {
+
+  // ! Taking a Mocked employee ID from session -- In production, change to actual employee ID from session
+  console.log('req.session.mock_employee_id', req.session.mock_employee_id)
+  const employee_id_asInt = parseInt(req.session.mock_employee_id, 10)
+
+  console.log('get_RecentWorkActivityInfo_ByEmpID for employee_id', employee_id_asInt)
+
+  if (true) {
+  return Promise.try(() => {
+    return Api_fns.get_Locations_byProjID_byEmployeeID(employee_id_asInt)
+    }).then((response) => {
+      console.log('get_RecentWorkActivityInfo_ByEmpID response is ', response)
+      res.status(200).json(response);
+    })  
+  }
+
 }
 
-const test_get_Timesheets_All = (req, res) => {
 
-  database('timesheets').select()
-    .then((item_set) => {
-      res.status(200).json(item_set);
-    })
-    .catch((error) => {
-      res.status(500).json({ error });
-    });
-}
-
-const test_post = function (req, res, next) {
-  var time = new Date()
-  console.log('req.body @ time', req.body, time)
-}
 
 
 module.exports = {
@@ -307,9 +284,6 @@ module.exports = {
   put_update_timesheet_toClockOut,
   get_PendingTasks_by_EmployeeID,
   EmployeeAPI_EventsEmitter,
-  post_Profile_ContactInfo_by_EmployeeID
-  // get_activities_by_EmployeeID,
-  // test_get_project_byID,
-  // test_get_Timesheets_All,
-  // test_post
+  post_Profile_ContactInfo_by_EmployeeID,
+  get_RecentWorkActivityInfo_ByEmpID
 }

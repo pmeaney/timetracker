@@ -1,7 +1,7 @@
-import { toggle_Visibility_Viewport_Maps } from "./actions"
 
 const initialState = {
   visibility_viewport_maps: false,
+  visibility_viewport_adminDataTable: false,
   timesheetData: [],
   infoWindows: []
 }
@@ -15,6 +15,12 @@ const reducer = (state = initialState, action) => {
       return (state = {
         ...state,
         visibility_viewport_maps: action.payload
+      })
+      
+    case "TOGGLE_VISIBILITY_VIEWPORT_ADMIN_DATA_TABLE":
+      return (state = {
+        ...state,
+        visibility_viewport_adminDataTable: action.payload
       })
 
     case "SETUP_INITIAL_TIMESHEET_DATA":

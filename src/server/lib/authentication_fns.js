@@ -72,16 +72,6 @@ const uploadProfilePhoto_filename = (user_id, user_profile_imageFilename) => {
 }
 
 
-
-
-
-
-
-
-
-
-
-
 module.exports = {
     hashPassword,
     getUserByEmail,

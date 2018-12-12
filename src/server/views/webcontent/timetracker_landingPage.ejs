@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>Timetracker project</title>
+
+
+  <!-- Currently CSS is in react bundle -->
+  <!-- <link href="/stylesheets/bootstrap4-compiled.css" rel="stylesheet" type="text/css"> -->
+  <link rel='stylesheet' href='/stylesheets/forDev_bulma.css' />
+  <link rel='stylesheet' href='/stylesheets/forDev_myStyles.css' />
+
+</head>
+
+<body>
+
+  <!-- Navigation bar -->
+  <%- include ../page_partials/navigationBar.ejs %>
+
+  <div class="container is-fluid topSpacing">
+
+    <div class="box customBoxSpacing">
+      <!-- Content -->
+      <div class="container CustomFormSpacing">
+        <h1 class="loginHeader">Timetracker project</h1>
+        <br>
+
+        <p>
+          Timetracker is a project for tracking timesheets of hourly workers.
+          <br><br>
+          In order to demo the app, you should use both of its user dashboards: one is for administrators and one is for employees.
+
+          <br><br>
+          Open the dashboard of test user, user 2, "Bill Smith"
+          <br>
+          <a href="#" class="button is-info">Demo employee user dashboard</a>
+          <br><br>
+          Open the administrator dashboard.
+
+          <a href="#" class="button is-info">Demo admin user dashboard</a>
+          <br><br>
+          Bug: <br>
+          Currently there is a small bug-- Auto-refresh works in development, but not in production.  You'll need to reload the admin's map dashboard or refresh the page in order to see an employee's newly clocked-in or clocked-out data.   Currently working finding the fix. 
+
+          <br><br>
+          Why create a time tracking project?
+          <br><br>
+          I wanted to create an time tracking application because it seemed like the natural
+          first step to tracking employee task completion for my own small business ideas. I can use it to schedule tasks for myself and others, and grow it according to practical needs.  At the same time, I can use it as a portfolio piece.
+          <br><br>
+          I created this app with the intention of having a simple, modular design.  Eventually, it will have a set of modules which could be relevant to a multitude of small business models, such as hiring & resume review, pickup and delivery, and video security.
+          <br>  And, 
+          <br><br>
+          UI: The user interface is focused around'viewports' which open when the respective dropdown button is clicked.  This makes it easy to add in new viewports with their own independent functionality, as react components.
+          <br><br>
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+      // Get all "navbar-burger" elements
+      const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+      // Check if there are any navbar burgers
+      if ($navbarBurgers.length > 0) {
+
+        // Add a click event on each of them
+        $navbarBurgers.forEach(el => {
+          el.addEventListener('click', () => {
+
+            // Get the target from the "data-target" attribute
+            const target = el.dataset.target;
+            const $target = document.getElementById(target);
+
+            // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+            el.classList.toggle('is-active');
+            $target.classList.toggle('is-active');
+
+          });
+        });
+      }
+
+    });
+  </script>
+</body>
+
+</html>

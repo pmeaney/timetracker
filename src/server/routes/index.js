@@ -5,6 +5,8 @@ var WebpageContent_ctrl = require('../route_controllers/RegularWebpageContent_co
 
 /* GET home page. */
 router.get('/', WebpageContent_ctrl.get_indexPage)
+router.get('/timetracker', WebpageContent_ctrl.get_timetrackerLandingPage)
+
 router.get('/stats_data/assault', WebpageContent_ctrl.local_data_statsProject)
 router.get('/stats_data_remote/assault', WebpageContent_ctrl.remote_data_statsProject)
 

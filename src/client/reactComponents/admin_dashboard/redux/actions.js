@@ -3,6 +3,12 @@ export const toggle_Visibility_Viewport_Maps = (value) => ({
   payload: value
 })
 
+export const toggle_Visibility_Viewport_AdminDataTable = (value) => ({
+  type: "TOGGLE_VISIBILITY_VIEWPORT_ADMIN_DATA_TABLE",
+  payload: value
+})
+
+
 export const setup_Initial_Timesheet_Data = (value1, value2) => ({
   type: "SETUP_INITIAL_TIMESHEET_DATA",
   payload1: value1,

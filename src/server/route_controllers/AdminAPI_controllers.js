@@ -71,7 +71,8 @@ EmployeeAPI_EventsEmitter.on('message', data => {
 
 const AdminEventStream = (req, res) => { 
 
-  res.status(200).set({
+  // res.status(200).set({
+  res.set({
     'Content-Type': 'text/event-stream',
     'Cache-Control': 'no-cache',
     'Connection': 'keep-alive'

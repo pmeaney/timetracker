@@ -9,6 +9,13 @@ const get_indexPage = (req, res) => {
   })
 }
 
+const get_timetrackerLandingPage = (req, res) => {
+  res.render('webcontent/timetracker_landingPage',
+    {
+      env: process.env
+    })
+}
+
 const local_data_statsProject = (req, res) => {
 
   /*  NOTE: Need to multiply each number by 1000, so that it's per 1000 people.
@@ -48,6 +55,7 @@ const remote_data_statsProject = (req, res) => {
 
 module.exports = {
   get_indexPage,
+  get_timetrackerLandingPage,
   local_data_statsProject,
   remote_data_statsProject,
 }

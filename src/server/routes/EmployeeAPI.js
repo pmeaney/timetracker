@@ -18,7 +18,8 @@ router.post('/timesheets/create', EmployeeAPI_ctrl.post_create_timesheet_toClock
 
 router.put('/timesheets/update', EmployeeAPI_ctrl.put_update_timesheet_toClockOut);
 
-router.get('/activities/getPendingTasks/emp/:emp_id', EmployeeAPI_ctrl.get_PendingTasks_by_EmployeeID );
+router.get('/activities/getPendingTasks/', EmployeeAPI_ctrl.get_PendingTasks_by_EmployeeID );
+router.get('/activities/getRecentWorkInfo/', EmployeeAPI_ctrl.get_RecentWorkActivityInfo_ByEmpID );
 
 router.post('/profile/uploadContactInfo', EmployeeAPI_ctrl.post_Profile_ContactInfo_by_EmployeeID);
 

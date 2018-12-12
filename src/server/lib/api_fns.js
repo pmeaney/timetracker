@@ -265,6 +265,56 @@ const getLocation_by_project_id = (project_id) => {
 	})
 }
 
+// - Locations-- > this will be shown by their clock in /clock out as well
+// Specifically: getting activities -> proj -> locations
+// 1. Find recent activities this employee worked on
+// 2. With those recent activities, use the activities.project_id to query projects.
+// 3. With those projects, use the projects.location_id to query locations
+// 4. Sort by the scheduled activity begin time -- activities.activity_datetime_begin
+var get_Locations_byProjID_byEmployeeID = (emp_id) => {
+	return Promise.try(() => {
+		return database('activities')
+			.select('activities.activity_id', 'activities.emp_assigned_to', 'activities.emp_assigned_by', 'activities.project_id', 'activities.activity_datetime_begin', 'activities.activity_notes')
+			.where({ emp_assigned_to: emp_id })
+			.join('projects',
+						'activities.project_id',
+						'=',
+						'projects.project_id',)
+			.select('projects.location_id', 'projects.project_mgr_emp_id')
+			.join('locations',
+						'projects.location_id',
+						'=',
+						'locations.location_id')
+			.select('locations.location_id',
+							'locations.location_name',
+							'locations.location_address',
+							'locations.location_city',
+							'locations.location_state',
+							'locations.location_zip',
+							'locations.location_type')
+			// get query employees with project_mgr_emp_id
+			.join('employees AS empSet1',
+						'empSet1.employee_id', // needs to be unique table alias, to keep it separate from next query using 'employee_id'
+						'=',
+						'projects.project_mgr_emp_id')
+			.select({ project_manager_firstName: 'empSet1.firstName', project_manager_lastName:'empSet1.lastName'})
+			// get query employees with activities.emp_assigned_by
+			.join('employees AS empSet2',
+						'empSet2.employee_id', // needs to be unique table alias, to keep it separate from previous query using 'employee_id'
+						'=',
+						'activities.emp_assigned_by')
+			.select({ emp_assigned_by_firstName: 'empSet2.firstName', emp_assigned_by_lastName: 'empSet2.lastName' })
+			.orderBy('activities.activity_datetime_begin', 'desc')
+			.limit(10)
+	})	
+		.then((res) => {
+			console.log('[lib/Api_fns.js] result of get_Locations_byProjID_byEmployeeID', res)
+			return res
+		})
+}
+// get_Locations_byProjID_byEmployeeID(2)
+
+
 const AdditionalDataLookup_On_Timesheets_array = (timesheets) => {
 	
 	return Promise.map(timesheets, (timesheet) => {
@@ -335,6 +385,7 @@ const postEmployeeProfileFormData = (dataObject) => {
 			.returning(['employee_id', 'phone', 'email', 'address']) // response data to return to user upon insert
 	})
 }
+
 
 const populateTestUserData = (testUserID_forRepopulation) => {
 	return Promise.try(() => {
@@ -411,5 +462,7 @@ module.exports = {
 	AdditionalDataLookup_On_Timesheets_array,
 	postEmployeeProfileFormData,
 	populateTestUserData,
-	checkIfNeedToRepopulateTaskQueue
+	checkIfNeedToRepopulateTaskQueue,
+	get_Locations_byProjID_byEmployeeID,
+
 };
