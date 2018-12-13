@@ -255,8 +255,6 @@ const post_Profile_ContactInfo_by_EmployeeID = (req, res) => {
   })
 }
 
-
-
 const get_RecentWorkActivityInfo_ByEmpID = (req, res) => {
 
   // ! Taking a Mocked employee ID from session -- In production, change to actual employee ID from session

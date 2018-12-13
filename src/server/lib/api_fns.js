@@ -307,9 +307,9 @@ var get_Locations_byProjID_byEmployeeID = (emp_id) => {
 			.orderBy('activities.activity_datetime_begin', 'desc')
 			.limit(10)
 	})	
-		.then((res) => {
-			console.log('[lib/Api_fns.js] result of get_Locations_byProjID_byEmployeeID', res)
-			return res
+		.then((result) => {
+			console.log('[lib/Api_fns.js] result of get_Locations_byProjID_byEmployeeID', result)
+			return result
 		})
 }
 // get_Locations_byProjID_byEmployeeID(2)

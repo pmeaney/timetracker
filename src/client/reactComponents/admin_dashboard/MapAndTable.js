@@ -71,11 +71,15 @@ class MapAndTable extends React.Component {
     console.log('[MapAndTable cDM] -- componentDidMount')
 
 
-    const es = new EventSource('/admin_api/eventstream')
+    const es = new EventSource('/admin_api/eventstream', {withCredentials: true})
 
-    es.onopen = (e) => {
-      console.log('event source connection opened')
-    }
+    // es.onopen = (e) => {
+    //   console.log('event source connection opened')
+    //   console.log('event info is ', e)
+    //   const es_data = e.data
+    //   console.log('es data is', es_data)
+
+    // }
     
     // es.addEventListener('message',  (e) => {
 
@@ -84,6 +88,7 @@ class MapAndTable extends React.Component {
     // })
 
     es.onmessage = (e) => {
+      console.log('on message e', e)
       const es_data = JSON.parse(e.data)
       console.log('[MapAndTable cDM] admin event stream data', es_data)
       if (es_data.timesheet_sub_type === "new_timesheet") {
@@ -104,7 +109,7 @@ class MapAndTable extends React.Component {
 
         this.props.update_ClockedOut_Timesheet_Data(timesheet_id, clockOutData)
       }
-      es.close()
+      // es.close()
     }
 
     es.onerror = function (e) {

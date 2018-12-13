@@ -83,10 +83,12 @@ const AdminEventStream = (req, res) => {
 
     console.log('data in step 4 is', data)
     if (data.timesheet_main_type === 'livestream_timesheet') {
+      console.log('writing data to stream now')
       // The string-type data to send to admin eventstream:
-      // res.write(`event: message\n`);
-      // res.write(`data: ${JSON.stringify(data)}\n\n`);
-      res.write(`data: ${JSON.stringify(data)}\r\n`);
+      res.write(`event: message\n`);
+      res.write(`data: ${JSON.stringify(data)}\n\n`);
+      // res.write(`data: ${JSON.stringify(data)}\r\n`);
+      
     }
     // res.write(`event: message\n`);
     // res.write(`data: ${JSON.stringify(data)}\n\n`);

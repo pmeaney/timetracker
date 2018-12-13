@@ -1,5 +1,4 @@
 import React from "react";
-import { makeData, Tips } from "./Utils";
 import { run_getData } from "./../lib/adminDataTable_getData_fns"
 
 // Import React Table
@@ -10,7 +9,7 @@ class AdminDataTable extends React.Component {
   constructor() {
     super();
     this.state = {
-      data: makeData(),
+      data: '', // or could do something like makeData() to return initial data
       selectedValue: null
     };
   }
@@ -59,7 +58,6 @@ class AdminDataTable extends React.Component {
           className="-striped -highlight"
         />
         <br />
-        <Tips />
       </div>
     );
   }
