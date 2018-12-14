@@ -206,6 +206,23 @@ const updateExistingTimesheet_onClockout = (activity_id, clockout_time, latitude
 	})
 }
 
+/* #############	Activity Codes 	  ################ */
+
+// get distinct activity codes for activities with emp_id
+const get_ListOf_ActivityCodes_by_EmployeeID = (emp_id) => {
+	console.log('emp id', emp_id)
+	return Promise.try(() => {
+		return database('activities')
+			.where({ emp_assigned_to: emp_id })
+			.distinct('activities.activity_code_id')
+			.join('activity_codes',
+				'activities.activity_code_id',
+				'=',
+				'activity_codes.activity_code_id')
+			.select('activity_codes.activity_type')
+			.returning('activity_codes.activity_type')
+	})
+}
 
 
 /* #############	Employees 	  ################ */
@@ -265,21 +282,20 @@ const getLocation_by_project_id = (project_id) => {
 	})
 }
 
-// - Locations-- > this will be shown by their clock in /clock out as well
-// Specifically: getting activities -> proj -> locations
-// 1. Find recent activities this employee worked on
-// 2. With those recent activities, use the activities.project_id to query projects.
-// 3. With those projects, use the projects.location_id to query locations
-// 4. Sort by the scheduled activity begin time -- activities.activity_datetime_begin
+// - Project & Location data by activities.employee_id
+// 	 this gets recent project & location data based on employee_id
+// 1. lookup activities by activities.emp_assigned_to === employee_id
+// 2. With those activities, return a set of distinct project_id 
+// 3. With that set of unique project_ids, return location data
 var get_Locations_byProjID_byEmployeeID = (emp_id) => {
 	return Promise.try(() => {
 		return database('activities')
-			.select('activities.activity_id', 'activities.emp_assigned_to', 'activities.emp_assigned_by', 'activities.project_id', 'activities.activity_datetime_begin', 'activities.activity_notes')
 			.where({ emp_assigned_to: emp_id })
+			.distinct('activities.project_id')
 			.join('projects',
 						'activities.project_id',
 						'=',
-						'projects.project_id',)
+						'projects.project_id')
 			.select('projects.location_id', 'projects.project_mgr_emp_id')
 			.join('locations',
 						'projects.location_id',
@@ -298,19 +314,7 @@ var get_Locations_byProjID_byEmployeeID = (emp_id) => {
 						'=',
 						'projects.project_mgr_emp_id')
 			.select({ project_manager_firstName: 'empSet1.firstName', project_manager_lastName:'empSet1.lastName'})
-			// get query employees with activities.emp_assigned_by
-			.join('employees AS empSet2',
-						'empSet2.employee_id', // needs to be unique table alias, to keep it separate from previous query using 'employee_id'
-						'=',
-						'activities.emp_assigned_by')
-			.select({ emp_assigned_by_firstName: 'empSet2.firstName', emp_assigned_by_lastName: 'empSet2.lastName' })
-			.orderBy('activities.activity_datetime_begin', 'desc')
-			.limit(10)
 	})	
-		.then((result) => {
-			console.log('[lib/Api_fns.js] result of get_Locations_byProjID_byEmployeeID', result)
-			return result
-		})
 }
 // get_Locations_byProjID_byEmployeeID(2)
 
@@ -464,5 +468,5 @@ module.exports = {
 	populateTestUserData,
 	checkIfNeedToRepopulateTaskQueue,
 	get_Locations_byProjID_byEmployeeID,
-
+	get_ListOf_ActivityCodes_by_EmployeeID,
 };

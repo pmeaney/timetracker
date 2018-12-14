@@ -1,17 +1,37 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import axios from 'axios'
-import Select from 'react-select';
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
+import Select from 'react-select'
+
+/* 
+  todo
+  get call for activity_code_id names
+  -> input
+*/
+const initialData = [{
+  activity_datetime_begin: '',
+  activity_id: '',
+  activity_notes: '',
+  emp_assigned_by: '',
+  emp_assigned_by_firstName: '',
+  emp_assigned_by_lastName: '',
+  emp_assigned_to: '',
+  location_address: '',
+  location_city: '',
+  location_id: '',
+  location_name: '',
+  location_state: '',
+  location_type: '',
+  location_zip: '',
+  project_id: '',
+  project_manager_firstName: '',
+  project_manager_lastName: '',
+  project_mgr_emp_id: '', 
+}]
+/* 
 
 
-const options = [
-  { value: 'activities', label: 'activities' },
-  { value: 'employees', label: 'employees' },
-  { value: 'timesheets', label: 'timesheets' },
-  { value: 'projects', label: 'projects' },
-  { value: 'locations', label: 'locations' }
-];
-
-
+*/
 /* 
 Need to log a new activity.
 { activity_code_id: 1,
@@ -71,12 +91,96 @@ activity_datetime_begin: '2018-02-03T13:00:00.000Z',
 activity_datetime_end: '2018-02-08T21:00:00.000Z'},
 
  */
+
+//  const options = [
+//   { value: 'chocolate', label: 'Chocolate' },
+//   { value: 'strawberry', label: 'Strawberry' },
+//   { value: 'vanilla', label: 'Vanilla' }
+// ];
+
 class FormAddNewActivity extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      recentActivities: initialData,
+      selectedRow: null,
+      newActivityNotes: '',
+      dropdownSelected_ActivityType: null,
+      dropdownOptions_ActivityTypes: []
+    }
 
-    // this.state = {
-    // }
+    this.handleRowSelect = this.handleRowSelect.bind(this)
+  }
+
+  handleChange = (dropdownSelected_ActivityType) => {
+    this.setState({ dropdownSelected_ActivityType });
+    console.log(`Option selected:`, dropdownSelected_ActivityType);
+  }
+
+  componentWillMount() {
+    axios.get('/emp_api/activities/getRecentWorkInfo/')
+      .then((response) => {
+        console.log('data response is', response)
+
+        var recentActivitiesData = response.data.map((currElement) => {
+          var location = currElement.location_address + " " + currElement.location_city + ", " + currElement.location_state
+          var project_manager_fullName = currElement.project_manager_firstName + " " + currElement.project_manager_lastName
+
+          return ({
+            ...currElement,
+            fullLocation: location,
+            project_manager_fullName: project_manager_fullName
+          })
+
+        })
+
+        console.log('recentActivitiesData', recentActivitiesData)
+
+        /* Concatenate firstname & lastname for proj mgr & assigned by */
+        this.setState({
+          recentActivities: recentActivitiesData
+        })
+      })
+
+    // ! Need to do a get call for list of activity_code_id names
+    axios.get('/emp_api/activity_codes/')
+      .then((response) => {
+        console.log('activity_codes data response is', response.data)
+
+        const labelsForDropdown = response.data.map((currElement) => {
+          console.log('currElement.activity_type', currElement.activity_type)
+
+          var upperCased = currElement.activity_type.replace(/^\w/, function (chr) {
+            return chr.toUpperCase();
+          });
+
+          const obj = {
+            value: currElement.activity_code_id,
+            label: upperCased 
+          }
+          
+          return obj
+        })
+        
+        this.setState({
+          dropdownOptions_ActivityTypes: labelsForDropdown
+        })
+        // console.log('labelsForDropdown', labelsForDropdown)
+      })
+  }
+
+  handleRowSelect(row, isSelected, e) {
+    console.log('row selected', row)
+    // console.log('e', e)
+    this.setState({
+      selectedRow: row
+    })
+  }
+
+  onChange = (event) => { // for general html input handlers
+    this.setState({
+      [event.target.name]: event.target.value
+    })
   }
 
 
@@ -87,6 +191,14 @@ class FormAddNewActivity extends Component {
     // console.log('access form data directly from event this way -->', event.target[0].value)
     console.log('form state', this.state)
 
+    /* 
+    ! Data to submit:
+    project_id
+    dateTime begin
+    dateTime end
+    activity notes
+    activity_code_id --> still need to show to user
+    */
     // axios.post('someURL', {
     //   phoneNumber: this.state.phoneNumber.value,
     //   email: this.state.email,
@@ -98,32 +210,50 @@ class FormAddNewActivity extends Component {
 
     // clear state when all done
     this.setState({
+      selectedRow: null,
+      newActivityNotes: ''
     });
 
   }
 
-  componentWillMount(){
-    axios.get('/emp_api/activities/getRecentWorkInfo/')
-      .then((response) => {
-        console.log('[cWM] Form_addNewActivity -- response from server is', response)
-      })
-  }
-
   render() {
+    const selectRowProp = {
+      mode: 'radio',
+      onSelect: this.handleRowSelect
+    };
+
+    const { dropdownSelected_ActivityType } = this.state;
+
     return (
-      <div className="box customBox">
+      <div className="customModalBox">
 
         <form onSubmit={this.onSubmit} >
-          <div className="columns">
+            <div className="box customBox">
+            
+            <p>Enter activity type:</p>
+            <Select
+              value={dropdownSelected_ActivityType}
+              onChange={this.handleChange}
+              options={this.state.dropdownOptions_ActivityTypes}
+            />
+            <br/>
+            
+            <p>Enter activity notes:</p>
+            <input className="input" type="text" name="newActivityNotes" placeholder="Describe the activity" value={this.state.newActivityNotes} onChange={this.onChange.bind(this)} ></input>
+            <br /><br />
 
-            <div className="column">
-             
-
-              <br /><br />
-              <button className="button is-normal">Submit</button>
+            <div className="overflowXYScroll">
+              <p>Select the project to work on:</p>
+              <BootstrapTable data={this.state.recentActivities} selectRow={selectRowProp}>
+                <TableHeaderColumn dataField='project_id' isKey={true}>PID</TableHeaderColumn>
+                <TableHeaderColumn dataField='fullLocation'>Project location</TableHeaderColumn>
+                <TableHeaderColumn dataField='location_type'>Project type</TableHeaderColumn>
+                <TableHeaderColumn dataField='project_manager_fullName'>ProjMgr</TableHeaderColumn>
+              </BootstrapTable>
             </div>
+            </div>
+          <button className="button is-normal">Submit</button>
 
-          </div>
         </form>
 
       </div>

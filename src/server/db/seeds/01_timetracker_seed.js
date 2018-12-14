@@ -29,6 +29,7 @@ exports.seed = function(knex, Promise) {
         { location_name: 'Brisbane post office', location_address: "280 Old County Rd", location_city: "brisbane", location_state: "ca", location_zip: "94005", location_type: "commercial"},
         { location_name: 'Brisbane Hardware & Sply Inc', location_address: "1 Visitacion Ave", location_city: "brisbane", location_state: "ca", location_zip: "94005", location_type: "commercial"},
         { location_name: 'Artichoke Joe&apos;s Casino', location_address: "659 Huntington Ave", location_city: "San Bruno", location_state: "ca", location_zip: "94066", location_type: "commercial"},
+        { location_name: 'Artichoke Joe&apos;s Hotel', location_address: "639 Huntington Ave", location_city: "San Bruno", location_state: "ca", location_zip: "94066", location_type: "commercial"},
       ]),
 
       knex('activity_codes').insert([
@@ -67,6 +68,7 @@ exports.seed = function(knex, Promise) {
             { location_id: 1, project_mgr_emp_id: 1, project_date_begin: '2018-01-01', project_date_end: '2018-01-20'},
             { location_id: 2, project_mgr_emp_id: 3, project_date_begin: '2018-01-15', project_date_end: '2018-01-30'},
             { location_id: 3, project_mgr_emp_id: 4, project_date_begin: '2018-02-02', project_date_end: '2018-02-09'},
+            { location_id: 4, project_mgr_emp_id: 2, project_date_begin: '2018-02-02', project_date_end: '2018-02-09'},
           ])
         ])
     })

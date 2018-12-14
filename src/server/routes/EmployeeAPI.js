@@ -20,6 +20,7 @@ router.put('/timesheets/update', EmployeeAPI_ctrl.put_update_timesheet_toClockOu
 
 router.get('/activities/getPendingTasks/', EmployeeAPI_ctrl.get_PendingTasks_by_EmployeeID );
 router.get('/activities/getRecentWorkInfo/', EmployeeAPI_ctrl.get_RecentWorkActivityInfo_ByEmpID );
+router.get('/activity_codes/', EmployeeAPI_ctrl.get_ListOf_activity_codes );
 
 router.post('/profile/uploadContactInfo', EmployeeAPI_ctrl.post_Profile_ContactInfo_by_EmployeeID);
 
