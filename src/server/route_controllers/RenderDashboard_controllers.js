@@ -17,12 +17,7 @@ const get_userDashboard_byUserID = function (req, res, next) {
 
   // if the user session has the same user_id as the one they're trying to access
 
-  console.log('req.session.user_id is ', req.session.user_id, 'type of is', typeof req.session.user_id)
-  console.log('req.params.user_id is ', req.params.user_id, 'type of is', typeof req.params.user_id)
-
   const param_user_id_asInt = parseInt(req.params.user_id, 10);
-
-  console.log('req.params.user_id after conversion is type of', typeof param_user_id_asInt)
 
   console.log('req.session is ', req.session)
   if (req.session.user_id === param_user_id_asInt) {
