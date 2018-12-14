@@ -16,5 +16,3 @@ I had initially written a frontend prototype with jQuery, but decided to switch 
 ![alt screenshot4](https://github.com/pmeaney/timetracker/blob/master/screenshots/4.png)
 
 ![alt screenshot5](https://github.com/pmeaney/timetracker/blob/master/screenshots/5.png)
-
-![alt screenshot2](https://github.com/pmeaney/timetracker/blob/master/screenshots/2.png)
