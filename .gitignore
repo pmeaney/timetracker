@@ -8,7 +8,6 @@
 **/.env
 **/.pgpass
 **/config.json
-
 **/testScripts
 
 # ignore file:
@@ -18,3 +17,4 @@ notesForGoogleDrive.txt
 
 # recursively ignore directory:
 fontAwesome/
+my-resume/

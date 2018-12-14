@@ -137,13 +137,13 @@ class FormAddNewActivity extends Component {
       ->  activity_datetime_end <== Date selector
 
     */
-    // axios.post('someURL', {
+    // axios.post('/emp_api/activities/create/selfAssignedTask', {
       // activity_code_id: 
       // project_id: 
-      // emp_assigned_by : 
-      // emp_assigned_to: 
+      // emp_assigned_by: current emp 
+      // emp_assigned_to: current emp
       // activity_notes: 
-      // activity_datetime_begin: 
+      // activity_datetime_begin:  
       // activity_datetime_end: 
     // })
     //   .then((response) => {

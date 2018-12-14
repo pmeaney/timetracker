@@ -290,6 +290,10 @@ const get_ListOf_activity_codes = (req, res) => {
   
 }
 
+// /emp_api/activities/createSelfAssignedTask
+const post_createSelfAssignedTask = (req, res) => {
+
+}
 
 module.exports = {
   post_create_timesheet_toClockIn,
@@ -298,5 +302,7 @@ module.exports = {
   EmployeeAPI_EventsEmitter,
   post_Profile_ContactInfo_by_EmployeeID,
   get_RecentWorkActivityInfo_ByEmpID,
-  get_ListOf_activity_codes
+  get_ListOf_activity_codes, 
+  post_createSelfAssignedTask
+
 }
