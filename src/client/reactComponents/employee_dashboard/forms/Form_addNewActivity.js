@@ -2,11 +2,16 @@ import React, { Component } from 'react'
 import axios from 'axios'
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import Select from 'react-select'
+import DayPickerInput from 'react-day-picker/DayPickerInput'
+import 'react-day-picker/lib/style.css';
 
-/* 
-  todo
-  add date select to activity creation modal
-*/
+import { getLuxon_local_DateTime, combineDateTimes } from '../../lib/general_fns'
+import TimePicker from 'rc-time-picker'
+import 'rc-time-picker/assets/index.css'
+import moment from 'moment'
+
+
+
 const initialData = [{
   activity_datetime_begin: '',
   activity_id: '',
@@ -36,16 +41,29 @@ class FormAddNewActivity extends Component {
       selectedRow: null,
       newActivityNotes: '',
       dropdownSelected_ActivityType: null,
-      dropdownOptions_ActivityTypes: []
+      dropdownOptions_ActivityTypes: [],
+      selectedDay_beginDay: undefined,
+      selectedDay_endDay: undefined,
+      timepicker_endTime: undefined, 
     }
 
+    // date pickers (begin and end dates)
+    this.handleDayChange_endDay = this.handleDayChange_endDay.bind(this); // !!
+    this.handleDayChange_beginDay = this.handleDayChange_beginDay.bind(this); // !!
+
+    // project row seleect
     this.handleRowSelect = this.handleRowSelect.bind(this)
+    
+    this.onChange = this.onChange.bind(this)
+
+    // General html inputs, such as the activity notes text field
+    this.onChangeInput = this.onChangeInput.bind(this)
+
+    // Activity type dropdown
+    this.handleChange = this.handleChange.bind(this)
+
   }
 
-  handleChange = (dropdownSelected_ActivityType) => {
-    this.setState({ dropdownSelected_ActivityType });
-    console.log(`Option selected:`, dropdownSelected_ActivityType);
-  }
 
   componentWillMount() {
     axios.get('/emp_api/activities/getRecentWorkInfo/')
@@ -77,11 +95,9 @@ class FormAddNewActivity extends Component {
         console.log('activity_codes data response is', response.data)
 
         const labelsForDropdown = response.data.map((currElement) => {
-          console.log('currElement.activity_type', currElement.activity_type)
-
-          var upperCased = currElement.activity_type.replace(/^\w/, function (chr) {
+          let upperCased = currElement.activity_type.replace(/^\w/, function (chr) {
             return chr.toUpperCase();
-          });
+          })
 
           const obj = {
             value: currElement.activity_code_id,
@@ -106,22 +122,154 @@ class FormAddNewActivity extends Component {
     })
   }
 
-  onChange = (event) => { // for general html input handlers
-    this.setState({
-      [event.target.name]: event.target.value
-    })
+  // General html input handlers
+  onChange = (string_nameOfThingToChange, event) => { 
+    console.log('on change received event: ', event)
+    
+    if(event._isAMomentObject && string_nameOfThingToChange === 'timepicker_beginTime') {
+      // set timepicker_beginTime
+      // console.log('data from timepicker received with name: ', string_nameOfThingToChange)
+      // console.log('data from timepicker received with time: ', event._d)
+
+      this.setState({
+        timepicker_beginTime: event._d
+      })
+    }
+
+    if(event._isAMomentObject && string_nameOfThingToChange === 'timepicker_endTime') {
+      // set timepicker_endTime
+      // console.log('data from timepicker received with name: ', string_nameOfThingToChange)
+      // console.log('data from timepicker received with time: ', event._d)
+      this.setState({
+        timepicker_endTime: event._d
+      })
+    } 
   }
 
+  onChangeInput = (event) => {
+    {
+      this.setState({
+        [event.target.name]: event.target.value
+      })
+    }
 
-  // ------ SUBMIT FORM ---------
-  onSubmit = (event) => {
-    event.preventDefault()
-    console.log('form submitted')
-    // console.log('access form data directly from event this way -->', event.target[0].value)
-    console.log('form state', this.state)
+  }
+
+  // Dropdown handler
+  handleChange = (dropdownSelected_ActivityType) => {
+    this.setState({ dropdownSelected_ActivityType });
+  }
+
+  // Date input - activity begin date
+  handleDayChange_beginDay(day) {
+    // Was going to format, but then realized that it needs to be stored as a timestamp anyway
+    // let luxonFormatted_date = getLuxon_local_DateTime(day, 'date')
+    this.setState({ selectedDay_beginDay: day });
+  }
+
+  // Date input - activity end date
+  handleDayChange_endDay(day){
+    // Was going to format, but then realized that it needs to be stored as a timestamp anyway
+    // let luxonFormatted_date = getLuxon_local_DateTime(day, 'date')
+  this.setState({ selectedDay_endDay: day });
+  }
+
+  handleValidation() {
+    let fields = this.state.fields;
+    let errors = {};
+    let formIsValid = true;
+
+    
+    // check if exists, if not, create error
+    if (!this.state.newActivityNotes) {
+      formIsValid = false;
+      errors["newActivityNotes"] = "Please provide activity notes.";
+    }
+
+    // if (typeof this.state.newActivityNotes !== "undefined") {
+    //   if (!this.state.newActivityNotes.match(/^[a-zA-Z]+$/)) {
+    //     formIsValid = false;
+    //     errors["name"] = "Only letters";
+    //   }
+    // }
 
     /* 
-    ! ---------- Data to submit: ------------ !
+    selectedRow, // project row
+    dropdownSelected_ActivityType, // activity type
+    selectedDay_beginDay, // begin date
+    selectedDay_endDay, // end date
+    begin time
+    end time
+      */
+
+    // check if exists, if not, create error
+    if (!this.state.selectedRow) {
+      formIsValid = false;
+      errors["selected_project"] = "Please select the project location.";
+    }
+
+
+    // check if exists, if not, create error
+    if (!this.state.dropdownSelected_ActivityType) {
+      formIsValid = false;
+      errors["selected_activity"] = "Please select the type of work activity";
+    }
+
+    if (!this.state.selectedDay_beginDay) {
+      formIsValid = false;
+      errors["selectedDay_beginDay"] = "Please select the beginning date of the work activity";
+    }
+
+    if (!this.state.selectedDay_endDay) {
+      formIsValid = false;
+      errors["selectedDay_endDay"] = "Please select the ending date of the work activity";
+    }
+
+    this.setState({ errors: errors });
+    return formIsValid;
+  }
+
+  // handleValueChange = (value) => {
+  //   console.log(value && value.format('HH:mm:ss'));
+  //   this.setState({ timepicker_endTime: value });
+  // }
+
+  // Submit form
+  onSubmit = (event) => {
+    event.preventDefault()
+
+    console.log('form submitted')
+    console.log('form state', this.state)
+
+    const { selectedDay_beginDay, selectedDay_endDay, timepicker_beginTime, timepicker_endTime } = this.state
+
+    // todo: First, validate they exist (use validator function in this script)
+    // TODO: VALIDATION
+    // frontend:
+    // user notification of required fields
+    // backend: validation:
+    // validate text-- escape chars
+    // begin_timestamp-- just make sure they exist
+    // end_timestamp-- just make sure they exist
+    // project - selected-- just make sure it exists
+
+    // TODO: Split & concatenate time&date for activity begin & end  time&date selected
+    // ? DONE: Next, check them out... then concatenate date + time ==>
+    const iso_timestamp_activity_begin = combineDateTimes(selectedDay_beginDay, timepicker_beginTime)
+    // const iso_timestamp_activity_end = combineDateTimes(selectedDay_endDay, timepicker_endTime)
+    console.log('Converted begin in ISO', iso_timestamp_activity_begin)
+    console.log('Converted begin in readable local time', getLuxon_local_DateTime(iso_timestamp_activity_begin, 'time'), getLuxon_local_DateTime(iso_timestamp_activity_begin, 'date'))
+
+
+    /* 
+    ! need 
+    frontend:  
+      user notification of required fields
+    backend: validation:
+      validate text -- escape chars
+      begin_timestamp -- just make sure they exist
+      end_timestamp  -- just make sure they exist
+      project-selected  -- just make sure it exists
 
       .  activity_code_id
       .  project_id
@@ -135,6 +283,19 @@ class FormAddNewActivity extends Component {
       .  activity_notes
       ->  activity_datetime_begin <== Date selector
       ->  activity_datetime_end <== Date selector
+
+      ! Need 2 sets of date & time pickers: begin & end time
+      ! - Activity time begin
+      ! COMBINE THE BEGIN DATE + TIME, AND END DATE + TIME
+      ? https://stackoverflow.com/questions/16597853/combine-date-and-time-string-into-single-date-with-javascript
+      ? https://stackoverflow.com/questions/42404507/moment-js-concatenate-date-and-time
+
+      Step 1- Use my luxon converter to convert dates & times
+      step 2 - change / to -
+      step 3 - follow the rest as mentioned in the accepted answer above
+
+      ! - Activity time end
+          ! - initial date & time value: the same as the begin
 
     */
     // axios.post('/emp_api/activities/create/selfAssignedTask', {
@@ -165,25 +326,85 @@ class FormAddNewActivity extends Component {
       onSelect: this.handleRowSelect
     };
 
+    const { selectedDay_beginDay, selectedDay_endDay, timepicker_beginTime, timepicker_endTime } = this.state;
+ 
+    const format = 'h:mm a';
+
+    const now = moment().hour(0).minute(0);
+
     return (
-      <div className="customModalBox">
+      <div className="container">
+        <div className="box customBox">
 
         <form onSubmit={this.onSubmit} >
-            <div className="box customBox">
-            
-            <p>Enter activity type:</p>
-            <Select
-              value={this.state.dropdownSelected_ActivityType}
-              onChange={this.handleChange}
-              options={this.state.dropdownOptions_ActivityTypes}
-            />
-            <br/>
-            
-            <p>Enter activity notes:</p>
-            <input className="input" type="text" name="newActivityNotes" placeholder="Describe the activity" value={this.state.newActivityNotes} onChange={this.onChange.bind(this)} ></input>
-            <br /><br />
 
-            <div className="overflowXYScroll">
+            <div className="columns">
+              <div className="column">
+
+                {/* // * Date picker */}
+                {selectedDay_beginDay && <p>Activity begin date: {getLuxon_local_DateTime(selectedDay_beginDay, 'date')}</p>}
+                {!selectedDay_beginDay && <p>Choose begin date</p>}
+                  <DayPickerInput onDayChange={this.handleDayChange_beginDay}/>
+                <br /><br />
+
+                {/* // * Time picker */}
+                {timepicker_beginTime && <p>Activity begin time: {getLuxon_local_DateTime(timepicker_beginTime, 'time')}</p>}
+                {!timepicker_beginTime && <p>Choose begin time</p>} 
+                  <TimePicker
+                    showSecond={false}
+                    defaultValue={now}
+                    className="xxx"
+                    onChange={e => this.onChange('timepicker_beginTime', e)}
+                    format={format}
+                    use12Hours
+                    inputReadOnly
+                  />
+
+              </div>
+              <div className="column">
+                
+                {/* // * Date picker */}
+                {selectedDay_endDay && <p>Activity end date: {getLuxon_local_DateTime(selectedDay_endDay, 'date')}</p>}
+                {!selectedDay_endDay && <p>Choose end date</p>}
+                  <DayPickerInput onDayChange={this.handleDayChange_endDay} />
+                
+                <br /><br /> 
+
+                {/* // * Time picker */}
+                {timepicker_endTime && <p>Activity end time: {getLuxon_local_DateTime(timepicker_endTime, 'time')}</p>}
+                {!timepicker_endTime && <p>Choose end time</p>} 
+                  <TimePicker
+                    showSecond={false}
+                    defaultValue={now}
+                    className="xxx"
+                    onChange={e => this.onChange('timepicker_endTime', e)}
+                    format={format}
+                    use12Hours
+                    inputReadOnly
+                  />
+
+              </div>
+              <div className="column">
+                <p>Enter activity type:</p>
+                <Select
+                  value={this.state.dropdownSelected_ActivityType}
+                  onChange={this.handleChange}
+                  options={this.state.dropdownOptions_ActivityTypes}
+                />
+                <br /><br />
+              </div>
+            </div>
+
+            <div className="columns">
+              <div className="column">
+                <p>Enter activity notes:</p>
+                    <input className="input newActivityNotes" type="text" name="newActivityNotes" placeholder="Describe the activity" value={this.state.newActivityNotes} onChange={this.onChangeInput.bind(this)}  />
+                <br/><br/>
+              </div>
+            </div>
+            
+
+            <div className="box overflowXYScroll">
               <p>Select the project to work on:</p>
               <BootstrapTable data={this.state.recentActivities} selectRow={selectRowProp}>
                 <TableHeaderColumn dataField='project_id' isKey={true}>PID</TableHeaderColumn>
@@ -192,10 +413,11 @@ class FormAddNewActivity extends Component {
                 <TableHeaderColumn dataField='project_manager_fullName'>ProjMgr</TableHeaderColumn>
               </BootstrapTable>
             </div>
-            </div>
           <button className="button is-normal">Submit</button>
+          </form>
+        </div>
 
-        </form>
+
 
       </div>
     )

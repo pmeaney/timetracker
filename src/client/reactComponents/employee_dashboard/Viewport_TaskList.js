@@ -2,7 +2,7 @@ import React, { Component }  from 'react';
 import { toggle_Visibility_Viewport_TaskList } from "./redux/actions"
 import { connect } from 'react-redux'
 import axios from "axios"
-import getLuxon_local_DateTime from "../lib/general_fns"
+import { getLuxon_local_DateTime } from "../lib/general_fns"
 import ModalAddNewActivity from './ModalAddNewActivity'
 
 // import { library } from '@fortawesome/fontawesome-svg-core';

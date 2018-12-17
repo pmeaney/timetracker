@@ -7,6 +7,7 @@ I had initially written a frontend prototype with jQuery, but decided to switch 
 - Backend: ExpressJS, NodeJS
 - Database: PostgreSQL -> KnexJS
 
+
 ![alt screenshot1](https://github.com/pmeaney/timetracker/blob/master/src/server/public/screenshots/1.png)
 
 ![alt screenshot2](https://github.com/pmeaney/timetracker/blob/master/src/server/public/screenshots/2.png)
