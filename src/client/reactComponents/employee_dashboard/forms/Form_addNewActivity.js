@@ -5,12 +5,10 @@ import Select from 'react-select'
 import DayPickerInput from 'react-day-picker/DayPickerInput'
 import 'react-day-picker/lib/style.css';
 
-import { getLuxon_local_DateTime, combineDateTimes } from '../../lib/general_fns'
+import { getLuxon_local_DateTime, combineDateTimes, make_FirstLetter_UpperCase } from '../../lib/general_fns'
 import TimePicker from 'rc-time-picker'
 import 'rc-time-picker/assets/index.css'
 import moment from 'moment'
-
-
 
 const initialData = [{
   activity_datetime_begin: '',
@@ -95,15 +93,17 @@ class FormAddNewActivity extends Component {
         console.log('activity_codes data response is', response.data)
 
         const labelsForDropdown = response.data.map((currElement) => {
-          let upperCased = currElement.activity_type.replace(/^\w/, function (chr) {
-            return chr.toUpperCase();
-          })
 
+          var activity_type_upperCasedFirstLetter = currElement.activity_type.replace(/^\w/, function (chr) {
+              return chr.toUpperCase();
+          })
           const obj = {
             value: currElement.activity_code_id,
-            label: upperCased 
+          // uppercase the first letter
+            label: activity_type_upperCasedFirstLetter
           }
           
+          // => TO DO: make sure that no html entities show up-- such as &apos; as the apostrophe in "Artechoke Joe's"
           return obj
         })
         
@@ -162,36 +162,25 @@ class FormAddNewActivity extends Component {
 
   // Date input - activity begin date
   handleDayChange_beginDay(day) {
-    // Was going to format, but then realized that it needs to be stored as a timestamp anyway
-    // let luxonFormatted_date = getLuxon_local_DateTime(day, 'date')
     this.setState({ selectedDay_beginDay: day });
   }
 
   // Date input - activity end date
   handleDayChange_endDay(day){
-    // Was going to format, but then realized that it needs to be stored as a timestamp anyway
-    // let luxonFormatted_date = getLuxon_local_DateTime(day, 'date')
-  this.setState({ selectedDay_endDay: day });
+    this.setState({ selectedDay_endDay: day });
   }
 
+  // => TO DO: Implement this basic 'input required' validation
   handleValidation() {
     let fields = this.state.fields;
     let errors = {};
     let formIsValid = true;
-
     
     // check if exists, if not, create error
     if (!this.state.newActivityNotes) {
       formIsValid = false;
       errors["newActivityNotes"] = "Please provide activity notes.";
     }
-
-    // if (typeof this.state.newActivityNotes !== "undefined") {
-    //   if (!this.state.newActivityNotes.match(/^[a-zA-Z]+$/)) {
-    //     formIsValid = false;
-    //     errors["name"] = "Only letters";
-    //   }
-    // }
 
     /* 
     selectedRow, // project row
@@ -229,10 +218,6 @@ class FormAddNewActivity extends Component {
     return formIsValid;
   }
 
-  // handleValueChange = (value) => {
-  //   console.log(value && value.format('HH:mm:ss'));
-  //   this.setState({ timepicker_endTime: value });
-  // }
 
   // Submit form
   onSubmit = (event) => {
@@ -243,18 +228,8 @@ class FormAddNewActivity extends Component {
 
     const { selectedDay_beginDay, selectedDay_endDay, timepicker_beginTime, timepicker_endTime } = this.state
 
-    // todo: First, validate they exist (use validator function in this script)
-    // TODO: VALIDATION
-    // frontend:
-    // user notification of required fields
-    // backend: validation:
-    // validate text-- escape chars
-    // begin_timestamp-- just make sure they exist
-    // end_timestamp-- just make sure they exist
-    // project - selected-- just make sure it exists
-
-    // TODO: Split & concatenate time&date for activity begin & end  time&date selected
-    // ? DONE: Next, check them out... then concatenate date + time ==>
+    // -> Split & concatenate time&date for activity begin & end  time&date selected
+    // ?> idea: add checkbox for 'same day' to end date UI, to autopop activity end date
     const iso_timestamp_activity_begin = combineDateTimes(selectedDay_beginDay, timepicker_beginTime)
     // const iso_timestamp_activity_end = combineDateTimes(selectedDay_endDay, timepicker_endTime)
     console.log('Converted begin in ISO', iso_timestamp_activity_begin)
@@ -262,42 +237,35 @@ class FormAddNewActivity extends Component {
 
 
     /* 
-    ! need 
+    => TO DO:
     frontend:  
-      user notification of required fields
-    backend: validation:
-      validate text -- escape chars
-      begin_timestamp -- just make sure they exist
-      end_timestamp  -- just make sure they exist
-      project-selected  -- just make sure it exists
+      - make sure all fields exist 
+        (use validator function in this script)
+      - user notification of required fields if fields not filled on submit 
+        (use validator function's error array in this script --> add to render)
+      
+    backend: 
+      - validation:
+          text -- escape chars
+          begin_timestamp -- just make sure they exist
+          end_timestamp  -- just make sure they exist
+          project_selected  -- just make sure it exists
 
-      .  activity_code_id
-      .  project_id
-      -> emp_assigned_by 
-          <== Dropdown selector, on the same get all as the other
-          Actually, since it's a self-assigned activity, make it self assigned...
-          either set emp_assigned_by as current emp_id, or perhaps the string 'self-assigned'
-          --Also, perhaps instruct the user to be sure to write the name of the person
-           who suggested they create an activity in the activity notes section (rather than allowing any user to add 'assigned_by' -- that way this field is only affected when managers assign activities themselves)
-      .  emp_assigned_to
-      .  activity_notes
-      ->  activity_datetime_begin <== Date selector
-      ->  activity_datetime_end <== Date selector
-
-      ! Need 2 sets of date & time pickers: begin & end time
-      ! - Activity time begin
-      ! COMBINE THE BEGIN DATE + TIME, AND END DATE + TIME
-      ? https://stackoverflow.com/questions/16597853/combine-date-and-time-string-into-single-date-with-javascript
-      ? https://stackoverflow.com/questions/42404507/moment-js-concatenate-date-and-time
-
-      Step 1- Use my luxon converter to convert dates & times
-      step 2 - change / to -
-      step 3 - follow the rest as mentioned in the accepted answer above
-
-      ! - Activity time end
-          ! - initial date & time value: the same as the begin
-
+      
+     Date to ultimately create on backend:
+      .   activity_code_id
+      .   project_id
+      .   emp_assigned_by < - since it's a self-assigned activity, make it self assigned...
+             either set emp_assigned_by as current emp_id, or perhaps the string 'self-assigned'
+             --Also, perhaps instruct the user to be sure to write the name of the person
+             who suggested they create an activity in the activity notes section(rather than allowing any user to add 'assigned_by' -- that way this field is only affected when managers assign activities themselves)
+      .   emp_assigned_to
+      .   activity_notes
+      .   activity_datetime_begin --> iso string
+      .   activity_datetime_end --> iso string
     */
+
+    // ! post call
     // axios.post('/emp_api/activities/create/selfAssignedTask', {
       // activity_code_id: 
       // project_id: 

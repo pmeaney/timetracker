@@ -2,6 +2,9 @@ import React from "react"
 import axios from 'axios'
 
 /* 
+current notes: ==> dropdown selector: chooses the table to display.
+
+previous notes:
 This is for the dropdown selector in ../admin_dashboard/Viewport_AdminDataTable.js
 it gets pre-population data for admin data table-- so it taps endpooints which provide info on several main tables
 

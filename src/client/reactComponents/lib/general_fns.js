@@ -44,7 +44,7 @@ var combineDateTimes = (date, time) => {
   return combined_DateTime_iso
 
   /*  // ! ###############################################################################################
-         ! DO NOT DELETE -- This is the test. Add it to a test script later. ############################# */
+         ! DO NOT DELETE -- This is the test.  Reference it to create a test script later. ############################# */
   // * Note: test_step3_combined_DateTime_ISO & test_step3_combined_DateTime_UTC represent the same exact thing, just different formats
   // * Step 1: Use example dates & times
   // * Note: we only care about the date on this: 12/03/2018

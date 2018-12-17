@@ -2,7 +2,7 @@ import React, { Component }  from 'react';
 import { toggle_Visibility_Viewport_TaskList } from "./redux/actions"
 import { connect } from 'react-redux'
 import axios from "axios"
-import { getLuxon_local_DateTime } from "../lib/general_fns"
+import { getLuxon_local_DateTime, make_FirstLetter_UpperCase } from "../lib/general_fns"
 import ModalAddNewActivity from './ModalAddNewActivity'
 
 // import { library } from '@fortawesome/fontawesome-svg-core';
@@ -233,7 +233,9 @@ class Viewport_TaskList extends Component {
           <div className="card">
             <header className="card-header">
               <p className="card-header-title">
-                {obj.activity_type} A_ID: { obj.activity_id }
+                {obj.activity_type.replace(/^\w/, function (chr) {
+                  return chr.toUpperCase();
+                })} A_ID: { obj.activity_id }
               </p>
             </header>
             <div className="card-content smallSpacing">
@@ -286,7 +288,9 @@ class Viewport_TaskList extends Component {
           <div className="card">
             <header className="card-header">
               <p className="card-header-title">
-                {obj.activity_type} A_ID: {obj.activity_id}
+                {obj.activity_type.replace(/^\w/, function (chr) {
+                  return chr.toUpperCase();
+                })} A_ID: {obj.activity_id}
               </p>
             </header>
             <div className="card-content smallSpacing">
