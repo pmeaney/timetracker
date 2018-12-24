@@ -309,15 +309,14 @@ var get_Locations_byProjID_byEmployeeID = (emp_id) => {
 							'locations.location_zip',
 							'locations.location_type')
 			// get query employees with project_mgr_emp_id
-			.join('employees AS empSet1',
-						'empSet1.employee_id', // needs to be unique table alias, to keep it separate from next query using 'employee_id'
+			.join('employees',
+						'employees.employee_id', // needs to be unique table alias, to keep it separate from next query using 'employee_id'
 						'=',
 						'projects.project_mgr_emp_id')
-			.select({ project_manager_firstName: 'empSet1.firstName', project_manager_lastName:'empSet1.lastName'})
-	})	
+			.select({ project_manager_firstName: 'employees.firstName', project_manager_lastName: 'employees.lastName'})
+	})
 }
 // get_Locations_byProjID_byEmployeeID(2)
-
 
 const AdditionalDataLookup_On_Timesheets_array = (timesheets) => {
 	

@@ -10,7 +10,14 @@ import TimePicker from 'rc-time-picker'
 import 'rc-time-picker/assets/index.css'
 import moment from 'moment'
 
-const initialData = [{
+/*  
+To Do:
+
+If errors,
+show visual overlay element telling user about form errors.
+
+*/
+const initialData = [{ // must be an array of an object
   activity_datetime_begin: '',
   activity_id: '',
   activity_notes: '',
@@ -31,20 +38,33 @@ const initialData = [{
   project_mgr_emp_id: '', 
 }]
 
+const initialErrorData = {
+  selected_projectLocation: '',
+  selected_activity: '',
+  selectedDay_beginDay: '',
+  selectedDay_endDay: '',
+  timepicker_beginTime: '',
+  timepicker_endTime: '',
+}
+
+const initialState = {
+  recentActivities: initialData,
+  selectedRow: null,
+  newActivityNotes: '',
+  dropdownSelected_ActivityType: null,
+  dropdownOptions_ActivityTypes: [],
+  selectedDay_beginDay: undefined,
+  selectedDay_endDay: undefined,
+  timepicker_beginTime: undefined,
+  timepicker_endTime: undefined,
+  errors: initialErrorData,
+  formSubmit_attempt: false,
+  formSubmit_success: false
+}
 class FormAddNewActivity extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      recentActivities: initialData,
-      selectedRow: null,
-      newActivityNotes: '',
-      dropdownSelected_ActivityType: null,
-      dropdownOptions_ActivityTypes: [],
-      selectedDay_beginDay: undefined,
-      selectedDay_endDay: undefined,
-      timepicker_endTime: undefined, 
-    }
-
+    this.state = initialState
     // date pickers (begin and end dates)
     this.handleDayChange_endDay = this.handleDayChange_endDay.bind(this); // !!
     this.handleDayChange_beginDay = this.handleDayChange_beginDay.bind(this); // !!
@@ -59,6 +79,9 @@ class FormAddNewActivity extends Component {
 
     // Activity type dropdown
     this.handleChange = this.handleChange.bind(this)
+
+    // Handle submit
+    this.onSubmit = this.onSubmit.bind(this)
 
   }
 
@@ -152,7 +175,6 @@ class FormAddNewActivity extends Component {
         [event.target.name]: event.target.value
       })
     }
-
   }
 
   // Dropdown handler
@@ -177,10 +199,10 @@ class FormAddNewActivity extends Component {
     let formIsValid = true;
     
     // check if exists, if not, create error
-    if (!this.state.newActivityNotes) {
-      formIsValid = false;
-      errors["newActivityNotes"] = "Please provide activity notes.";
-    }
+    // if (!this.state.newActivityNotes) {
+    //   formIsValid = false;
+    //   errors["newActivityNotes"] = "Please provide activity notes.";
+    // }
 
     /* 
     selectedRow, // project row
@@ -191,49 +213,82 @@ class FormAddNewActivity extends Component {
     end time
       */
 
+    
+
     // check if exists, if not, create error
+    // <span className="myCustomError">{this.state.errors["selected_projectLocation"]}</span>
     if (!this.state.selectedRow) {
       formIsValid = false;
-      errors["selected_project"] = "Please select the project location.";
+      errors["selectedRow"] = "Please select the project location.";
     }
 
+    if (!this.state.newActivityNotes) {
+      formIsValid = false;
+      errors["newActivityNotes"] = "Please enter activity notes.";
+    }
 
     // check if exists, if not, create error
+    // <span className="myCustomError">{this.state.errors["dropdownSelected_ActivityType"]}</span>
     if (!this.state.dropdownSelected_ActivityType) {
       formIsValid = false;
-      errors["selected_activity"] = "Please select the type of work activity";
-    }
+      errors["dropdownSelected_ActivityType"] = "Please select the type of work activity";
 
+    }
+   
+    // <span className="myCustomError">{this.state.errors["selectedDay_beginDay"]}</span>
     if (!this.state.selectedDay_beginDay) {
       formIsValid = false;
       errors["selectedDay_beginDay"] = "Please select the beginning date of the work activity";
     }
 
+    // <span className="myCustomError">{this.state.errors["selectedDay_endDay"]}</span>
     if (!this.state.selectedDay_endDay) {
       formIsValid = false;
       errors["selectedDay_endDay"] = "Please select the ending date of the work activity";
     }
 
+    // <span className="myCustomError">{this.state.errors["timepicker_beginTime"]}</span>
+    if (!this.state.timepicker_beginTime) {
+      formIsValid = false;
+      errors["timepicker_beginTime"] = "Please select the beginning time of the work activity";
+    }
+
+    // <span className="myCustomError">{this.state.errors["timepicker_endTime"]}</span>
+    if (!this.state.timepicker_endTime) {
+      formIsValid = false;
+      errors["timepicker_endTime"] = "Please select the ending time of the work activity";
+    }
+
+
+
+
     this.setState({ errors: errors });
+    console.log('errors state:', this.state.errors)
     return formIsValid;
   }
 
 
   // Submit form
   onSubmit = (event) => {
+
+    /*  NOTE: At end of submission: Close Modal & show visual notification of new activity created */
     event.preventDefault()
 
     console.log('form submitted')
     console.log('form state', this.state)
 
-    const { selectedDay_beginDay, selectedDay_endDay, timepicker_beginTime, timepicker_endTime } = this.state
+    this.setState({
+      formSubmit_attempt: true
+    })
 
-    // -> Split & concatenate time&date for activity begin & end  time&date selected
-    // ?> idea: add checkbox for 'same day' to end date UI, to autopop activity end date
-    const iso_timestamp_activity_begin = combineDateTimes(selectedDay_beginDay, timepicker_beginTime)
+    // const { selectedDay_beginDay, selectedDay_endDay, timepicker_beginTime, timepicker_endTime } = this.state
+
+    // // -> Split & concatenate time&date for activity begin & end  time&date selected
+    // // ?> idea: add checkbox for 'same day' to end date UI, to autopop activity end date
+    // const iso_timestamp_activity_begin = combineDateTimes(selectedDay_beginDay, timepicker_beginTime)
     // const iso_timestamp_activity_end = combineDateTimes(selectedDay_endDay, timepicker_endTime)
-    console.log('Converted begin in ISO', iso_timestamp_activity_begin)
-    console.log('Converted begin in readable local time', getLuxon_local_DateTime(iso_timestamp_activity_begin, 'time'), getLuxon_local_DateTime(iso_timestamp_activity_begin, 'date'))
+    // console.log('Converted begin in ISO', iso_timestamp_activity_begin)
+    // console.log('Converted begin in readable local time', getLuxon_local_DateTime(iso_timestamp_activity_begin, 'time'), getLuxon_local_DateTime(iso_timestamp_activity_begin, 'date'))
 
 
     /* 
@@ -265,6 +320,38 @@ class FormAddNewActivity extends Component {
       .   activity_datetime_end --> iso string
     */
 
+    // -> validation
+
+    console.log('Form submitted...' )
+    if (this.handleValidation()) {
+      console.log('On form submit, good validation returned.')
+
+
+      // axios.post('/emp_api/activities/create/selfAssignedTask', {
+      // activity_code_id: 
+      // project_id: 
+      // emp_assigned_by: current emp 
+      // emp_assigned_to: current emp
+      // activity_notes: 
+      // activity_datetime_begin:  
+      // activity_datetime_end: 
+      // })
+      //   .then((response) => {
+      //     console.log('response from server is', response)
+      //   })
+
+    //   // clear state when all done
+      console.log('Clearing state after form submit')
+      this.setState(initialState);
+      this.setState({
+        formSubmit_success: true
+      })
+      // TODO: Connect to Redux.  Set modal open = false, after a 2 second interval. (need to connect modal visibility state to redux as well)
+    } else {
+      console.log('On form submit, errored validation returned.')
+    }
+
+
     // ! post call
     // axios.post('/emp_api/activities/create/selfAssignedTask', {
       // activity_code_id: 
@@ -280,11 +367,11 @@ class FormAddNewActivity extends Component {
     //   })
 
     // clear state when all done
-    this.setState({
-      selectedRow: null,
-      newActivityNotes: '',
-      dropdownSelected_ActivityType: ''
-    });
+    // this.setState({
+    //   selectedRow: null,
+    //   newActivityNotes: '',
+    //   dropdownSelected_ActivityType: ''
+    // });
 
   }
 
@@ -294,17 +381,32 @@ class FormAddNewActivity extends Component {
       onSelect: this.handleRowSelect
     };
 
-    const { selectedDay_beginDay, selectedDay_endDay, timepicker_beginTime, timepicker_endTime } = this.state;
+    
+    const { 
+      recentActivities,
+      newActivityNotes,
+      selectedRow,
+      selectedDay_beginDay,
+      selectedDay_endDay, 
+      timepicker_beginTime, 
+      timepicker_endTime, 
+      dropdownSelected_ActivityType,
+      dropdownOptions_ActivityTypes,
+      errors,
+      formSubmit_attempt,
+      formSubmit_success } = this.state;
  
+    console.log('this.state.errors is', errors)
     const format = 'h:mm a';
 
     const now = moment().hour(0).minute(0);
+
 
     return (
       <div className="container">
         <div className="box customBox">
 
-        <form onSubmit={this.onSubmit} >
+          <form onSubmit={this.onSubmit}>
 
             <div className="columns">
               <div className="column">
@@ -312,12 +414,19 @@ class FormAddNewActivity extends Component {
                 {/* // * Date picker */}
                 {selectedDay_beginDay && <p>Activity begin date: {getLuxon_local_DateTime(selectedDay_beginDay, 'date')}</p>}
                 {!selectedDay_beginDay && <p>Choose begin date</p>}
+                {!selectedDay_beginDay && formSubmit_attempt &&
+                  <span className="myCustomError">{errors["selectedDay_beginDay"]}</span>
+                }
+                
                   <DayPickerInput onDayChange={this.handleDayChange_beginDay}/>
                 <br /><br />
 
                 {/* // * Time picker */}
                 {timepicker_beginTime && <p>Activity begin time: {getLuxon_local_DateTime(timepicker_beginTime, 'time')}</p>}
                 {!timepicker_beginTime && <p>Choose begin time</p>} 
+                {!timepicker_beginTime && formSubmit_attempt &&
+                  <span className="myCustomError">{errors["timepicker_beginTime"]}</span>
+                }
                   <TimePicker
                     showSecond={false}
                     defaultValue={now}
@@ -334,6 +443,9 @@ class FormAddNewActivity extends Component {
                 {/* // * Date picker */}
                 {selectedDay_endDay && <p>Activity end date: {getLuxon_local_DateTime(selectedDay_endDay, 'date')}</p>}
                 {!selectedDay_endDay && <p>Choose end date</p>}
+                {!selectedDay_endDay && formSubmit_attempt &&
+                  <span className="myCustomError">{errors["selectedDay_endDay"]}</span>
+                }
                   <DayPickerInput onDayChange={this.handleDayChange_endDay} />
                 
                 <br /><br /> 
@@ -341,6 +453,9 @@ class FormAddNewActivity extends Component {
                 {/* // * Time picker */}
                 {timepicker_endTime && <p>Activity end time: {getLuxon_local_DateTime(timepicker_endTime, 'time')}</p>}
                 {!timepicker_endTime && <p>Choose end time</p>} 
+                {!timepicker_endTime && formSubmit_attempt &&
+                  <span className="myCustomError">{errors["timepicker_endTime"]}</span>
+                }
                   <TimePicker
                     showSecond={false}
                     defaultValue={now}
@@ -353,11 +468,17 @@ class FormAddNewActivity extends Component {
 
               </div>
               <div className="column">
+                
                 <p>Enter activity type:</p>
+
+                { !dropdownSelected_ActivityType && formSubmit_attempt &&
+                  <span className="myCustomError">{errors["dropdownSelected_ActivityType"]}</span>
+                }
+
                 <Select
-                  value={this.state.dropdownSelected_ActivityType}
+                  value={dropdownSelected_ActivityType}
                   onChange={this.handleChange}
-                  options={this.state.dropdownOptions_ActivityTypes}
+                  options={dropdownOptions_ActivityTypes}
                 />
                 <br /><br />
               </div>
@@ -366,6 +487,9 @@ class FormAddNewActivity extends Component {
             <div className="columns">
               <div className="column">
                 <p>Enter activity notes:</p>
+                {!newActivityNotes && formSubmit_attempt &&
+                  <span className="myCustomError">{errors["newActivityNotes"]}</span>
+                }
                     <input className="input newActivityNotes" type="text" name="newActivityNotes" placeholder="Describe the activity" value={this.state.newActivityNotes} onChange={this.onChangeInput.bind(this)}  />
                 <br/><br/>
               </div>
@@ -374,14 +498,35 @@ class FormAddNewActivity extends Component {
 
             <div className="box overflowXYScroll">
               <p>Select the project to work on:</p>
-              <BootstrapTable data={this.state.recentActivities} selectRow={selectRowProp}>
+              {!selectedRow && formSubmit_attempt &&
+                <span className="myCustomError">{errors["selectedRow"]}</span>
+              }
+              <BootstrapTable data={recentActivities} selectRow={selectRowProp}>
                 <TableHeaderColumn dataField='project_id' isKey={true}>PID</TableHeaderColumn>
                 <TableHeaderColumn dataField='location_name'>Location name</TableHeaderColumn>
                 <TableHeaderColumn dataField='fullLocation'>Location address</TableHeaderColumn>
                 <TableHeaderColumn dataField='project_manager_fullName'>ProjMgr</TableHeaderColumn>
               </BootstrapTable>
             </div>
-          <button className="button is-normal">Submit</button>
+
+            {/* {'selected_activity' in errors && formSubmit_attempt  */}
+            {Object.keys(errors).length > 0 && formSubmit_attempt
+              ?
+                <div className="notification is-warning">
+                  <strong>Please correct the errors above and try again.</strong>
+                </div>
+              : null
+            }
+            
+            { formSubmit_success 
+              ?
+              <div className="notification is-primary">
+                <strong>Thank you for your new work activity.</strong>
+              </div>
+              : null
+            }
+            
+            <button className="button is-normal" type="submit">Submit</button>
           </form>
         </div>
 

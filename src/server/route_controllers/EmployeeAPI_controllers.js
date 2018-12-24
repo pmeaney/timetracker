@@ -36,7 +36,7 @@ const post_create_timesheet_toClockIn = (req, res) => {
   console.log('req.session', req.session)
   console.log('req.session.mock_employee_id', req.session.mock_employee_id)
 
-  // ! Taking a Mocked employee ID from session -- In production, change to actual employee ID from session
+  // ! Using a Mocked employee ID from session -- In production, change to actual employee ID from session
 
   const employee_id_asInt = parseInt(req.session.mock_employee_id, 10)
   const activity_id_For_Timesheets_Lookup = parseInt(req.body.activity_id, 10)
@@ -147,7 +147,7 @@ const put_update_timesheet_toClockOut = (req, res) => {
 // ********************************************************
 const get_PendingTasks_by_EmployeeID = (req, res) => {
 
-  // ! Taking a Mocked employee ID from session -- In production, change to actual employee ID from session
+  // ! Using a Mocked employee ID from session -- In production, change to actual employee ID from session
   console.log('req.session.mock_employee_id', req.session.mock_employee_id)
   const employee_id_asInt = parseInt(req.session.mock_employee_id, 10)
 
@@ -257,7 +257,7 @@ const post_Profile_ContactInfo_by_EmployeeID = (req, res) => {
 
 const get_RecentWorkActivityInfo_ByEmpID = (req, res) => {
 
-  // ! Taking a Mocked employee ID from session -- In production, change to actual employee ID from session
+  // ! Using a Mocked employee ID from session -- In production, change to actual employee ID from session
   // console.log('req.session.mock_employee_id', req.session.mock_employee_id)
   const employee_id_asInt = parseInt(req.session.mock_employee_id, 10)
 
@@ -275,7 +275,7 @@ const get_RecentWorkActivityInfo_ByEmpID = (req, res) => {
 }
 
 const get_ListOf_activity_codes = (req, res) => {
-  // ! Taking a Mocked employee ID from session -- In production, change to actual employee ID from session
+  // ! Using a Mocked employee ID from session -- In production, change to actual employee ID from session
   // console.log('req.session.mock_employee_id', req.session.mock_employee_id)
   const employee_id_asInt = parseInt(req.session.mock_employee_id, 10)
 
@@ -292,6 +292,12 @@ const get_ListOf_activity_codes = (req, res) => {
 
 // /emp_api/activities/createSelfAssignedTask
 const post_createSelfAssignedTask = (req, res) => {
+  console.log('req.body', req.body)
+  console.log('req.session', req.session)
+  console.log('req.session.mock_employee_id', req.session.mock_employee_id)
+
+  // ! Using a Mocked employee ID from session (set on login auth) -- In production, change to actual employee ID from session
+  const employee_id_asInt = parseInt(req.session.mock_employee_id, 10)
 
 }
 
@@ -304,5 +310,4 @@ module.exports = {
   get_RecentWorkActivityInfo_ByEmpID,
   get_ListOf_activity_codes, 
   post_createSelfAssignedTask
-
 }

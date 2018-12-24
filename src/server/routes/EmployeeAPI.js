@@ -15,7 +15,7 @@ router.get('/', function (req, res, next) {
 // router.post('/test_post', EmployeeAPI_ctrl.test_post);
 
 router.post('/timesheets/create', EmployeeAPI_ctrl.post_create_timesheet_toClockIn);
-router.post('/activities/create/selfAssignedTask', EmployeeAPI_ctrl.post_create_timesheet_toClockIn);
+router.post('/activities/create/selfAssignedTask', EmployeeAPI_ctrl.post_createSelfAssignedTask);
 
 router.put('/timesheets/update', EmployeeAPI_ctrl.put_update_timesheet_toClockOut);
 
