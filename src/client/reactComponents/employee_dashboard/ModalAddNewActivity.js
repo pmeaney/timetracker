@@ -7,9 +7,14 @@ sass:
 import React from 'react'
 import FormAddNewActivity from './forms/Form_addNewActivity'
 
+
+import { toggle_Visibility_Modal_CreateActivity } from "./redux/actions"
+import { connect } from 'react-redux'
+
 // import { library } from '@fortawesome/fontawesome-svg-core';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 // library.add(faPlusCircle);
 
 
@@ -42,20 +47,16 @@ class ModalAddNewActivity extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      modalState: false
-    };
-
-    this.toggleModal = this.toggleModal.bind(this);
+    this.Toggle_Visibility_Modal = this.Toggle_Visibility_Modal.bind(this);
   }
 
-  toggleModal(e) {
-    console.log('toggleModal clicked')
-    this.setState((prev, props) => {
-      const newState = !prev.modalState;
-
-      return { modalState: newState };
-    });
+  Toggle_Visibility_Modal(value, e) {
+    e.stopPropagation()
+    this.props.toggle_Visibility_Modal_CreateActivity(value)
+  }
+  
+  componentWillUnmount(){
+    clearInterval()
   }
 
   render() {
@@ -68,7 +69,7 @@ class ModalAddNewActivity extends React.Component {
           className="customButton button is-info is-rounded is-pulled-right" //customRightFloatButton
           aria-label="add_timesheet"
           onClick={
-            e => this.toggleModal(e)
+            e => this.Toggle_Visibility_Modal(true, e)
             // e => this.HandleClick_Create_UnscheduledTimesheet(e)
           }
         >
@@ -78,8 +79,8 @@ class ModalAddNewActivity extends React.Component {
         </button>
 
         <Modal
-        closeModal={this.toggleModal}
-        modalState={this.state.modalState}
+        closeModal={e => this.Toggle_Visibility_Modal(false, e)}
+        modalState={this.props.visibility_modal_createActivity}
         title="Create an activity for yourself"
         >
         {/* <p className="modalContent">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sit amet justo in arcu efficitur malesuada nec ut diam. Aenean a iaculis eros. Proin nec purus congue, rutrum sapien id, sodales ante. Nam imperdiet sapien pretium leo dapibus euismod. Ut ac venenatis nunc. Praesent viverra purus vel lacus ullamcorper porta a a augue. Proin rhoncus tempus leo sed ultricies. In luctus aliquam placerat. Cras efficitur enim vitae vulputate consequat. Nulla tellus est, fringilla quis nisi eu, aliquam finibus eros.</p> */}
@@ -90,4 +91,19 @@ class ModalAddNewActivity extends React.Component {
   }
 }
 
-export default ModalAddNewActivity
+//state: visibility_modal_createActivity
+//dispatch: toggle_Visibility_Modal_CreateActivity(True or false value)
+
+const mapStateToProps = store => ({
+  visibility_modal_createActivity: store.visibility_modal_createActivity
+})
+
+const mapDispatchToProps = {
+  toggle_Visibility_Modal_CreateActivity
+}
+
+export default connect(
+  mapStateToProps,
+  // null,
+  mapDispatchToProps
+)(ModalAddNewActivity);

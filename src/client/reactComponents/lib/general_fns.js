@@ -19,6 +19,7 @@ var combineDateTimes = (date, time) => {
   // console.log('new Date(date)', new Date(date))
   // console.log('new Date(time)', new Date(time))
 
+  if(date && time){
   var date_ISOstring = new Date(date).toISOString()
   var time_ISOstring = new Date(time).toISOString()
 
@@ -42,6 +43,10 @@ var combineDateTimes = (date, time) => {
 
   // ? ISO is what our Postgres is setup to store, so we'll return that format in the function itself
   return combined_DateTime_iso
+  }
+  else {
+    return ''
+  }
 
   /*  // ! ###############################################################################################
          ! DO NOT DELETE -- This is the test.  Reference it to create a test script later. ############################# */

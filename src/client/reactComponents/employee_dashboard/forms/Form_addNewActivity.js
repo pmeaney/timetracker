@@ -10,6 +10,10 @@ import TimePicker from 'rc-time-picker'
 import 'rc-time-picker/assets/index.css'
 import moment from 'moment'
 
+import { toggle_Visibility_Modal_CreateActivity } from "../redux/actions"
+import { connect } from 'react-redux'
+
+
 /*  
 To Do:
 
@@ -234,7 +238,7 @@ class FormAddNewActivity extends Component {
       errors["dropdownSelected_ActivityType"] = "Please select the type of work activity";
 
     }
-   
+    
     // <span className="myCustomError">{this.state.errors["selectedDay_beginDay"]}</span>
     if (!this.state.selectedDay_beginDay) {
       formIsValid = false;
@@ -281,16 +285,16 @@ class FormAddNewActivity extends Component {
       formSubmit_attempt: true
     })
 
-    // const { selectedDay_beginDay, selectedDay_endDay, timepicker_beginTime, timepicker_endTime } = this.state
+    const { selectedDay_beginDay, selectedDay_endDay, timepicker_beginTime, timepicker_endTime } = this.state
 
     // // -> Split & concatenate time&date for activity begin & end  time&date selected
     // // ?> idea: add checkbox for 'same day' to end date UI, to autopop activity end date
-    // const iso_timestamp_activity_begin = combineDateTimes(selectedDay_beginDay, timepicker_beginTime)
-    // const iso_timestamp_activity_end = combineDateTimes(selectedDay_endDay, timepicker_endTime)
+    const iso_timestamp_activity_begin = combineDateTimes(selectedDay_beginDay, timepicker_beginTime)
+    const iso_timestamp_activity_end = combineDateTimes(selectedDay_endDay, timepicker_endTime)
     // console.log('Converted begin in ISO', iso_timestamp_activity_begin)
     // console.log('Converted begin in readable local time', getLuxon_local_DateTime(iso_timestamp_activity_begin, 'time'), getLuxon_local_DateTime(iso_timestamp_activity_begin, 'date'))
 
-
+    
     /* 
     => TO DO:
     frontend:  
@@ -322,33 +326,41 @@ class FormAddNewActivity extends Component {
 
     // -> validation
 
-    console.log('Form submitted...' )
+    console.log('Attempting validation before submitting...' )
     if (this.handleValidation()) {
-      console.log('On form submit, good validation returned.')
+      console.log('Form is valid, next will submit form.')
 
 
-      // axios.post('/emp_api/activities/create/selfAssignedTask', {
-      // activity_code_id: 
-      // project_id: 
-      // emp_assigned_by: current emp 
-      // emp_assigned_to: current emp
-      // activity_notes: 
-      // activity_datetime_begin:  
-      // activity_datetime_end: 
-      // })
-      //   .then((response) => {
-      //     console.log('response from server is', response)
-      //   })
+      axios.post('/emp_api/activities/create/selfAssignedTask', {
+        //recentActivities 
+        // --> user selected from list of projects "recentActivities"
+        // --> selected one --> "selectedRow" object
+        // --> send through the project_id property of "selectedRow" object
+        newActivity_project_id: this.state.selectedRow['project_id'],
+        newActivity_notes: this.state.newActivityNotes,
+        newActivity_type: this.state.dropdownSelected_ActivityType['value'],
+        newActivity_begin: iso_timestamp_activity_begin,
+        newActivity_end: iso_timestamp_activity_end,
+        // and since it's a self-assigned task, employee assigned by & employee assigned to are the same (the currently logged in user)
+        // so, we can just get that from the session, serverside
+      })
+        .then((response) => {
+          console.log('response from server is', response)
+        })
 
-    //   // clear state when all done
+      // clear state when all done
       console.log('Clearing state after form submit')
       this.setState(initialState);
       this.setState({
         formSubmit_success: true
       })
       // TODO: Connect to Redux.  Set modal open = false, after a 2 second interval. (need to connect modal visibility state to redux as well)
+      // closing modal:
+
+      setInterval(function () { this.props.toggle_Visibility_Modal_CreateActivity(false) }, 2000);
+
     } else {
-      console.log('On form submit, errored validation returned.')
+      console.log('On attempt to submit form, validation returned 1+ errors.')
     }
 
 
@@ -510,7 +522,7 @@ class FormAddNewActivity extends Component {
             </div>
 
             {/* {'selected_activity' in errors && formSubmit_attempt  */}
-            {Object.keys(errors).length > 0 && formSubmit_attempt
+            {Object.keys(errors).length > 0 && formSubmit_attempt && !formSubmit_success
               ?
                 <div className="notification is-warning">
                   <strong>Please correct the errors above and try again.</strong>
@@ -526,7 +538,13 @@ class FormAddNewActivity extends Component {
               : null
             }
             
-            <button className="button is-normal" type="submit">Submit</button>
+            <button 
+              className="button is-normal" 
+              type="submit"
+              disabled={
+                formSubmit_success
+              }
+              >Submit</button>
           </form>
         </div>
 
@@ -537,4 +555,16 @@ class FormAddNewActivity extends Component {
   }
 }
 
-export default FormAddNewActivity
+// const mapStateToProps = store => ({
+//   visibility_modal_createActivity: store.visibility_modal_createActivity
+// })
+
+const mapDispatchToProps = {
+  toggle_Visibility_Modal_CreateActivity
+}
+
+export default connect(
+  // mapStateToProps,
+  null,
+  mapDispatchToProps
+)(FormAddNewActivity);

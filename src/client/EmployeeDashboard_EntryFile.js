@@ -1,11 +1,11 @@
 import React from "react"
 import ReactDOM from "react-dom"
 
-import visibilityToggler from "./reactComponents/employee_dashboard/redux/visibilityReducer"
+import reducer from "./reactComponents/employee_dashboard/redux/reducer"
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
 
-const store = createStore(visibilityToggler)
+const store = createStore(reducer)
 
 
 import EmployeeDashboardController from "./reactComponents/employee_dashboard/EmployeeDashboardController"
