@@ -4,7 +4,7 @@ import { toggle_Visibility_Viewport_AdminDataTable } from "./redux/actions"
 // import AdminDataTable from './testing/AdminDataTable'
 import BootstrapDataTable from './AdminDataTable_ReactBootstrapTable'
 import Select from 'react-select';
-import { getData_forDataTable } from '../lib/getData_fns'
+import { getData_forDataTable, extractObjectKeys_into2D_array } from '../lib/getData_fns'
   /* 
   Todo___________
   Create function which accepts the selected table as argument.
@@ -76,7 +76,8 @@ class Viewport_AdminDataTable extends Component {
         value: 'activities',
         label: 'activities'
       },
-      retrievedTable: []
+      retrievedTable: [],
+      columnNames: []
     }
     this.HandleClick_CloseButton_VisibilityToggle_Viewport_AdminDataTable = this.HandleClick_CloseButton_VisibilityToggle_Viewport_AdminDataTable.bind(this)
   }
@@ -87,18 +88,18 @@ class Viewport_AdminDataTable extends Component {
   }
 
   handleChange = (selectedOption) => {
-    this.setState({ selectedOption })
-    // console.log(`Option selected:`, selectedOption)
     // NOTE: Not passing state, because it might not be immediately updated (per Reactjs idiocyncracies).
     // So, just passing the selectedOption directly.  Otherwise, we'll be one step behind (in terms of the dropdown-selected table-name being one step ahead of the table actually retrieved) 
     getData_forDataTable(selectedOption)
-      .then((res) => {
-        console.log('handle data res', res.data)
+      .then((result) => {
+
+        const setOfKeys_2D_array = extractObjectKeys_into2D_array(result.data)
+
         this.setState({
-          retrievedTable: res.data
-        },
-          // check this.state
-          () => console.log('this.state', this.state))
+          retrievedTable: result.data,
+          selectedOption: selectedOption,
+          columnNames: setOfKeys_2D_array
+        })
       })
       .catch(error => {
         console.log("Error during http get request for data in Viewport_AdminDataTable-- handleChange " + error)
@@ -107,32 +108,20 @@ class Viewport_AdminDataTable extends Component {
   }
 
   componentWillMount(){
-    /* 
-    When the viewport is opened... we run a get request for the current "selectedOption",
-    But, instead ot putting the function here, let's abstract it to clean things up.
-
-    Ok, so, selectedOption is passed to the backend.
-
-    Then, based on which selectedOption is sent through, we query that table, and return the results.
-    
-    So, we pass through this.state.selectedOption
+    // Here, we're just getting data for the default selectedOption within this.state, which is 'activities'
     getData_forDataTable(this.state.selectedOption)
-    */
-    // getData_forDataTable(this.state.selectedOption)
-    getData_forDataTable(this.state.selectedOption)
-      .then((res) => {
-        console.log('cWM res', res.data)
+      .then((result) => {
+
+        const setOfKeys_2D_array = extractObjectKeys_into2D_array(result.data)
+
         this.setState({
-          retrievedTable: res.data
-        },
-          // check this.state
-          () => console.log('this.state', this.state))
+          retrievedTable: result.data,
+          columnNames: setOfKeys_2D_array
+        })
       })
       .catch(error => {
         console.log("Error during http get request for data in Viewport_AdminDataTable-- componentWillMount " + error)
       })
-      
-
   }
 
 
@@ -150,7 +139,6 @@ class Viewport_AdminDataTable extends Component {
             onChange={this.handleChange}
             options={options}
           />
-
           </span>
           
           <button
@@ -161,17 +149,10 @@ class Viewport_AdminDataTable extends Component {
           </button>
         </div>
         <div className="message-body addHeight">
-          {/* 
-          // -> Next TODO: On user select
-          // -> of dropdown option, populate
-          // -> the respective data table
-          // -> and allow for excel-style
-          // -> editing of data tables
-          <AdminDataTable 
-           selectedValue={selectedOption}
-          /> */}
-          
-          <BootstrapDataTable value={selectedOption} />
+          {this.state.columnNames.length > 0 ? 
+          <BootstrapDataTable columnNames={this.state.columnNames} retrievedTable={this.state.retrievedTable} value={selectedOption} />
+          : null
+          }
         </div>
       </article>
     )

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import 'bootstrap/dist/css/bootstrap.min.css' // bootstrap css needed for react-bootstrap-table
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css'
-import { getData_forDataTable } from '../lib/getData_fns'
+import { getData_forDataTable, extractObjectKeys_into2D_array } from '../lib/getData_fns'
 
 /* // -> Project needs:
   => Populate rows
@@ -42,10 +42,6 @@ function addProducts(quantity) {
 addProducts(5);
 
 class MyCustomBody extends Component {
-
-  componentWillMount() {
-    console.log('cWM In MyCustomBody in AdminDataTable_ReactBootstrapTable this.props are', this.props )
-  }
 
   // this is activated on save of new row (in new row modal)
   getFieldValue() {
@@ -113,10 +109,85 @@ export default class CustomInsertModalBodyTable extends React.Component {
   }
 
   componentWillMount() {
-    console.log('CustomInsertModalBodyTable -- props received in react bootstrap table are', this.props)
+
+    // const columnSet = this.props.columnNames[0].map((currElement, index) => {
+    //   if (index === 0) {
+    //     return <TableHeaderColumn isKey={true} dataField={this.props.columnNames[0][index]}>{this.props.columnNames[1][index]}</TableHeaderColumn>
+    //   } else {
+    //     return <TableHeaderColumn dataField={this.props.columnNames[0][index]}>{this.props.columnNames[1][index]}</TableHeaderColumn>
+    //   }
+    // })
+
+    // console.log('columnSet', columnSet)
+
   }
 
   render() {
+
+    console.log('this.props within table renderer', this.props)
+
+    /* 
+    => Need to take keys. Make 2 sets.  Original, and formatted.
+       Then convert _ into space. 
+       Then uppercase first letter of each word.
+       Now we have set of formatted names for columns
+    
+       Then, we can access it by sth like this: namesOfKeys[index] within the setOf map below,
+       so that the text is inserted into the TableHeaderColumn tag
+
+    => Need to, for index of 0, add in "isKey={true}"
+
+    => Then, we can map through, with all but the first being setup like this:
+      <TableHeaderColumn dataField='${unformattedName}'>${formattedName}</TableHeaderColumn>
+    
+    */
+
+    // const setOfKeys_2D_array = extractObjectKeys_into2D_array(this.props.retrievedTable)
+
+    // console.log('setOfKeys_2D_array', setOfKeys_2D_array)
+
+    // const setOf_TableHeaderColumn_components = []
+
+    // setOfKeys_2D_array[0].map((currElement, index) => {
+    //   // console.log('currElement', currElement)
+    //   if (index === 0) {
+    //     var componentForSet = <TableHeaderColumn isKey={true} dataField={setOfKeys_2D_array[0][index]}>{setOfKeys_2D_array[1][index]}</TableHeaderColumn>
+    //     setOf_TableHeaderColumn_components.push(componentForSet)
+    //   } else {
+    //     var componentForSet = <TableHeaderColumn dataField={setOfKeys_2D_array[0][index]}>{setOfKeys_2D_array[1][index]}</TableHeaderColumn>
+    //     setOf_TableHeaderColumn_components.push(componentForSet)
+    //   }
+    // })
+    
+
+    /* 
+    setOfKeys_2D_array[0].map((currElement, index) => {
+            // console.log('currElement', currElement)
+            if (index === 0) {
+              return <TableHeaderColumn isKey={true} dataField={setOfKeys_2D_array[0][index]}>{setOfKeys_2D_array[1][index]}</TableHeaderColumn>
+              // return componentForSet
+            } else {
+              return <TableHeaderColumn dataField={setOfKeys_2D_array[0][index]}>{setOfKeys_2D_array[1][index]}</TableHeaderColumn>
+              // return componentForSet
+            }
+          })
+    */
+    // console.log('setOf_TableHeaderColumn_components', setOf_TableHeaderColumn_components)
+
+    // const setOf_TableHeaderColumn_components = []
+
+    // const setOf_TableHeaderColumn_mapper = this.props.retrievedTable.map((currElement, index) => {
+    //   // console.log('at index', index, 'we have: ', currElement)
+    //   if (index === 0 ) {
+    //     var componentForSet = `<TableHeaderColumn isKey={true} dataField='${setOfKeys_2D_array[0][index]}'>${setOfKeys_2D_array[1][index]}</TableHeaderColumn>`
+    //     setOf_TableHeaderColumn_components.push(componentForSet)
+    //   } else {
+    //     var componentForSet = `<TableHeaderColumn dataField='${setOfKeys_2D_array[0][index]}'>${setOfKeys_2D_array[1][index]}</TableHeaderColumn>`
+    //     setOf_TableHeaderColumn_components.push(componentForSet)
+    //   }
+    // })
+
+    // console.log('setOf_TableHeaderColumn_components', setOf_TableHeaderColumn_components)
 
     // This is the function (onAfterDeleteRow) we would call to run http request to drop the row (we won't delete it, just add a new column in DB for 'isDeleted' and set it to false by default.  Then update to true on delete
     // Then, on backend, when retrieving DB table, only retrieve those with isDeleted: false)
@@ -132,11 +203,28 @@ export default class CustomInsertModalBodyTable extends React.Component {
       insertModalBody: this.createCustomModalBody,
       afterDeleteRow: onAfterDeleteRow  // A hook for after droping rows.
     };
+
     return (
-      <BootstrapTable data={products} selectRow={selectRowProp} search={true} options={options} deleteRow={true} insertRow>
-        <TableHeaderColumn dataField='id' isKey={true}>Product IDz</TableHeaderColumn>
+      <BootstrapTable data={this.props.retrievedTable} selectRow={selectRowProp} search={true} options={options} deleteRow={true} insertRow>
+        {/* {mappedComponents} */}
+
+        {/* {setOfKeys_2D_array.length !== 0 && columnSet} */}
+
+        {this.props.columnNames.length > 0 ?
+          this.props.columnNames[0].map((currElement, index) => {
+            if (index === 0) {
+              return <TableHeaderColumn key={index} isKey={true} dataField={this.props.columnNames[0][index]}>{this.props.columnNames[1][index]}</TableHeaderColumn>
+            } else {
+              return <TableHeaderColumn key={index} dataField={this.props.columnNames[0][index]}>{this.props.columnNames[1][index]}</TableHeaderColumn>
+            }
+          })
+          :
+          null
+        }
+              
+        {/* <TableHeaderColumn dataField='id' isKey={true}>Product ID</TableHeaderColumn>
         <TableHeaderColumn dataField='name'>Product Name</TableHeaderColumn>
-        <TableHeaderColumn dataField='price'>Product Price</TableHeaderColumn>
+        <TableHeaderColumn dataField='price'>Product Price</TableHeaderColumn> */}
       </BootstrapTable>
     );
   }
