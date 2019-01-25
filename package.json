@@ -29,6 +29,7 @@
     "babel-preset-env": "^1.7.0",
     "babel-preset-es2015": "*",
     "babel-preset-react": "^6.24.1",
+    "bootstrap": "^4.2.1",
     "brotli-webpack-plugin": "^1.0.0",
     "bulma": "^0.7.2",
     "classnames": "^2.2.6",

@@ -1,14 +1,33 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { toggle_Visibility_Viewport_AdminDataTable } from "./redux/actions"
-import AdminDataTable from './AdminDataTable'
+// import AdminDataTable from './testing/AdminDataTable'
+import BootstrapDataTable from './AdminDataTable_ReactBootstrapTable'
 import Select from 'react-select';
-
+import { getData_forDataTable } from '../lib/getData_fns'
   /* 
-  First step: Select table contents.
-  Second step: Select filter (date selector, or search box)
+  Todo___________
+  Create function which accepts the selected table as argument.
+  Run this function on componentWillMount (more info on the function below)
 
-    Check out filtering exampke:
+  Thoughts_______
+  First step: Select table from dropdown.
+    -> Fire a function with Selected table as argument 
+      This function is a get call to the API to request the user-specified data
+      After we get the data response, make sure we pass it to the data table as an array of objects
+      example:
+        {
+          id: id,
+          name: 'Item name ' + id,
+          price: 2100 + i
+        }
+  
+  If time-related, then 
+    --> Second step: Select filter (date selector, or search box)
+    After filtered timeframe is selected, update the table view.
+      --> This can probably actually just be a column filter
+
+  Check out filtering exampke:
   https://codesandbox.io/s/r74mokr5x4
   Upon first step, The content populates into a 2nd selector, along with a data table.
   The second slector is the filter.
@@ -53,10 +72,11 @@ class Viewport_AdminDataTable extends Component {
     
     this.state = {
       selectedOption: {
-        // setting up a default value for the table
+        // This simply sets up a default value for the table
         value: 'activities',
         label: 'activities'
-      }
+      },
+      retrievedTable: []
     }
     this.HandleClick_CloseButton_VisibilityToggle_Viewport_AdminDataTable = this.HandleClick_CloseButton_VisibilityToggle_Viewport_AdminDataTable.bind(this)
   }
@@ -67,8 +87,52 @@ class Viewport_AdminDataTable extends Component {
   }
 
   handleChange = (selectedOption) => {
-    this.setState({ selectedOption });
-    console.log(`Option selected:`, selectedOption);
+    this.setState({ selectedOption })
+    // console.log(`Option selected:`, selectedOption)
+    // NOTE: Not passing state, because it might not be immediately updated (per Reactjs idiocyncracies).
+    // So, just passing the selectedOption directly.  Otherwise, we'll be one step behind (in terms of the dropdown-selected table-name being one step ahead of the table actually retrieved) 
+    getData_forDataTable(selectedOption)
+      .then((res) => {
+        console.log('handle data res', res.data)
+        this.setState({
+          retrievedTable: res.data
+        },
+          // check this.state
+          () => console.log('this.state', this.state))
+      })
+      .catch(error => {
+        console.log("Error during http get request for data in Viewport_AdminDataTable-- handleChange " + error)
+      })
+
+  }
+
+  componentWillMount(){
+    /* 
+    When the viewport is opened... we run a get request for the current "selectedOption",
+    But, instead ot putting the function here, let's abstract it to clean things up.
+
+    Ok, so, selectedOption is passed to the backend.
+
+    Then, based on which selectedOption is sent through, we query that table, and return the results.
+    
+    So, we pass through this.state.selectedOption
+    getData_forDataTable(this.state.selectedOption)
+    */
+    // getData_forDataTable(this.state.selectedOption)
+    getData_forDataTable(this.state.selectedOption)
+      .then((res) => {
+        console.log('cWM res', res.data)
+        this.setState({
+          retrievedTable: res.data
+        },
+          // check this.state
+          () => console.log('this.state', this.state))
+      })
+      .catch(error => {
+        console.log("Error during http get request for data in Viewport_AdminDataTable-- componentWillMount " + error)
+      })
+      
+
   }
 
 
@@ -97,9 +161,17 @@ class Viewport_AdminDataTable extends Component {
           </button>
         </div>
         <div className="message-body addHeight">
+          {/* 
+          // -> Next TODO: On user select
+          // -> of dropdown option, populate
+          // -> the respective data table
+          // -> and allow for excel-style
+          // -> editing of data tables
           <AdminDataTable 
            selectedValue={selectedOption}
-          />
+          /> */}
+          
+          <BootstrapDataTable value={selectedOption} />
         </div>
       </article>
     )

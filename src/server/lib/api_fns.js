@@ -443,8 +443,17 @@ const checkIfNeedToRepopulateTaskQueue = (employee_id_repopTaskQueue) => {
 				})
 		})
 	}, interval)
-
 }
+
+
+const get_Admin_dataFor_DataTable = (tableName) => {
+	console.log('tableName received in api fns', tableName)
+	return Promise.try(() => {
+		return database( tableName )
+	})
+}
+
+
 
 module.exports = {
 	getAllActivities,
@@ -468,4 +477,5 @@ module.exports = {
 	checkIfNeedToRepopulateTaskQueue,
 	get_Locations_byProjID_byEmployeeID,
 	get_ListOf_ActivityCodes_by_EmployeeID,
+	get_Admin_dataFor_DataTable
 };

@@ -96,6 +96,27 @@ const AdminEventStream = (req, res) => {
   });
 }
 
+/*##########################################
+##            Data for Data Table -- Receives url parameter as the table name to query
+##########################################*/
+
+const get_DataForTable = (req, res) => {
+
+  console.log('params received for db lookup: table name: ', req.params.tableName)
+
+  // note on regex character escape:  \W is the equivalent of [^0-9a-zA-Z_]
+  const escaped_tableName = req.params.tableName.replace(/\W/g, '')
+
+  if (true /* need to do some sort of security check */) {
+    return Promise.try(() => {
+      return Api_fns.get_Admin_dataFor_DataTable(escaped_tableName);
+    })
+    .then((dataResponse) => {
+      console.log('dataResponse is ', dataResponse)
+      res.status(200).json(dataResponse)
+    })
+  }
+}
 
 /*##########################################
 ##            Timesheets
@@ -202,5 +223,6 @@ const get_Activities_All = (req, res) => {
 module.exports = { 
   AdminEventStream,
   get_Timesheets_All,
-  get_Activities_All
+  get_Activities_All,
+  get_DataForTable,
 }

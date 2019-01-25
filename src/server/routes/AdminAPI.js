@@ -6,6 +6,8 @@ router.get('/', function (req, res, next) {
   res.send('this is the regular /admin_api route');
 });
 
+router.get('/getDataForTable/:tableName', AdminAPI_ctrl.get_DataForTable);
+
 router.get('/timesheets', AdminAPI_ctrl.get_Timesheets_All);
 
 router.get('/activities', AdminAPI_ctrl.get_Activities_All)

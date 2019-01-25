@@ -1,10 +1,10 @@
 import React from "react";
-import getLuxon_local_DateTime from "../lib/general_fns"
+import { getLuxon_local_DateTime } from "../lib/general_fns"
 import { connect } from 'react-redux'
 import { toggle_InfoWindow_isOpen_State } from './redux/actions'
 
 const DataTableTimesheets = (props) => {
-  
+
   const list = props.timesheetData.map((item, i) => {
 
   // if timesheet's scheduled activity has a start time, display that scheduled start time in a readable format.  otherwise, display null
@@ -34,8 +34,6 @@ const DataTableTimesheets = (props) => {
   })
 
   // onClick = { props.toggle_InfoWindow_isOpen_State.bind(this, i) } 
-
-
   return (
     <div>
       <table className="table is-striped is-narrow tableCustom">

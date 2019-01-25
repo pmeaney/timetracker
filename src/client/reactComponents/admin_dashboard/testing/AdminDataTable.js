@@ -1,5 +1,5 @@
 import React from "react";
-import { run_getData } from "./../lib/adminDataTable_getData_fns"
+import { run_getData } from "../../lib/adminDataTable_getData_fns"
 
 // Import React Table
 import ReactTable from "react-table";
@@ -13,7 +13,6 @@ class AdminDataTable extends React.Component {
       selectedValue: null
     };
   }
-
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.selectedValue !== prevState.selectedValue) {
