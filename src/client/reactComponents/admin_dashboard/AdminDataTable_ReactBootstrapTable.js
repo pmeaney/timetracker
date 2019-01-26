@@ -124,8 +124,6 @@ export default class CustomInsertModalBodyTable extends React.Component {
 
   render() {
 
-    console.log('this.props within table renderer', this.props)
-
     /* 
     => Need to take keys. Make 2 sets.  Original, and formatted.
        Then convert _ into space. 
@@ -212,10 +210,38 @@ export default class CustomInsertModalBodyTable extends React.Component {
 
         {this.props.columnNames.length > 0 ?
           this.props.columnNames[0].map((currElement, index) => {
-            if (index === 0) {
-              return <TableHeaderColumn key={index} isKey={true} dataField={this.props.columnNames[0][index]}>{this.props.columnNames[1][index]}</TableHeaderColumn>
+
+            // Guard condition: when index is same length of retrievedTable length, then stop.
+            if (index === this.props.retrievedTable.length) {
+              console.log('index === retrievedTable.length ', index, this.props.retrievedTable.length)
+              return
+            } 
+
+            if (index < this.props.retrievedTable.length) {
+              console.log('index === retrievedTable.length ', index, this.props.retrievedTable.length)
+            
+              var keyOfFirstElement = this.props.columnNames[0][Object.keys(currElement)[0]] // takes array of names of keys, then takes the first one. Example: activities --> takes activity_id
+              // console.log('currElement', currElement)
+              // console.log('keyOfFirstElement', keyOfFirstElement)
+
+              console.log('at index of array', index, ' we have a ', keyOfFirstElement, 'of: ', this.props.retrievedTable[index][keyOfFirstElement])
+              var uniqueID_for_rowKey = this.props.retrievedTable[index][keyOfFirstElement]
+              
+              /* // => Next step:
+              Iterate through table data ('retrievedTable'), based on a zeroedIndex-- i.e. start at 0  Access keyOfFirstElement */
+              
+              // console.log('this.props.retrievedTable[index][keyOfFirstElement]', this.props.retrievedTable[index][keyOfFirstElement])
+              // console.log('currElement.keyOfFirstElement', currElement.keyOfFirstElement)
+              // console.log('currElement[JSON.stringify(keyOfFirstElement)]', currElement[JSON.stringify(keyOfFirstElement)])
+            
+
+              if (index === 0) {
+                return <TableHeaderColumn key={uniqueID_for_rowKey} isKey={true} dataField={this.props.columnNames[0][index]}>{this.props.columnNames[1][index]}</TableHeaderColumn>
+              } else {
+                return <TableHeaderColumn key={uniqueID_for_rowKey} dataField={this.props.columnNames[0][index]}>{this.props.columnNames[1][index]}</TableHeaderColumn>
+              }
             } else {
-              return <TableHeaderColumn key={index} dataField={this.props.columnNames[0][index]}>{this.props.columnNames[1][index]}</TableHeaderColumn>
+              return
             }
           })
           :
