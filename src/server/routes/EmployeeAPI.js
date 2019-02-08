@@ -3,11 +3,12 @@ var router = express.Router();
 var EmployeeAPI_ctrl = require('../route_controllers/EmployeeAPI_controllers')
 
 /*
+  Can probably delete this old note:
   #########   NEED TO FIX:
     1. All uses of functions which themselves are Promise.try()... need to be run within a Promiste.try()
       --> such as any knex table data lookup functions
-
 */
+
 router.get('/', function (req, res, next) {
   res.send('this is the regular /emp_api route');
 });
@@ -24,5 +25,7 @@ router.get('/activities/getRecentWorkInfo/', EmployeeAPI_ctrl.get_RecentWorkActi
 router.get('/activity_codes/', EmployeeAPI_ctrl.get_ListOf_activity_codes );
 
 router.post('/profile/uploadContactInfo', EmployeeAPI_ctrl.post_Profile_ContactInfo_by_EmployeeID);
+
+router.get('/eventstream', EmployeeAPI_ctrl.EmployeeEventStream)
 
 module.exports = router;

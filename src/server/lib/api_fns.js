@@ -84,6 +84,67 @@ const getActivities_forWhich_timesheetsDoNotExist = (emp_id) => {
 	})
 }
 
+const post_newActivity_employeeSelfAssignedActivity = (newActivity_objectToPost) => {
+	return Promise.try(() => {
+		return database("activities")
+			.returning([
+				'activity_id',
+				'activity_code_id',
+				'project_id',
+				'emp_assigned_by',
+				'emp_assigned_to',
+				'activity_notes',
+				'activity_datetime_begin',
+				'activity_datetime_end'
+			]) // response data to return to user upon insert
+			.insert({
+				activity_code_id: newActivity_objectToPost.newActivity_type,
+				project_id: newActivity_objectToPost.newActivity_project_id,
+				emp_assigned_by: newActivity_objectToPost.newActivity_emp_assigned_by,
+				emp_assigned_to: newActivity_objectToPost.newActivity_emp_assigned_to,
+				activity_notes: newActivity_objectToPost.newActivity_notes_escaped,
+				activity_datetime_begin: newActivity_objectToPost.newActivity_begin,
+				activity_datetime_end: newActivity_objectToPost.newActivity_end,
+			})
+	})
+}
+
+const AdditionalDataLookup_On_newActivity = (newActivity) => {
+
+	return Promise.try(() => {
+		return ForDataItem_LookUp__ActivityType_Location_ProjectMgr(newActivity)
+	}).then((newActivity_additionalData) => {
+		let merged_activityData_with_newActivity_additionalData = merge(newActivity, newActivity_additionalData)
+		return merged_activityData_with_newActivity_additionalData
+	})
+
+}
+
+const ForDataItem_LookUp__ActivityType_Location_ProjectMgr = (dataItem) => {
+	return Promise.all([
+		// console.log('datapoint.final_mergedData.activity_code',datapoint.final_mergedData.activity_code)
+		getActivityType_by_activity_code_id(dataItem.activity_code_id),
+		getLocation_by_project_id(dataItem.project_id),
+		getProjectMgr_by_project_id(dataItem.project_id)
+	]).spread((activityType_data, location_data, projMgr_emp_data) => {
+
+		//renaming the keys of projMgr_emp_data to add 'projMgr_' prefix to make it more clear what sort of data it is
+		let projMgr_emp_data_updatedKeys =
+		{
+			projMgr_employee_id: projMgr_emp_data[0].employee_id,
+			projMgr_firstName: projMgr_emp_data[0].firstName,
+			projMgr_lastName: projMgr_emp_data[0].lastName,
+			projMgr_phone: projMgr_emp_data[0].phone,
+			projMgr_email: projMgr_emp_data[0].email
+		}
+
+		// Merging each of the three objects into a single array set of the three objects
+		let merge1 = merge(activityType_data[0], location_data[0])
+		let merge2 = merge(merge1, projMgr_emp_data_updatedKeys)
+		return merge2
+	})
+}
+
 /* #############	Timesheets 	  ################ */
 const getAllTimesheets = () => {
 	return Promise.try(() => {
@@ -343,28 +404,8 @@ const AdditionalDataLookup_On_Timesheets_array = (timesheets) => {
 		return Promise.map(resultData, (datapoint) => {
 			// console.log('datapoint is', datapoint)
 
-			return Promise.all([
-				// console.log('datapoint.final_mergedData.activity_code',datapoint.final_mergedData.activity_code)
-				getActivityType_by_activity_code_id(datapoint.activity_code_id),
-				getLocation_by_project_id(datapoint.project_id),
-				getProjectMgr_by_project_id(datapoint.project_id)
-			]).spread((activityType_data, location_data, projMgr_emp_data) => {
-
-				//renaming the keys of projMgr_emp_data to add 'projMgr_' prefix to make it more clear what sort of data it is
-				let projMgr_emp_data_updatedKeys =
-				{
-					projMgr_employee_id: projMgr_emp_data[0].employee_id,
-					projMgr_firstName: projMgr_emp_data[0].firstName,
-					projMgr_lastName: projMgr_emp_data[0].lastName,
-					projMgr_phone: projMgr_emp_data[0].phone,
-					projMgr_email: projMgr_emp_data[0].email
-				}
-
-				// Merging each of the three objects into a single array set of the three objects
-				let merge1 = merge(activityType_data[0], location_data[0])
-				let merge2 = merge(merge1, projMgr_emp_data_updatedKeys)
-				return merge2
-
+			return Promise.try(() => {
+				return ForDataItem_LookUp__ActivityType_Location_ProjectMgr(datapoint)
 			})
 			.then((resultData) => {
 				// Now we merge the resulting array item with the timesheet item.
@@ -459,6 +500,10 @@ module.exports = {
 	getAllActivities,
 	getActivity_by_id,
 	getActivitiesBy_employee_assigned_to,
+	post_newActivity_employeeSelfAssignedActivity,
+	getActivityType_by_activity_code_id,
+	getActivities_forWhich_timesheetsDoNotExist,
+	AdditionalDataLookup_On_newActivity,
 	getAllEmployees,
 	getEmployee_by_id,
 	getAllTimesheets,
@@ -466,11 +511,9 @@ module.exports = {
 	getTimesheet_by_activity_id,
 	createNewTimesheet_onClockin,
 	updateExistingTimesheet_onClockout,
-	getActivityType_by_activity_code_id,
 	getLocation_by_project_id,
 	getProjectMgr_by_project_id,
 	getTimesheetsAndActivities_forWhich_Timesheets_haveNullClockOut_forEmployee,
-	getActivities_forWhich_timesheetsDoNotExist,
 	AdditionalDataLookup_On_Timesheets_array,
 	postEmployeeProfileFormData,
 	populateTestUserData,

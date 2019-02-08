@@ -10,64 +10,70 @@ const database = require('knex')(knex_config[environment]);
 const Api_fns = require('../lib/api_fns')
 const General_fns = require('../lib/general_fns')
 
-/*//*###########################################
-//*###          Event emitters & Admin API related lookups
-//*##########################################*/
+/*//=>###########################################
+//=>###   Event emitters (for Admin viewport(s))
+//=>##########################################*/
 const EventEmitter = require('events');
 class AdminAPI_EventEmitterClass extends EventEmitter { }
 const AdminAPI_EventStream_EventEmitter = new AdminAPI_EventEmitterClass();
 
 const EmployeeAPI_EventsEmitter = require('./EmployeeAPI_controllers').EmployeeAPI_EventsEmitter;
 
-EmployeeAPI_EventsEmitter.on('message', data => {
-  // console.log('received message in EmployeeAPI_EventsEmitter, with data: ', data)
-  if (data.title === 'timesheet') {
+    /*//=>###########################################
+    //=>###   Admin view, listening to Employee Event emitter, in order to update MapAndTable within Viewport_Maps
+    //=>##########################################*/
+    // => EmployeeAPI_EventsEmitter is imported here, because we listen to it in order to real-time update
+    // => the Admin's viewport: MapAndTable (at: src/client/reactComponents/admin_dashboard/MapAndTable.js )
+    // => Therefore, the end result is an update of the admin view, based on an employee's action. Hence this is in the AdminAPI_controllers.js file
 
-    console.log('[Emitting event: new timesheet clockin] Step 2 - Clockin data received.  Now going to do some additional lookups on this timesheet, # ', data.timesheet.timesheet_id)
+    // => SECTION FOR: Timesheet clockin/clockout listener.  Listens to Employee Timesheet clockin/clockout
+  EmployeeAPI_EventsEmitter.on('message', data => {
+    // console.log('received message in EmployeeAPI_EventsEmitter, with data: ', data)
+    if (data.title === 'timesheet') {
 
-    return Promise.try(() => {
-      return Api_fns.getTimesheet_by_timesheet_id(data.timesheet.timesheet_id);
-    }).then((timesheets) => {
-      return Api_fns.AdditionalDataLookup_On_Timesheets_array(timesheets)
-    }) 
-    .then((resultDataFromLookup) => {
-      console.log('[Emitting event: new timesheet -- clockin] Step 3 - Additional lookups successful, now we will emit the final data to Admin API event stream')
+      console.log('[Emitting event: new timesheet clockin] Step 2 - Clockin data received.  Now going to do some additional lookups on this timesheet, # ', data.timesheet.timesheet_id)
 
-      console.log('resultDataFromLookup for sending to thru event stream', resultDataFromLookup[0])
+      return Promise.try(() => {
+        return Api_fns.getTimesheet_by_timesheet_id(data.timesheet.timesheet_id);
+      }).then((timesheets) => {
+        return Api_fns.AdditionalDataLookup_On_Timesheets_array(timesheets)
+      }) 
+      .then((resultDataFromLookup) => {
+        console.log('[Emitting event: new timesheet -- clockin] Step 3 - Additional lookups successful, now we will emit the final data to Admin API event stream')
 
-      
+        console.log('resultDataFromLookup for sending to thru event stream', resultDataFromLookup[0])
 
-      if (data.timesheet_type === 'new_timesheet') {
-        console.log('new_timesheet received')
-        AdminAPI_EventStream_EventEmitter.emit('message', {
-          ...resultDataFromLookup[0],
-          timesheet_main_type: 'livestream_timesheet',
-          timesheet_sub_type: 'new_timesheet',
-        })
-      }
+        
 
-      if (data.timesheet_type === 'updated_timesheet') {
-        console.log('updated_timesheet received')
+        if (data.timesheet_type === 'new_timesheet') {
+          console.log('new_timesheet received')
+          AdminAPI_EventStream_EventEmitter.emit('message', {
+            ...resultDataFromLookup[0],
+            timesheet_main_type: 'livestream_timesheet',
+            timesheet_sub_type: 'new_timesheet',
+          })
+        }
 
-        AdminAPI_EventStream_EventEmitter.emit('message', {
-          ...resultDataFromLookup[0],
-          timesheet_main_type: 'livestream_timesheet',
-          timesheet_sub_type: 'updated_timesheet',
-        })
-      }
-    })
-  } else {
-    console.log('Error: no time sheet exists for that lookup')
-  }
-  // console.log('received message in EmployeeAPI_EventsEmitter, with data.timesheet.timesheet_id: ', data.timesheet.timesheet_id)
-  // do lookup
-  // after lookup, emit message with lookup data to AdminAPI_EventStream_EventEmitter
-});
+        if (data.timesheet_type === 'updated_timesheet') {
+          console.log('updated_timesheet received')
+
+          AdminAPI_EventStream_EventEmitter.emit('message', {
+            ...resultDataFromLookup[0],
+            timesheet_main_type: 'livestream_timesheet',
+            timesheet_sub_type: 'updated_timesheet',
+          })
+        }
+      })
+    } 
+    // console.log('received message in EmployeeAPI_EventsEmitter, with data.timesheet.timesheet_id: ', data.timesheet.timesheet_id)
+    // do lookup
+    // after lookup, emit message with lookup data to AdminAPI_EventStream_EventEmitter
+  });
 
 
-/*//*###########################################
-//*###          Route controllers
-//*##########################################*/
+/*//=>###########################################
+//=>###     EVENT STREAM -- Route controllers
+//=>##########################################*/
 
 const AdminEventStream = (req, res) => { 
 
@@ -87,14 +93,13 @@ const AdminEventStream = (req, res) => {
       // The string-type data to send to admin eventstream:
       res.write(`event: message\n`);
       res.write(`data: ${JSON.stringify(data)}\n\n`);
-      // res.write(`data: ${JSON.stringify(data)}\r\n`);
-      
     }
-    // res.write(`event: message\n`);
-    // res.write(`data: ${JSON.stringify(data)}\n\n`);
-    // res.status(200).json(data) ;
   });
 }
+
+/*//*###########################################
+//*###          REGULAR (non-stream) Route controllers
+//*##########################################*/
 
 /*##########################################
 ##            Data for Data Table -- Receives url parameter as the table name to query

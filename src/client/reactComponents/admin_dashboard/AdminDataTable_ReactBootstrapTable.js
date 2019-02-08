@@ -8,13 +8,19 @@ import { getData_forDataTable, extractObjectKeys_into2D_array } from '../lib/get
   => Populate rows
   => Single selection
   => Add new row
-  => Edit selected row
+    -> Problem: Need to remove certain columns, such as unique ID, created at, updated at.
+    -> Problem: Need to populate the modal's dropdown selectors.  It's possible it'll be easier just to create my own modal.
+        -> need to explore capabilities of this modal to see how easy it is to customize
+        => Check out dropdown selector examples here: https://github.com/AllenFang/react-bootstrap-table/tree/master/examples/js/custom/insert-modal
+        (We'd want dropdown selectors based on which table is loaded.  i.e. new activity? need to select from employees to assign it to)
+  => Edit selected row (or, cell edit capability, onBlur => save based on row unique ID)
+      => Check out this example: https://github.com/AllenFang/react-bootstrap-table/issues/930
+
   => Delete selected row
   => Table search -> super easy
   => Pagination
 
-
-
+  => uh oh... the next version is out: https://react-bootstrap-table.github.io/react-bootstrap-table2/
   * => Table search 
   http://allenfang.github.io/react-bootstrap-table/example.html#manipulation
   Requirements:
@@ -22,24 +28,7 @@ import { getData_forDataTable, extractObjectKeys_into2D_array } from '../lib/get
 
   * => Delete selected row
 
-
-
 /* // => Table with insert modal */
-const products = [];
-
-function addProducts(quantity) {
-  const startId = products.length;
-  for (let i = 0; i < quantity; i++) {
-    const id = startId + i;
-    products.push({
-      id: id,
-      name: 'Item name ' + id,
-      price: 2100 + i
-    });
-  }
-}
-
-addProducts(5);
 
 class MyCustomBody extends Component {
 
@@ -108,85 +97,7 @@ export default class CustomInsertModalBodyTable extends React.Component {
     );
   }
 
-  componentWillMount() {
-
-    // const columnSet = this.props.columnNames[0].map((currElement, index) => {
-    //   if (index === 0) {
-    //     return <TableHeaderColumn isKey={true} dataField={this.props.columnNames[0][index]}>{this.props.columnNames[1][index]}</TableHeaderColumn>
-    //   } else {
-    //     return <TableHeaderColumn dataField={this.props.columnNames[0][index]}>{this.props.columnNames[1][index]}</TableHeaderColumn>
-    //   }
-    // })
-
-    // console.log('columnSet', columnSet)
-
-  }
-
   render() {
-
-    /* 
-    => Need to take keys. Make 2 sets.  Original, and formatted.
-       Then convert _ into space. 
-       Then uppercase first letter of each word.
-       Now we have set of formatted names for columns
-    
-       Then, we can access it by sth like this: namesOfKeys[index] within the setOf map below,
-       so that the text is inserted into the TableHeaderColumn tag
-
-    => Need to, for index of 0, add in "isKey={true}"
-
-    => Then, we can map through, with all but the first being setup like this:
-      <TableHeaderColumn dataField='${unformattedName}'>${formattedName}</TableHeaderColumn>
-    
-    */
-
-    // const setOfKeys_2D_array = extractObjectKeys_into2D_array(this.props.retrievedTable)
-
-    // console.log('setOfKeys_2D_array', setOfKeys_2D_array)
-
-    // const setOf_TableHeaderColumn_components = []
-
-    // setOfKeys_2D_array[0].map((currElement, index) => {
-    //   // console.log('currElement', currElement)
-    //   if (index === 0) {
-    //     var componentForSet = <TableHeaderColumn isKey={true} dataField={setOfKeys_2D_array[0][index]}>{setOfKeys_2D_array[1][index]}</TableHeaderColumn>
-    //     setOf_TableHeaderColumn_components.push(componentForSet)
-    //   } else {
-    //     var componentForSet = <TableHeaderColumn dataField={setOfKeys_2D_array[0][index]}>{setOfKeys_2D_array[1][index]}</TableHeaderColumn>
-    //     setOf_TableHeaderColumn_components.push(componentForSet)
-    //   }
-    // })
-    
-
-    /* 
-    setOfKeys_2D_array[0].map((currElement, index) => {
-            // console.log('currElement', currElement)
-            if (index === 0) {
-              return <TableHeaderColumn isKey={true} dataField={setOfKeys_2D_array[0][index]}>{setOfKeys_2D_array[1][index]}</TableHeaderColumn>
-              // return componentForSet
-            } else {
-              return <TableHeaderColumn dataField={setOfKeys_2D_array[0][index]}>{setOfKeys_2D_array[1][index]}</TableHeaderColumn>
-              // return componentForSet
-            }
-          })
-    */
-    // console.log('setOf_TableHeaderColumn_components', setOf_TableHeaderColumn_components)
-
-    // const setOf_TableHeaderColumn_components = []
-
-    // const setOf_TableHeaderColumn_mapper = this.props.retrievedTable.map((currElement, index) => {
-    //   // console.log('at index', index, 'we have: ', currElement)
-    //   if (index === 0 ) {
-    //     var componentForSet = `<TableHeaderColumn isKey={true} dataField='${setOfKeys_2D_array[0][index]}'>${setOfKeys_2D_array[1][index]}</TableHeaderColumn>`
-    //     setOf_TableHeaderColumn_components.push(componentForSet)
-    //   } else {
-    //     var componentForSet = `<TableHeaderColumn dataField='${setOfKeys_2D_array[0][index]}'>${setOfKeys_2D_array[1][index]}</TableHeaderColumn>`
-    //     setOf_TableHeaderColumn_components.push(componentForSet)
-    //   }
-    // })
-
-    // console.log('setOf_TableHeaderColumn_components', setOf_TableHeaderColumn_components)
-
     // This is the function (onAfterDeleteRow) we would call to run http request to drop the row (we won't delete it, just add a new column in DB for 'isDeleted' and set it to false by default.  Then update to true on delete
     // Then, on backend, when retrieving DB table, only retrieve those with isDeleted: false)
     function onAfterDeleteRow(rowKeys) {
@@ -204,53 +115,26 @@ export default class CustomInsertModalBodyTable extends React.Component {
 
     return (
       <BootstrapTable data={this.props.retrievedTable} selectRow={selectRowProp} search={true} options={options} deleteRow={true} insertRow>
-        {/* {mappedComponents} */}
-
-        {/* {setOfKeys_2D_array.length !== 0 && columnSet} */}
-
+        
         {this.props.columnNames.length > 0 ?
           this.props.columnNames[0].map((currElement, index) => {
-
-            // Guard condition: when index is same length of retrievedTable length, then stop.
-            if (index === this.props.retrievedTable.length) {
-              console.log('index === retrievedTable.length ', index, this.props.retrievedTable.length)
-              return
-            } 
-
+            // Guard condition: don't flow over-- stop when index is one less than same length of retrievedTable length
+            // Keep running the loop, until we reach point just before index = this.props.retrievedTable.length (because one more increment, and it runs off the top of the target)
             if (index < this.props.retrievedTable.length) {
               console.log('index === retrievedTable.length ', index, this.props.retrievedTable.length)
-            
               var keyOfFirstElement = this.props.columnNames[0][Object.keys(currElement)[0]] // takes array of names of keys, then takes the first one. Example: activities --> takes activity_id
-              // console.log('currElement', currElement)
-              // console.log('keyOfFirstElement', keyOfFirstElement)
-
               console.log('at index of array', index, ' we have a ', keyOfFirstElement, 'of: ', this.props.retrievedTable[index][keyOfFirstElement])
-              var uniqueID_for_rowKey = this.props.retrievedTable[index][keyOfFirstElement]
-              
-              /* // => Next step:
-              Iterate through table data ('retrievedTable'), based on a zeroedIndex-- i.e. start at 0  Access keyOfFirstElement */
-              
-              // console.log('this.props.retrievedTable[index][keyOfFirstElement]', this.props.retrievedTable[index][keyOfFirstElement])
-              // console.log('currElement.keyOfFirstElement', currElement.keyOfFirstElement)
-              // console.log('currElement[JSON.stringify(keyOfFirstElement)]', currElement[JSON.stringify(keyOfFirstElement)])
-            
-
+              var uniqueID_for_rowKey = this.props.retrievedTable[index][keyOfFirstElement] // e.g. activities object's current element's activity_id
               if (index === 0) {
                 return <TableHeaderColumn key={uniqueID_for_rowKey} isKey={true} dataField={this.props.columnNames[0][index]}>{this.props.columnNames[1][index]}</TableHeaderColumn>
               } else {
                 return <TableHeaderColumn key={uniqueID_for_rowKey} dataField={this.props.columnNames[0][index]}>{this.props.columnNames[1][index]}</TableHeaderColumn>
               }
-            } else {
-              return
-            }
+            } 
           })
           :
           null
         }
-              
-        {/* <TableHeaderColumn dataField='id' isKey={true}>Product ID</TableHeaderColumn>
-        <TableHeaderColumn dataField='name'>Product Name</TableHeaderColumn>
-        <TableHeaderColumn dataField='price'>Product Price</TableHeaderColumn> */}
       </BootstrapTable>
     );
   }

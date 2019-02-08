@@ -113,7 +113,7 @@ class MapAndTable extends React.Component {
     }
 
     es.onerror = function (e) {
-      console.log("Error: EventSource failed for url: /eventstream (MapAndTable component, ComponentWillMount)");
+      console.log("Error: EventSource failed for url: /admin_api/eventstream (MapAndTable component, componentDidMount)");
     };
   }
 

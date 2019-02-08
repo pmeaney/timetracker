@@ -263,9 +263,6 @@ class FormAddNewActivity extends Component {
       errors["timepicker_endTime"] = "Please select the ending time of the work activity";
     }
 
-
-
-
     this.setState({ errors: errors });
     console.log('errors state:', this.state.errors)
     return formIsValid;
@@ -325,7 +322,7 @@ class FormAddNewActivity extends Component {
     */
 
     // -> validation
-
+    // TODO: --> end date must be after start date. AND if end date = start date, end time must be after start time
     console.log('Attempting validation before submitting...' )
     if (this.handleValidation()) {
       console.log('Form is valid, next will submit form.')
@@ -354,38 +351,21 @@ class FormAddNewActivity extends Component {
       this.setState({
         formSubmit_success: true
       })
-      // TODO: Connect to Redux.  Set modal open = false, after a 2 second interval. (need to connect modal visibility state to redux as well)
-      // closing modal:
 
-      setInterval(function () { this.props.toggle_Visibility_Modal_CreateActivity(false) }, 2000);
+      // closing modal:
+      // Connected to Redux.  Set modal open = false, after a 2 second interval. (need to connect modal visibility state to redux as well)
+      // TODO: => this isn't working
+      // setInterval(function () { this.props.toggle_Visibility_Modal_CreateActivity(false) }, 2000);
 
     } else {
       console.log('On attempt to submit form, validation returned 1+ errors.')
     }
-
-
-    // ! post call
-    // axios.post('/emp_api/activities/create/selfAssignedTask', {
-      // activity_code_id: 
-      // project_id: 
-      // emp_assigned_by: current emp 
-      // emp_assigned_to: current emp
-      // activity_notes: 
-      // activity_datetime_begin:  
-      // activity_datetime_end: 
-    // })
-    //   .then((response) => {
-    //     console.log('response from server is', response)
-    //   })
-
-    // clear state when all done
-    // this.setState({
-    //   selectedRow: null,
-    //   newActivityNotes: '',
-    //   dropdownSelected_ActivityType: ''
-    // });
-
   }
+
+  componentDidMount() {
+    console.log('this.state.errors is', this.state.errors)
+  }
+  
 
   render() {
     const selectRowProp = {
@@ -408,7 +388,7 @@ class FormAddNewActivity extends Component {
       formSubmit_attempt,
       formSubmit_success } = this.state;
  
-    console.log('this.state.errors is', errors)
+    
     const format = 'h:mm a';
 
     const now = moment().hour(0).minute(0);
