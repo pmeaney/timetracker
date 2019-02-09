@@ -75,68 +75,23 @@ class Viewport_TaskList extends Component {
     es.onmessage = (e) => {
       console.log('on message e', e)
       const es_data = JSON.parse(e.data)
-      console.log('[Viewport_tasklist cDM] employee event stream data', es_data)
+      // console.log('[Viewport_tasklist cDM] employee event stream data', es_data)
+      console.log('New activity data to append is ', es_data.newActivity)
 
-
-      /* 
-      Currently the object looks like this-- NOTE: We need to run an additional lookup on this before sending it through stream,
-      so ill go fix that.
-
-      newActivity: {
-        activity_code_id: 1
-        activity_datetime_begin: "2019-02-04T06:04:04.145Z"
-        activity_datetime_end: "2019-02-11T06:01:04.145Z"
-        activity_id: 20
-        activity_notes: "blah paint %2422 .. ##"
-        emp_assigned_by: 2
-        emp_assigned_to: 2
-        project_id: 1
-      }
-      newActivity_type: "employeeSelfAssignedActivity"
-      title: "newActivity"
-
-      => Here's how the object needs to look in order to push it into the new tasks within state:
-        activity_code_id: 8
-        activity_datetime_begin: "2018-02-04T13:00:00.000Z"
-        activity_datetime_end: "2018-02-08T21:00:00.000Z"
-        activity_id: 15
-        activity_notes: "Testing 3..."
-        activity_type: "dry wall installation"
-        emp_assigned_by: 1
-        emp_assigned_to: 2
-        location_address: "1 Visitacion Ave"
-        location_city: "brisbane"
-        location_name: "Brisbane Hardware & Sply Inc"
-        location_state: "ca"
-        location_type: "commercial"
-        location_zip: "94005"
-        projectMgr_email: "email@gmail.com"
-        projectMgr_firstName: "James"
-        projectMgr_lastName: "Bond"
-        projectMgr_phone: "123-456-7890"
-        project_id: 2
- */
-      
-      // if (es_data.newActivity_type === "employeeSelfAssignedActivity") {
+      if (es_data.newActivity_type === "employeeSelfAssignedActivity") {
 
       // Here, we add it to the new tasks array within state.
       // So, take state, and append a new activity
-      //   var infoWindowObj = { isOpen: false }
-      //   this.props.concat_Additional_Timesheet_Data(es_data, infoWindowObj)
-      // }
+      // this.state.employee_data_newTasks_forClockIn
 
-      // if (es_data.timesheet_sub_type === "updated_timesheet") {
-      //   var clockOutData = {
-      //     timesheet_clockout: es_data.timesheet_clockout,
-      //     timesheet_clockout_lat: es_data.timesheet_clockout_lat,
-      //     timesheet_clockout_long: es_data.timesheet_clockout_long,
-      //     timesheet_sub_type: es_data.timesheet_sub_type // this simply overwrites "new_timesheet" with "updated_timesheet"
-      //   }
+        const joined_unClockedInTasks_withNew_employeeSelfAssignedActivity= this.state.employee_data_newTasks_forClockIn.concat(es_data.newActivity)
+        
+        this.setState({
+          employee_data_newTasks_forClockIn: joined_unClockedInTasks_withNew_employeeSelfAssignedActivity
+        })
 
-      //   var timesheet_id = es_data.timesheet_id
+      }
 
-      //   this.props.update_ClockedOut_Timesheet_Data(timesheet_id, clockOutData)
-      // }
       // es.close()
     }
 

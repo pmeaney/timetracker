@@ -398,14 +398,13 @@ const post_createSelfAssignedTask = (req, res) => {
     // projectMgr_phone: "123-456-7890"
     // project_id: 2
 
+    // NOTE: On completion of frontend employee tasklist event stream, delete the above object comments about additional lookup
+
     return Api_fns.AdditionalDataLookup_On_newActivity(newActivity[0])
 
   }).then((newActivity_plus_AdditionalActivityData) => {
 
     console.log('Response received from AdditionalDataLookup_On_newActivity is', newActivity_plus_AdditionalActivityData)
-
-
-
 
     // Need to emit to an employee task event stream-- Any new activities from Employee, Mgr, or Admin will ultimately go into event stream
     console.log('[Emitting event: new activity -- employeeSelfAssignedActivity ] Step 1 - An employee just assigned themselves an activity. Emitting message to emitter.')
@@ -414,7 +413,6 @@ const post_createSelfAssignedTask = (req, res) => {
       newActivity_type: 'employeeSelfAssignedActivity',
       newActivity: newActivity_plus_AdditionalActivityData
     })
-    
     res.status(200).json(newActivity_plus_AdditionalActivityData);
   })
 
