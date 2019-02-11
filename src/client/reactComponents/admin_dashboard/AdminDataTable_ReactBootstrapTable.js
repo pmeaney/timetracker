@@ -113,11 +113,25 @@ export default class CustomInsertModalBodyTable extends React.Component {
       afterDeleteRow: onAfterDeleteRow  // A hook for after droping rows.
     };
 
+    const listFor_hideInsertModalField = ['updated_at', 'created_at']
+
+
+    /* 
+    For fields we want to hide, need to add `hiddenOnInsert` on `<TableHeaderColumn>`
+    - created at
+    - updated at
+    - any main _id field, such as activity_id or project_id, for that specific table.
+
+
+    
+    */
+
     return (
       <BootstrapTable data={this.props.retrievedTable} selectRow={selectRowProp} search={true} options={options} deleteRow={true} insertRow>
-        
+      
         {this.props.columnNames.length > 0 ?
           this.props.columnNames[0].map((currElement, index) => {
+            
             // Guard condition: don't flow over-- stop when index is one less than same length of retrievedTable length
             // Keep running the loop, until we reach point just before index = this.props.retrievedTable.length (because one more increment, and it runs off the top of the target)
             if (index < this.props.retrievedTable.length) {
@@ -126,9 +140,15 @@ export default class CustomInsertModalBodyTable extends React.Component {
               console.log('at index of array', index, ' we have a ', keyOfFirstElement, 'of: ', this.props.retrievedTable[index][keyOfFirstElement])
               var uniqueID_for_rowKey = this.props.retrievedTable[index][keyOfFirstElement] // e.g. activities object's current element's activity_id
               if (index === 0) {
-                return <TableHeaderColumn key={uniqueID_for_rowKey} isKey={true} dataField={this.props.columnNames[0][index]}>{this.props.columnNames[1][index]}</TableHeaderColumn>
+                // index 0 will always be the table's main id, so we want to hide it on the insert modal.
+                return <TableHeaderColumn key={uniqueID_for_rowKey} isKey={true} hiddenOnInsert={true} dataField={this.props.columnNames[0][index]}>{this.props.columnNames[1][index]}</TableHeaderColumn>
               } else {
-                return <TableHeaderColumn key={uniqueID_for_rowKey} dataField={this.props.columnNames[0][index]}>{this.props.columnNames[1][index]}</TableHeaderColumn>
+                // here, we add an if statement to check if it's in a list of other things we want to hide on the insert modal
+                if (listFor_hideInsertModalField.includes(currElement)) {
+                  return <TableHeaderColumn key={uniqueID_for_rowKey} hiddenOnInsert={true} dataField={this.props.columnNames[0][index]}>{this.props.columnNames[1][index]}</TableHeaderColumn>
+                } else {
+                  return <TableHeaderColumn key={uniqueID_for_rowKey} dataField={this.props.columnNames[0][index]}>{this.props.columnNames[1][index]}</TableHeaderColumn>
+                }
               }
             } 
           })

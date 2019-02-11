@@ -374,34 +374,7 @@ const post_createSelfAssignedTask = (req, res) => {
     return Api_fns.post_newActivity_employeeSelfAssignedActivity(newActivity_objectToPost)
   }).then((newActivity) => {
     console.log('post_newActivity_employeeSelfAssignedActivity newActivity response is ', newActivity)
-    // => Next, we need to do additional lookups--
-    // => The object needs to look like this plus the below location and proj mgr info...
-    // activity_code_id: 8
-    // activity_datetime_begin: "2018-02-04T13:00:00.000Z"
-    // activity_datetime_end: "2018-02-08T21:00:00.000Z"
-    // activity_id: 15
-    // activity_notes: "Testing 3..."
-    // activity_type: "dry wall installation"
-    // emp_assigned_by: 1
-    // emp_assigned_to: 2
-
-    // => We are missing this: 
-    // location_address: "1 Visitacion Ave"
-    // location_city: "brisbane"
-    // location_name: "Brisbane Hardware & Sply Inc"
-    // location_state: "ca"
-    // location_type: "commercial"
-    // location_zip: "94005"
-    // projectMgr_email: "email@gmail.com"
-    // projectMgr_firstName: "James"
-    // projectMgr_lastName: "Bond"
-    // projectMgr_phone: "123-456-7890"
-    // project_id: 2
-
-    // NOTE: On completion of frontend employee tasklist event stream, delete the above object comments about additional lookup
-
     return Api_fns.AdditionalDataLookup_On_newActivity(newActivity[0])
-
   }).then((newActivity_plus_AdditionalActivityData) => {
 
     console.log('Response received from AdditionalDataLookup_On_newActivity is', newActivity_plus_AdditionalActivityData)
