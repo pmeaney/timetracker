@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import 'bootstrap/dist/css/bootstrap.min.css' // bootstrap css needed for react-bootstrap-table
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css'
-import { getData_forDataTable, extractObjectKeys_into2D_array } from '../lib/getData_fns'
+import axios from 'axios'
 
 /* // -> Project needs:
   => Populate rows
@@ -89,12 +89,57 @@ class MyCustomBody extends Component {
 
 export default class CustomInsertModalBodyTable extends React.Component {
 
+  constructor() {
+    super();
+  
+    // if we don't bind this function, we cannot access state nor props within it.
+    this.afterSaveCell = this.afterSaveCell.bind(this)
+  }
+  
+  
+  componentWillMount() {
+    this.setState({
+      selected_option: this.props.value.value
+    })
+
+    console.log('this.props are in CWM', this.props)
+  }
+  
+
+
   createCustomModalBody = (columns, validateState, ignoreEditable) => {
     return (
       <MyCustomBody columns={columns}
         validateState={validateState}
         ignoreEditable={ignoreEditable} />
     );
+  }
+
+  afterSaveCell(row, cellName, cellValue){
+    console.log('in afterSaveCell we have these: row, cellName, cellValue', row, cellName, cellValue)
+    // console.log('in afterSaveCell we have this.state.selected_option', this.state.selected_option)
+    console.log('for afterSaveCell we will send changes to this table in db:', this.props.value.value)
+    // console.log('row[0] is', row[0])
+    // Object.keys(row)[0] 
+
+    console.log('first key in row object', Object.keys(row)[0], 'first value in row object', Object.values(row)[0]  )
+
+    /* 
+    We will send through to put:
+    - table name: this.props.value.value)
+    - field name: cellName
+    - new value: cellValue */
+      axios
+        .put('/admin_api/updateDataForTable', {
+          tableName: this.props.value.value,
+          tableRow_type: Object.keys(row)[0], 
+          tableRow_id: Object.values(row)[0],
+          fieldName: cellName,
+          newValueToPut: cellValue,
+        })
+        .then((response) => {
+          console.log('response is:', response)
+        })
   }
 
   render() {
@@ -115,27 +160,23 @@ export default class CustomInsertModalBodyTable extends React.Component {
 
     const listFor_hideInsertModalField = ['updated_at', 'created_at']
 
-
-    /* 
-    For fields we want to hide, need to add `hiddenOnInsert` on `<TableHeaderColumn>`
-    - created at
-    - updated at
-    - any main _id field, such as activity_id or project_id, for that specific table.
+    const cellEdit = {
+      mode: 'click', // click cell to edit
+      afterSaveCell: this.afterSaveCell,
+    }
 
 
-    
-    */
 
     return (
-      <BootstrapTable data={this.props.retrievedTable} selectRow={selectRowProp} search={true} options={options} deleteRow={true} insertRow>
+      <BootstrapTable data={this.props.retrievedTable} selectRow={selectRowProp} search={true} options={options} deleteRow={true} cellEdit={cellEdit} insertRow>
       
+
         {this.props.columnNames.length > 0 ?
           this.props.columnNames[0].map((currElement, index) => {
             
             // Guard condition: don't flow over-- stop when index is one less than same length of retrievedTable length
             // Keep running the loop, until we reach point just before index = this.props.retrievedTable.length (because one more increment, and it runs off the top of the target)
             if (index < this.props.retrievedTable.length) {
-              console.log('index === retrievedTable.length ', index, this.props.retrievedTable.length)
               var keyOfFirstElement = this.props.columnNames[0][Object.keys(currElement)[0]] // takes array of names of keys, then takes the first one. Example: activities --> takes activity_id
               console.log('at index of array', index, ' we have a ', keyOfFirstElement, 'of: ', this.props.retrievedTable[index][keyOfFirstElement])
               var uniqueID_for_rowKey = this.props.retrievedTable[index][keyOfFirstElement] // e.g. activities object's current element's activity_id

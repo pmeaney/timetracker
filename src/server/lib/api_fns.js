@@ -494,6 +494,22 @@ const get_Admin_dataFor_DataTable = (tableName) => {
 	})
 }
 
+// tableName,
+// tableRow_type,
+// tableRow_id,
+// fieldName,
+// newValueToPut
+const put_DataForTable_update_Table_Field_withData = (tableName, tableRow_type, tableRow_id, fieldName, newDataValue) => {
+	return Promise.try(() => {
+		return database(tableName)
+			.where(`${tableRow_type}`, `${tableRow_id}`)
+			.update(`${fieldName}`, `${newDataValue}`)
+			.returning(['*'])
+	})
+		.then((updatedRow) => {
+			console.log('updatedRow is now:', updatedRow)
+		})
+}
 
 
 module.exports = {
@@ -520,5 +536,6 @@ module.exports = {
 	checkIfNeedToRepopulateTaskQueue,
 	get_Locations_byProjID_byEmployeeID,
 	get_ListOf_ActivityCodes_by_EmployeeID,
-	get_Admin_dataFor_DataTable
+	get_Admin_dataFor_DataTable,
+	put_DataForTable_update_Table_Field_withData
 };

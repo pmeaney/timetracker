@@ -105,30 +105,71 @@ const AdminEventStream = (req, res) => {
 ##            Data for Data Table -- Receives url parameter as the table name to query
 ##########################################*/
 
+
+
+
+
 const get_DataForTable = (req, res) => {
 
   console.log('params received for db lookup: table name: ', req.params.tableName)
 
   // note on regex character escape:  \W is the equivalent of [^0-9a-zA-Z_]
   const escaped_tableName = req.params.tableName.replace(/\W/g, '')
-
-  if (true /* need to do some sort of security check */) {
+   // IMPORTANT__ADD_SECURITY: csurf token
+  if (true) {
     return Promise.try(() => {
       return Api_fns.get_Admin_dataFor_DataTable(escaped_tableName);
     })
     .then((dataResponse) => {
       console.log('dataResponse is ', dataResponse)
-      res.status(200).json(dataResponse)
+
+      // console.log('data response Object.keys(dataResponse[0])[0] is ', Object.keys(dataResponse[0])[0])
+      // need to sort by the first key (in first object) which will be primary key of the table selected: Object.keys(dataResponse[0])[0]
+      const keyToSortBy = Object.keys(dataResponse[0])[0]
+      
+      const sortedDataResponse = dataResponse.sort(General_fns.sort_by_object_field(keyToSortBy, false, parseInt))
+
+      console.log('sortedDataResponse', sortedDataResponse)
+      res.status(200).json(sortedDataResponse)
     })
   }
+}
+
+const put_DataForTable_update = (req, res) => {
+  console.log('req received for db table update', req.body)
+
+  /* 
+  besides tablename, fieldname, and newValue, we also need the ID of the row.
+  
+  */
+  // IMPORTANT__ADD_SECURITY: csurf token
+  if (true) {
+    return Promise.try(() => {
+      return Api_fns.put_DataForTable_update_Table_Field_withData(
+        req.body.tableName,
+        req.body.tableRow_type,
+        req.body.tableRow_id,
+        req.body.fieldName,
+        req.body.newValueToPut
+      )
+    })
+      .then((resultData) => {
+        // console.log('resultData', resultData)
+
+        res.status(200).json(resultData);
+      })
+  } else {
+    res.status(500).json({ error: 'sorry, we were unable to fulfill your request for to update the table data.' });
+  }
+
 }
 
 /*##########################################
 ##            Timesheets
 ##########################################*/
 const get_Timesheets_All = (req, res) => {
-
-  if (true /* need to do some sort of security check */) {
+   // IMPORTANT__ADD_SECURITY: csurf token
+  if (true) {
     return Promise.try(() => {
       return Api_fns.getAllTimesheets();
     }).then((timesheets) => {
@@ -148,8 +189,8 @@ const get_Timesheets_All = (req, res) => {
 ##            Activities //! Unused. This is just for reference
 ##########################################*/
 const get_Activities_All = (req, res) => {
-
-  if (true /* need to do some sort of security check */) {
+   // IMPORTANT__ADD_SECURITY: csurf token
+  if (true) {
     return Promise.try(() => {
       return Api_fns.getAllActivities();
     }).then((activities) => {
@@ -230,4 +271,5 @@ module.exports = {
   get_Timesheets_All,
   get_Activities_All,
   get_DataForTable,
+  put_DataForTable_update
 }

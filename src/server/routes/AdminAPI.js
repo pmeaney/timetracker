@@ -8,6 +8,8 @@ router.get('/', function (req, res, next) {
 
 router.get('/getDataForTable/:tableName', AdminAPI_ctrl.get_DataForTable);
 
+router.put('/updateDataForTable', AdminAPI_ctrl.put_DataForTable_update);
+
 router.get('/timesheets', AdminAPI_ctrl.get_Timesheets_All);
 
 router.get('/activities', AdminAPI_ctrl.get_Activities_All)

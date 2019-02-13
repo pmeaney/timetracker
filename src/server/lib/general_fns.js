@@ -24,11 +24,25 @@ const get_readable_time = (timestamp) => {
 	return rawTimestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
 }
 
+var sort_by_object_field = function (field, reverse, primer) {
+// source: https://stackoverflow.com/questions/979256/sorting-an-array-of-javascript-objects
+
+	var key = primer ?
+		function (x) { return primer(x[field]) } :
+		function (x) { return x[field] };
+
+	reverse = !reverse ? 1 : -1;
+
+	return function (a, b) {
+		return a = key(a), b = key(b), reverse * ((a > b) - (b > a));
+	}
+}
 
 
 module.exports = {
 	summarize_string,
 	get_readable_date,
-	get_readable_time
+	get_readable_time,
+	sort_by_object_field
 
 }

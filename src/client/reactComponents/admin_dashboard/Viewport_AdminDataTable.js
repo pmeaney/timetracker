@@ -5,6 +5,7 @@ import { toggle_Visibility_Viewport_AdminDataTable } from "./redux/actions"
 import BootstrapDataTable from './AdminDataTable_ReactBootstrapTable'
 import Select from 'react-select';
 import { getData_forDataTable, extractObjectKeys_into2D_array } from '../lib/getData_fns'
+
   /* 
   Todo___________
   Create function which accepts the selected table as argument.
@@ -128,17 +129,15 @@ class Viewport_AdminDataTable extends Component {
   
   render() {
 
-    const { selectedOption } = this.state;
-
     return (
       <article className="message is-link">
         <div className="message-header">
           <span className="customPaddingForText_adminDataTable">Admin Data Table</span>
           <span className="customSpan_adminDataTableSelector">
             <Select
-            value={selectedOption}
-            onChange={this.handleChange}
-            options={options}
+              value={this.state.selectedOption}
+              onChange={this.handleChange}
+              options={options}
           />
           </span>
           
@@ -151,7 +150,7 @@ class Viewport_AdminDataTable extends Component {
         </div>
         <div className="message-body addHeight">
           {this.state.columnNames.length > 0 ? 
-          <BootstrapDataTable columnNames={this.state.columnNames} retrievedTable={this.state.retrievedTable} value={selectedOption} />
+          <BootstrapDataTable columnNames={this.state.columnNames} retrievedTable={this.state.retrievedTable} value={this.state.selectedOption} />
           : null
           }
         </div>
