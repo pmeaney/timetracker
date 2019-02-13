@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
-import 'bootstrap/dist/css/bootstrap.min.css' // bootstrap css needed for react-bootstrap-table
-import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css'
+// import 'bootstrap/dist/css/bootstrap.min.css' // bootstrap css needed for react-bootstrap-table
+import "../../scss/scss-ReactBootstrapTable/bootstrap.scss"
+// import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css'
+import 'react-bootstrap-table/css/react-bootstrap-table.css'
 import axios from 'axios'
 
 /* // -> Project needs:
