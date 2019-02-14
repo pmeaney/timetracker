@@ -508,7 +508,12 @@ const put_DataForTable_update_Table_Field_withData = (tableName, tableRow_type, 
 	})
 		.then((updatedRow) => {
 			console.log('updatedRow is now:', updatedRow)
+			return updatedRow
 		})
+		.catch(function (error) {
+			console.error('Error from api_fns.js in function put_DataForTable_update_Table_Field_withData: ', error);
+			return error
+		});
 }
 
 

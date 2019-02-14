@@ -56,9 +56,15 @@ import { getData_forDataTable, extractObjectKeys_into2D_array } from '../lib/get
 
   */
 
+const initiallyLoadedOption = {
+  // This simply sets up a default value for the table, when the viewport is initially loaded
+  value: 'activities',
+  label: 'activities'
+}
 
 const options = [
   { value: 'activities', label: 'activities' },
+  { value: 'activity_codes', label: 'activity_codes' },
   { value: 'employees', label: 'employees' },
   { value: 'timesheets', label: 'timesheets' },
   { value: 'projects', label: 'projects' },
@@ -72,11 +78,7 @@ class Viewport_AdminDataTable extends Component {
     super();
     
     this.state = {
-      selectedOption: {
-        // This simply sets up a default value for the table
-        value: 'activities',
-        label: 'activities'
-      },
+      selectedOption: initiallyLoadedOption,
       retrievedTable: [],
       columnNames: []
     }
@@ -102,9 +104,6 @@ class Viewport_AdminDataTable extends Component {
           columnNames: setOfKeys_2D_array
         })
       })
-      .catch(error => {
-        console.log("Error during http get request for data in Viewport_AdminDataTable-- handleChange " + error)
-      })
 
   }
 
@@ -119,9 +118,6 @@ class Viewport_AdminDataTable extends Component {
           retrievedTable: result.data,
           columnNames: setOfKeys_2D_array
         })
-      })
-      .catch(error => {
-        console.log("Error during http get request for data in Viewport_AdminDataTable-- componentWillMount " + error)
       })
   }
 

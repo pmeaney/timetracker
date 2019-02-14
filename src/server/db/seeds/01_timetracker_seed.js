@@ -43,7 +43,7 @@ exports.seed = function(knex, Promise) {
         { activity_type: 'dry wall installation'},
         { activity_type: 'framing'},
         { activity_type: 'bull dozer driving'},
-        { activity_type: 'demolition &amp; cleanup'},
+        { activity_type: 'demolition and cleanup'},
       ]),
 
       /* 

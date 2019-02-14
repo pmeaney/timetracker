@@ -94,21 +94,16 @@ export default class CustomInsertModalBodyTable extends React.Component {
   constructor() {
     super();
   
+    this.state = {
+      errorMsg: '',
+      errorTargetedUpdate: '',
+      toggle_Visibility_ErrorNotification: false
+    }
     // if we don't bind this function, we cannot access state nor props within it.
-    this.afterSaveCell = this.afterSaveCell.bind(this)
+    this.beforeSaveCellAsync = this.beforeSaveCellAsync.bind(this)
+    this.HandleClick_CloseButton_VisibilityToggle_ErrorNotification = this.HandleClick_CloseButton_VisibilityToggle_ErrorNotification.bind(this)
   }
   
-  
-  componentWillMount() {
-    this.setState({
-      selected_option: this.props.value.value
-    })
-
-    console.log('this.props are in CWM', this.props)
-  }
-  
-
-
   createCustomModalBody = (columns, validateState, ignoreEditable) => {
     return (
       <MyCustomBody columns={columns}
@@ -117,31 +112,47 @@ export default class CustomInsertModalBodyTable extends React.Component {
     );
   }
 
-  afterSaveCell(row, cellName, cellValue){
-    console.log('in afterSaveCell we have these: row, cellName, cellValue', row, cellName, cellValue)
-    // console.log('in afterSaveCell we have this.state.selected_option', this.state.selected_option)
-    console.log('for afterSaveCell we will send changes to this table in db:', this.props.value.value)
-    // console.log('row[0] is', row[0])
-    // Object.keys(row)[0] 
+  beforeSaveCellAsync (row, cellName, cellValue, done){
+    axios
+      .put('/admin_api/updateDataForTable', {
+        tableName: this.props.value.value,
+        tableRow_type: Object.keys(row)[0], 
+        tableRow_id: Object.values(row)[0],
+        fieldName: cellName,
+        newValueToPut: cellValue,
+      })
+      .then((response) => {
+        console.log('response is:', response)
+        if (response.data.name === 'error') {
+          console.log('Error occured during attempted data update, details are:', response.data.detail)
+          this.setState({ 
+            errorMsg: response.data.detail,
+            errorTargetedUpdate: 'Row: ' + Object.values(row)[0] + ', Cell: ' + cellName + ', Value: ' + cellValue,
+            toggle_Visibility_ErrorNotification: false,
+           })
+          done(false)
+        } else {
+          console.log('The requested data update was successful, new row data is:', response.data[0])
+          if (this.state.errorMsg.length > 0) {
+            this.setState({
+              toggle_Visibility_ErrorNotification: true,
+              errorTargetedUpdate: '',
+              errorMsg: '',
+            })
+          }
+          done(true)
+        }
+      })
+    return 1
+  }
 
-    console.log('first key in row object', Object.keys(row)[0], 'first value in row object', Object.values(row)[0]  )
-
-    /* 
-    We will send through to put:
-    - table name: this.props.value.value)
-    - field name: cellName
-    - new value: cellValue */
-      axios
-        .put('/admin_api/updateDataForTable', {
-          tableName: this.props.value.value,
-          tableRow_type: Object.keys(row)[0], 
-          tableRow_id: Object.values(row)[0],
-          fieldName: cellName,
-          newValueToPut: cellValue,
-        })
-        .then((response) => {
-          console.log('response is:', response)
-        })
+  HandleClick_CloseButton_VisibilityToggle_ErrorNotification(e){
+    e.stopPropagation();
+    this.setState({ 
+      toggle_Visibility_ErrorNotification: true,
+      errorMsg: '',
+      errorTargetedUpdate: ''
+     })
   }
 
   render() {
@@ -164,12 +175,28 @@ export default class CustomInsertModalBodyTable extends React.Component {
 
     const cellEdit = {
       mode: 'click', // click cell to edit
-      afterSaveCell: this.afterSaveCell,
+      // beforeSaveCell: this.beforeSaveCell,
+      beforeSaveCell: this.beforeSaveCellAsync
     }
 
 
 
     return (
+
+      <div>
+
+      {this.state.errorMsg.length > 0 && !this.state.toggle_Visibility_ErrorNotification ?
+        <div className="notification is-danger">
+          <button 
+            className="delete"
+            onClick={e => this.HandleClick_CloseButton_VisibilityToggle_ErrorNotification(e)}
+          ></button>
+            Unable to make requested data update ({this.state.errorTargetedUpdate}) &mdash; due to the following error:
+            <br/><br /> <strong>{this.state.errorMsg}</strong>
+            <br/> Most likely this is because the data you input is out of range.  Please check the appropriate data table for acceptable inputs.
+        </div>
+      : null }
+
       <BootstrapTable data={this.props.retrievedTable} selectRow={selectRowProp} search={true} options={options} deleteRow={true} cellEdit={cellEdit} insertRow>
       
 
@@ -199,6 +226,8 @@ export default class CustomInsertModalBodyTable extends React.Component {
           null
         }
       </BootstrapTable>
+      </div>
+
     );
   }
 }
