@@ -14,6 +14,12 @@ router.get('/timesheets', AdminAPI_ctrl.get_Timesheets_All);
 
 router.get('/activities', AdminAPI_ctrl.get_Activities_All)
 
+router.get('/employees', AdminAPI_ctrl.get_Employees_All)
+
+router.get('/locationsByProjects', AdminAPI_ctrl.get_locationsByProjects_All)
+
+router.get('/activity_codes', AdminAPI_ctrl.get_activityCodes_All)
+
 router.get('/eventstream', AdminAPI_ctrl.AdminEventStream)
 
 module.exports = router;

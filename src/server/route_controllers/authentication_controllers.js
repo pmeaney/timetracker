@@ -15,11 +15,13 @@ const database = require('knex')(knex_config[environment]);
 // ***            Registration
 // ****************************************
 
-const get_RegistrationPage = function (req, res, next) {
+const get_RegistrationPage = function (req, res) {
+  console.log('req.session is:', req.session)
   res.render('pages/register', {
     data: {},
     errors: {},
-    env: process.env.NODE_ENV
+    env: process.env.NODE_ENV,
+    csrfToken: req.csrfToken()
   })
 }
 
@@ -38,7 +40,9 @@ const post_RegistrationPage_formValidationRequirements = [
       .custom((value, { req }) => value === req.body.password)
   ]
 
-const post_RegistrationPage_createNewUser = (req, res, next) => {
+const post_RegistrationPage_createNewUser = (req, res) => {
+  console.log('req.session is:', req.session)
+
   const errors = validationResult(req)
   const mappedErrors = errors.mapped()
   console.log('mappedErrors obj is:', mappedErrors)
@@ -54,11 +58,8 @@ const post_RegistrationPage_createNewUser = (req, res, next) => {
   // A - looking up registration request's user info by email to see if this account exists already.
   // B - if user obj does not exist, we can safely create one
   // C - if it does exist, let the visitor know so they can correct their actions
-
   if (mapErrors_noErrors == true) {
     console.log('notice: there are no errors from validation result');
-
-
     // A - Try to get user by email.  If its possible, we know that one is taken, so cant use it
     return Promise.try(() => {
       return Auth_fns.getUserByEmail(req.body.email);
@@ -102,7 +103,6 @@ const post_RegistrationPage_createNewUser = (req, res, next) => {
               req.session.mock_employee_id = 2
               // console.log(req.session)
 
-
               // here I should add user info to session and redirect them to the page a new user would see:
               // their user profile, where they can apply from
               // (in the future, i can redirect using user info this way, such as by reading a user's employment status or rank)
@@ -114,27 +114,14 @@ const post_RegistrationPage_createNewUser = (req, res, next) => {
               req.session.save(function (err) {
                 // session updated
                 console.log("Session Before Redirect: ", req.session);
-                // res.redirect('/dashboard/profile/' + req.session.user_id)
                 res.redirect('/dashboard/user/' + req.session.user_id)
-              });
-
-
-
-
+              })
             })
-
-
-
           })
-
         })
 
-
-
         // - B2. insert user into users table.
-
         // passing in the request objects from form, and hashed_password
-
         // should even pass in some of their info, such as username, so its clear that it worked
         // - B3. flash confirmation
       } else {
@@ -142,38 +129,38 @@ const post_RegistrationPage_createNewUser = (req, res, next) => {
         // the user object based on the email already exists
         req.flash('infoMessage', 'Sorry, a user with that email address already exists.  You may already have an account, or perhaps you mistyped your email address.')
         // flash some error message to the user.
-
         res.render('pages/register', {
           data: req.body, // { message, email }
           errors: errors.mapped(),
-          env: process.env.NODE_ENV
+          env: process.env.NODE_ENV,
+          csrfToken: req.csrfToken()
         })
       }
-
     });
-
   } else {
     // This will push data to the template to make it highlight the error fields
     console.log('notice: there ARE errors from validation result');
     res.render('pages/register', {
       data: req.body, // { message, email }
       errors: errors.mapped(),
-      env: process.env.NODE_ENV
+      env: process.env.NODE_ENV,
+      csrfToken: req.csrfToken()
     })
   }
-
   // The matchedData function returns the output of the sanitizers on our input.
   // i.e. this is the sanitized req.body  
   const data = matchedData(req)
   console.log('Sanitized:', data)
-
 }
 
 // ****************************************
 // ***            Login
 // ****************************************
 
-const get_LoginPage = function (req, res, next) {
+const get_LoginPage = function (req, res) {
+
+  console.log('req.session is:', req.session)
+  console.log('req.csrfToken() is', req.csrfToken())
 
   // if user has a session already, redirect them to their profile page.
   // else, render the login page.
@@ -187,36 +174,51 @@ const get_LoginPage = function (req, res, next) {
   res.render('pages/login',
     {
       // errors: '',
-      env: process.env.NODE_ENV
+      env: process.env.NODE_ENV,
+      csrfToken: req.csrfToken()
     });
 
 }
 
-const post_LoginPage = function (req, res, next) {
+const post_LoginPage = function (req, res) {
+  
   console.log('req.body', req.body)
   console.log('session info', req.session)
-
   return Promise.try(() => {
     return Auth_fns.checkPasswordForEmail(req.body.password, req.body.email)
-  }).then((result) => {
-    console.log('[Msg from users.js API] result of comparison is', result)
-    if (result === true) {
+  }).then((response) => {
+    console.log('[Msg from users.js API] response of comparison is', response)
 
-      /* Next step: Check what type of user the user is, on the result data.
-      Control with appropriate conditional statement: Based on whether its employee, manager, or admin, 
-      redirect to the appropriate dashboard */
+    if (response.length > 0) {
+    //   /* Next step: Check what type of user the user is, on the result data.
+    //   Control with appropriate conditional statement: Based on whether its employee, manager, or admin, 
+    //   redirect to the appropriate dashboard */
+      req.session.user_id = response[0].user_id
 
-      
+      // ! Mocking the employee ID
+      req.session.mock_employee_id = 2
+      req.session.user_type = response[0].user_type
       req.session.good_user_login_attempt = 'Hey there.  Welcome.'
       res.redirect('/dashboard/user/' + req.session.user_id)
+      // res.redirect('/dashboard/user/' + req.session.user_id, { csrfToken: req.csrfToken()})
       console.log('session info updated: ', req.session)
     } else {
       req.session.bad_user_login_attempt = 'Sorry, your login credentials were incorrect. Please try again.'
-      res.redirect('/auth/login')
-      console.log('session info updated: ', req.session)
+      res.render('/auth/login')
+      console.log('session info updated: ', req.session, { csrfToken: req.csrfToken()})
     }
   })
+}
 
+const get_Logout = function (req, res) {
+  // Should probably check if the user is logged in, if so, destroy the session.
+  req.session.destroy(
+    function() {
+    //  Here, we would redirect... and perhaps even send a 'goodbye message'
+    //  Should redirect to some landing page...
+      res.send('Session deleted');
+    }
+  )
 }
 
 module.exports = {
@@ -224,5 +226,6 @@ module.exports = {
   post_RegistrationPage_formValidationRequirements,
   post_RegistrationPage_createNewUser,
   get_LoginPage,
-  post_LoginPage
+  post_LoginPage,
+  get_Logout
 };

@@ -113,6 +113,7 @@ export default class CustomInsertModalBodyTable extends React.Component {
   }
 
   beforeSaveCellAsync (row, cellName, cellValue, done){
+    // documentation: https://github.com/AllenFang/react-bootstrap-table/blob/master/examples/js/cell-edit/cell-edit-hook-table.js
     axios
       .put('/admin_api/updateDataForTable', {
         tableName: this.props.value.value,
@@ -133,6 +134,8 @@ export default class CustomInsertModalBodyTable extends React.Component {
           done(false)
         } else {
           console.log('The requested data update was successful, new row data is:', response.data[0])
+
+          // if after successful update of data, and state still has error info, clear it and close the error notification message
           if (this.state.errorMsg.length > 0) {
             this.setState({
               toggle_Visibility_ErrorNotification: true,

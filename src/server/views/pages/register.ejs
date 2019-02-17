@@ -50,6 +50,8 @@
         <% } %>
 
         <form role="form" method="POST" action="/auth/register" novalidate>
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
           <div class="field">
             <p class="control">
               <!-- <p class="control has-icons-left has-icons-right"> -->

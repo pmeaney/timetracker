@@ -184,6 +184,44 @@ const get_Timesheets_All = (req, res) => {
   }
 }
 
+/*##########################################
+##            Projects
+##########################################*/
+const get_locationsByProjects_All = (req, res) => {
+  // IMPORTANT__ADD_SECURITY: csurf token
+  return Promise.try(() => {
+    return Api_fns.get_Locations_byProjID_forAllProjects()
+  }).then((response) => {
+    // console.log('get_RecentWorkActivityInfo_ByEmpID response is ', response)
+    res.status(200).json(response);
+  })
+}
+
+/*##########################################
+##            Activity codes
+##########################################*/
+const get_activityCodes_All = (req, res) => {
+  // IMPORTANT__ADD_SECURITY: csurf token
+  return Promise.try(() => {
+    return Api_fns.getActivityCodes_All()
+  }).then((response) => {
+    // console.log('get_activityCodes_All response is ', response)
+    res.status(200).json(response);
+  })
+}
+
+/*##########################################
+##            Employees
+##########################################*/
+const get_Employees_All = (req, res)  => {
+  // IMPORTANT__ADD_SECURITY: csurf token
+  return Promise.try(() => {
+    return Api_fns.getEmployees_All()
+  }).then((response) => {
+    // console.log('get_activityCodes_All response is ', response)
+    res.status(200).json(response);
+  })
+} 
 
 /*##########################################
 ##            Activities //! Unused. This is just for reference
@@ -270,6 +308,9 @@ module.exports = {
   AdminEventStream,
   get_Timesheets_All,
   get_Activities_All,
+  get_locationsByProjects_All,
+  get_activityCodes_All,
+  get_Employees_All,
   get_DataForTable,
-  put_DataForTable_update
+  put_DataForTable_update,
 }

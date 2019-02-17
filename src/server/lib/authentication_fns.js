@@ -45,7 +45,7 @@ const createUser = (email, hashed_password) => {
 
 const checkPasswordForEmail = (password, email)=> {
 	return Promise.try(() => {
-	        return database("users").where({ user_email: email });
+		return database("users").where({ user_email: email });
 	}).then((user)=>{
 
 		console.log('user.length',user.length)
@@ -59,6 +59,12 @@ const checkPasswordForEmail = (password, email)=> {
 
 			return Promise.try(() => {
 				return bcrypt.compare(password, user[0]["hashed_password"])
+			}).then((result) => {
+				if (result) {
+					console.log('Successful user match, sending user data to frontend...', user)
+					return user
+				}
+
 			})
 		}
 	})

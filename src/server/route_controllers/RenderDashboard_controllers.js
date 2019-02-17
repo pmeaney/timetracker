@@ -1,13 +1,13 @@
 // const dotenv = require("dotenv").config({ path: '../.env' });
 
-const get_adminDashboard = function (req, res, next) {
+const get_adminDashboard = function (req, res) {
   res.render('pages/adminDashboard', {
     errors: {},
     // gmaps_api_key: process.env.GMAPS_API.toString()
   }) 
 }
 
-const get_userDashboard_byUserID = function (req, res, next) {
+const get_userDashboard_byUserID = function (req, res) {
 
   // if there's no user session
   // if (!req.session.user_id) {
@@ -18,6 +18,7 @@ const get_userDashboard_byUserID = function (req, res, next) {
   // if the user session has the same user_id as the one they're trying to access
 
   const param_user_id_asInt = parseInt(req.params.user_id, 10);
+  console.log('for render dashboard, param_user_id_asInt is', param_user_id_asInt)
 
   console.log('req.session is ', req.session)
   if (req.session.user_id === param_user_id_asInt) {

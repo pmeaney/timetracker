@@ -56,7 +56,14 @@ const getActivityType_by_activity_code_id = (activity_code_id) => {
 		return database("activity_codes")
 			.select('activity_codes.activity_type')
 			.where({ activity_code_id: activity_code_id });
-    })
+		})
+}
+
+const getActivityCodes_All = () => {
+	return Promise.try(() => {
+		return database("activity_codes")
+			.select('activity_codes.activity_code_id', 'activity_codes.activity_type')
+	})
 }
 
 const getActivities_forWhich_timesheetsDoNotExist = (emp_id) => {
@@ -287,9 +294,14 @@ const get_ListOf_ActivityCodes_by_EmployeeID = (emp_id) => {
 
 
 /* #############	Employees 	  ################ */
-const getAllEmployees = () => {
+const getEmployees_All = () => {
 	return Promise.try(() => {
-		return database("employees");
+		return database("employees")
+			.select(
+				'employees.employee_id',
+				'employees.firstName',
+				'employees.lastName'
+			)
     })
 }
 
@@ -348,7 +360,7 @@ const getLocation_by_project_id = (project_id) => {
 // 1. lookup activities by activities.emp_assigned_to === employee_id
 // 2. With those activities, return a set of distinct project_id 
 // 3. With that set of unique project_ids, return location data
-var get_Locations_byProjID_byEmployeeID = (emp_id) => {
+const get_Locations_byProjID_byEmployeeID = (emp_id) => {
 	return Promise.try(() => {
 		return database('activities')
 			.where({ emp_assigned_to: emp_id })
@@ -378,6 +390,30 @@ var get_Locations_byProjID_byEmployeeID = (emp_id) => {
 	})
 }
 // get_Locations_byProjID_byEmployeeID(2)
+const get_Locations_byProjID_forAllProjects = () => {
+	return Promise.try(() => {
+		return database('projects')
+			.select('projects.project_id', 'projects.location_id', 'projects.project_mgr_emp_id')
+			.join('locations',
+				'projects.location_id',
+				'=',
+				'locations.location_id')
+			.select('locations.location_id',
+				'locations.location_name',
+				'locations.location_address',
+				'locations.location_city',
+				'locations.location_state',
+				'locations.location_zip',
+				'locations.location_type')
+			// get query employees with project_mgr_emp_id
+			.join('employees',
+				'employees.employee_id', // needs to be unique table alias, to keep it separate from next query using 'employee_id'
+				'=',
+				'projects.project_mgr_emp_id')
+			.select({ project_manager_firstName: 'employees.firstName', project_manager_lastName: 'employees.lastName' })
+	})
+}
+
 
 const AdditionalDataLookup_On_Timesheets_array = (timesheets) => {
 	
@@ -523,9 +559,10 @@ module.exports = {
 	getActivitiesBy_employee_assigned_to,
 	post_newActivity_employeeSelfAssignedActivity,
 	getActivityType_by_activity_code_id,
+	getActivityCodes_All,
 	getActivities_forWhich_timesheetsDoNotExist,
 	AdditionalDataLookup_On_newActivity,
-	getAllEmployees,
+	getEmployees_All,
 	getEmployee_by_id,
 	getAllTimesheets,
 	getTimesheet_by_timesheet_id,
@@ -540,6 +577,7 @@ module.exports = {
 	populateTestUserData,
 	checkIfNeedToRepopulateTaskQueue,
 	get_Locations_byProjID_byEmployeeID,
+	get_Locations_byProjID_forAllProjects,
 	get_ListOf_ActivityCodes_by_EmployeeID,
 	get_Admin_dataFor_DataTable,
 	put_DataForTable_update_Table_Field_withData

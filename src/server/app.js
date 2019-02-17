@@ -7,6 +7,7 @@ const validator = require('express-validator');
 const helmet = require('helmet')
 const flash = require('express-flash');
 const multer = require('multer'); // file storing middleware
+var csrf = require('csurf')
 
 const dotenv = require('dotenv').config({ path: './.env' });
 
@@ -111,7 +112,8 @@ const middleware = [
     },
     store: store
   }),
-  flash()
+  flash(),
+  csrf(),
 ]
 
 app.use(middleware)
@@ -131,6 +133,8 @@ app.use(function(req, res, next) {
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
+  res.locals.csrfToken = req.csrfToken()
+
   // res.locals.error = req.app.get('env') === 'development' ? err : {};
   res.locals.error = req.app.get('env') === 'development' ? err : err;
 

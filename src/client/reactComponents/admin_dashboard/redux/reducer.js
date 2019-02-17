@@ -1,6 +1,7 @@
 
 const initialState = {
   visibility_viewport_maps: false,
+  visibility_viewport_newItemDashboard: false,
   visibility_viewport_adminDataTable: false,
   timesheetData: [],
   infoWindows: []
@@ -21,6 +22,12 @@ const reducer = (state = initialState, action) => {
       return (state = {
         ...state,
         visibility_viewport_adminDataTable: action.payload
+      })
+      
+    case "TOGGLE_VISIBILITY_VIEWPORT_NEW_ITEM_DASHBOARD":
+      return (state = {
+        ...state,
+        visibility_viewport_newItemDashboard: action.payload
       })
 
     case "SETUP_INITIAL_TIMESHEET_DATA":

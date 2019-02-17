@@ -7,54 +7,18 @@ import Select from 'react-select';
 import { getData_forDataTable, extractObjectKeys_into2D_array } from '../lib/getData_fns'
 
   /* 
-  Todo___________
-  Create function which accepts the selected table as argument.
-  Run this function on componentWillMount (more info on the function below)
-
-  Thoughts_______
-  First step: Select table from dropdown.
-    -> Fire a function with Selected table as argument 
-      This function is a get call to the API to request the user-specified data
-      After we get the data response, make sure we pass it to the data table as an array of objects
-      example:
-        {
-          id: id,
-          name: 'Item name ' + id,
-          price: 2100 + i
-        }
-  
-  If time-related, then 
-    --> Second step: Select filter (date selector, or search box)
-    After filtered timeframe is selected, update the table view.
-      --> This can probably actually just be a column filter
-
-  Check out filtering exampke:
-  https://codesandbox.io/s/r74mokr5x4
-  Upon first step, The content populates into a 2nd selector, along with a data table.
-  The second slector is the filter.
-
-
-  if activities or timesheets, 2nd dropdown = date selector
-  if employees, projects, or locations, 2nd dropdown = search term
-
-  If selected option is timesheets or activities,
-    show a date time selector. (else show null)
-    Then, listen for date time selection.  Based on date selection, send props to table.
-  
-  If selected option is employees, projects, or locations
-    show a search box.
-    Then listen for input.  Based on search input, send props to table.
-
-  
-  We also need a date picker.
-
-  if selected option is activities or timesheets, 
-  The handle change method will not fire the next step (to send state as props to datatable)
-  until it also receives a selected date range.
-
-
-
-  */
+   => Update idea:
+   To make the table more human readable, perhaps on data retrieval, convert data set to something like this:
+    basically, we'll have the datapoint ID (foreign key), but also the readable label, instead of just the datapoint ID
+   This way both are available-- the foreign key is available for user's editing, and readable label is displayed in table.
+   For example:
+   instead of--
+    activity_code_id: 2
+   have this--
+    activity_code_id:
+        { value: 2,
+          label: outdoor painting }
+   */
 
 const initiallyLoadedOption = {
   // This simply sets up a default value for the table, when the viewport is initially loaded
@@ -121,10 +85,7 @@ class Viewport_AdminDataTable extends Component {
       })
   }
 
-
-  
   render() {
-
     return (
       <article className="message is-link">
         <div className="message-header">
@@ -136,7 +97,6 @@ class Viewport_AdminDataTable extends Component {
               options={options}
           />
           </span>
-          
           <button
             className="delete"
             aria-label="delete"

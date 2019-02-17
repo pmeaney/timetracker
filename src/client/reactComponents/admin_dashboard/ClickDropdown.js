@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { toggle_Visibility_Viewport_Maps, toggle_Visibility_Viewport_AdminDataTable } from "./redux/actions"
+import { toggle_Visibility_Viewport_Maps, toggle_Visibility_Viewport_AdminDataTable, toggle_Visibility_Viewport_NewItemDashboard } from "./redux/actions"
 import { connect } from 'react-redux'
 
 class ClickDropdown extends Component {
@@ -60,6 +60,11 @@ class ClickDropdown extends Component {
     this.props.toggle_Visibility_Viewport_AdminDataTable(!this.props.visibility_viewport_adminDataTable)
   }
 
+  HandleClick_VisibilityToggle_Viewport_NewItemDashboard(e) {
+    e.stopPropagation(); // stop bubbling up to parent div
+    this.props.toggle_Visibility_Viewport_NewItemDashboard(!this.props.visibility_viewport_newItemDashboard)
+  }
+
   render() {
     return (
       <div>
@@ -93,6 +98,14 @@ class ClickDropdown extends Component {
                   <li>
                     <button
                       className="button"
+                      onClick={e => this.HandleClick_VisibilityToggle_Viewport_NewItemDashboard(e)}
+                    >
+                      New Item Dashboard
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="button"
                       onClick={e => this.HandleClick_VisibilityToggle_Viewport_AdminDataTable(e)}
                     >
                       Admin DataTable
@@ -113,11 +126,13 @@ class ClickDropdown extends Component {
 
 const mapStateToProps = store => ({
   visibility_viewport_maps: store.visibility_viewport_maps,
+  visibility_viewport_newItemDashboard: store.visibility_viewport_newItemDashboard,
   visibility_viewport_adminDataTable: store.visibility_viewport_adminDataTable
 })
 
 const mapDispatchToProps = {
   toggle_Visibility_Viewport_Maps,
+  toggle_Visibility_Viewport_NewItemDashboard,
   toggle_Visibility_Viewport_AdminDataTable
 }
 

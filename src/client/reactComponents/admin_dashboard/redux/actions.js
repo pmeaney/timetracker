@@ -8,6 +8,10 @@ export const toggle_Visibility_Viewport_AdminDataTable = (value) => ({
   payload: value
 })
 
+export const toggle_Visibility_Viewport_NewItemDashboard = (value) => ({
+  type: "TOGGLE_VISIBILITY_VIEWPORT_NEW_ITEM_DASHBOARD",
+  payload: value
+})
 
 export const setup_Initial_Timesheet_Data = (value1, value2) => ({
   type: "SETUP_INITIAL_TIMESHEET_DATA",

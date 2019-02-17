@@ -294,13 +294,10 @@ const post_Profile_ContactInfo_by_EmployeeID = (req, res) => {
 }
 
 const get_RecentWorkActivityInfo_ByEmpID = (req, res) => {
-
   // ! Using a Mocked employee ID from session -- In production, change to actual employee ID from session
   // console.log('req.session.mock_employee_id', req.session.mock_employee_id)
   const employee_id_asInt = parseInt(req.session.mock_employee_id, 10)
-
   // console.log('get_RecentWorkActivityInfo_ByEmpID for employee_id', employee_id_asInt)
-
   if (true) {
   return Promise.try(() => {
     return Api_fns.get_Locations_byProjID_byEmployeeID(employee_id_asInt)
@@ -309,7 +306,6 @@ const get_RecentWorkActivityInfo_ByEmpID = (req, res) => {
       res.status(200).json(response);
     })  
   }
-
 }
 
 const get_ListOf_activity_codes = (req, res) => {
