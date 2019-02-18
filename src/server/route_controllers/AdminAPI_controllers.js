@@ -105,17 +105,13 @@ const AdminEventStream = (req, res) => {
 ##            Data for Data Table -- Receives url parameter as the table name to query
 ##########################################*/
 
-
-
-
-
 const get_DataForTable = (req, res) => {
 
   console.log('params received for db lookup: table name: ', req.params.tableName)
 
   // note on regex character escape:  \W is the equivalent of [^0-9a-zA-Z_]
   const escaped_tableName = req.params.tableName.replace(/\W/g, '')
-   // IMPORTANT__ADD_SECURITY: csurf token
+   
   if (true) {
     return Promise.try(() => {
       return Api_fns.get_Admin_dataFor_DataTable(escaped_tableName);
@@ -137,12 +133,9 @@ const get_DataForTable = (req, res) => {
 
 const put_DataForTable_update = (req, res) => {
   console.log('req received for db table update', req.body)
-
   /* 
   besides tablename, fieldname, and newValue, we also need the ID of the row.
-  
   */
-  // IMPORTANT__ADD_SECURITY: csurf token
   if (true) {
     return Promise.try(() => {
       return Api_fns.put_DataForTable_update_Table_Field_withData(
@@ -168,7 +161,7 @@ const put_DataForTable_update = (req, res) => {
 ##            Timesheets
 ##########################################*/
 const get_Timesheets_All = (req, res) => {
-   // IMPORTANT__ADD_SECURITY: csurf token
+   
   if (true) {
     return Promise.try(() => {
       return Api_fns.getAllTimesheets();
@@ -188,7 +181,7 @@ const get_Timesheets_All = (req, res) => {
 ##            Projects
 ##########################################*/
 const get_locationsByProjects_All = (req, res) => {
-  // IMPORTANT__ADD_SECURITY: csurf token
+  
   return Promise.try(() => {
     return Api_fns.get_Locations_byProjID_forAllProjects()
   }).then((response) => {
@@ -201,7 +194,7 @@ const get_locationsByProjects_All = (req, res) => {
 ##            Activity codes
 ##########################################*/
 const get_activityCodes_All = (req, res) => {
-  // IMPORTANT__ADD_SECURITY: csurf token
+  
   return Promise.try(() => {
     return Api_fns.getActivityCodes_All()
   }).then((response) => {
@@ -214,7 +207,7 @@ const get_activityCodes_All = (req, res) => {
 ##            Employees
 ##########################################*/
 const get_Employees_All = (req, res)  => {
-  // IMPORTANT__ADD_SECURITY: csurf token
+  
   return Promise.try(() => {
     return Api_fns.getEmployees_All()
   }).then((response) => {
@@ -227,7 +220,7 @@ const get_Employees_All = (req, res)  => {
 ##            Activities //! Unused. This is just for reference
 ##########################################*/
 const get_Activities_All = (req, res) => {
-   // IMPORTANT__ADD_SECURITY: csurf token
+   
   if (true) {
     return Promise.try(() => {
       return Api_fns.getAllActivities();

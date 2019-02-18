@@ -5,6 +5,12 @@ var WebpageContent_ctrl = require('../route_controllers/RegularWebpageContent_co
 
 /* GET home page. */
 router.get('/', WebpageContent_ctrl.get_indexPage)
+
+// this was just to test & try to catch 500 error
+// router.get('/make_error_500', function (req, res, next) {
+//   res.status(500).send()
+// })
+
 router.get('/timetracker', WebpageContent_ctrl.get_timetrackerLandingPage)
 
 router.get('/stats_data/assault', WebpageContent_ctrl.local_data_statsProject)

@@ -49,20 +49,32 @@ const checkPasswordForEmail = (password, email)=> {
 	}).then((user)=>{
 
 		console.log('user.length',user.length)
-		if (user.length < 1 || user === 'undefined') {
+		if (user.length < 1 || user[0] === undefined || password === "") {
 			return false
 		} else {
 
-			console.log('user from user_fns of user lookup is ', user)
+			console.log('Found user for the email that was input... Now comparing hashed passwords')
+			// console.log('user from user_fns of user lookup is ', user)
 			// compare hashed version of the password input via the form
 			// with the [looked-up-by-email] user's hashed password
 
 			return Promise.try(() => {
 				return bcrypt.compare(password, user[0]["hashed_password"])
 			}).then((result) => {
-				if (result) {
-					console.log('Successful user match, sending user data to frontend...', user)
-					return user
+				console.log('result from hashed password comparison was:', result)
+				if (result === true) {
+					console.log('Successful user match, sending user data to frontend...')
+					var user_info = {
+						user_id: user[0].user_id,
+						employee_id: user[0].employee_id,
+						user_email: user[0].user_email,
+						user_type: user[0].user_type,
+						is_authorized: true
+					}
+					return user_info
+				} else {
+					console.log('result from password comparison is false, will return { is_authorized: false }')
+					return { is_authorized: false }
 				}
 
 			})

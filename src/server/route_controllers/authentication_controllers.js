@@ -16,6 +16,7 @@ const database = require('knex')(knex_config[environment]);
 // ****************************************
 
 const get_RegistrationPage = function (req, res) {
+  console.log('req.body is:', req.body)
   console.log('req.session is:', req.session)
   res.render('pages/register', {
     data: {},
@@ -24,7 +25,6 @@ const get_RegistrationPage = function (req, res) {
     csrfToken: req.csrfToken()
   })
 }
-
 
 const post_RegistrationPage_formValidationRequirements = [
   check('email')
@@ -42,6 +42,7 @@ const post_RegistrationPage_formValidationRequirements = [
 
 const post_RegistrationPage_createNewUser = (req, res) => {
   console.log('req.session is:', req.session)
+  console.log('req.body is:', req.body)
 
   const errors = validationResult(req)
   const mappedErrors = errors.mapped()
@@ -133,7 +134,7 @@ const post_RegistrationPage_createNewUser = (req, res) => {
           data: req.body, // { message, email }
           errors: errors.mapped(),
           env: process.env.NODE_ENV,
-          csrfToken: req.csrfToken()
+          csrfToken: req.csrfToken(),
         })
       }
     });
@@ -144,7 +145,7 @@ const post_RegistrationPage_createNewUser = (req, res) => {
       data: req.body, // { message, email }
       errors: errors.mapped(),
       env: process.env.NODE_ENV,
-      csrfToken: req.csrfToken()
+      csrfToken: req.csrfToken(),
     })
   }
   // The matchedData function returns the output of the sanitizers on our input.
@@ -160,6 +161,7 @@ const post_RegistrationPage_createNewUser = (req, res) => {
 const get_LoginPage = function (req, res) {
 
   console.log('req.session is:', req.session)
+  console.log('req.body is:', req.body)
   console.log('req.csrfToken() is', req.csrfToken())
 
   // if user has a session already, redirect them to their profile page.
@@ -175,50 +177,84 @@ const get_LoginPage = function (req, res) {
     {
       // errors: '',
       env: process.env.NODE_ENV,
-      csrfToken: req.csrfToken()
+      csrfToken: req.csrfToken(),
     });
 
 }
 
 const post_LoginPage = function (req, res) {
   
-  console.log('req.body', req.body)
-  console.log('session info', req.session)
+  console.log('req.body is:', req.body)
+  console.log('req.session is:', req.session)
   return Promise.try(() => {
     return Auth_fns.checkPasswordForEmail(req.body.password, req.body.email)
   }).then((response) => {
-    console.log('[Msg from users.js API] response of comparison is', response)
+    console.log('[Response received from authentication_fns.js API] -- result of comparison is', response)
 
-    if (response.length > 0) {
-    //   /* Next step: Check what type of user the user is, on the result data.
+    if (response.is_authorized === true) {
+    //   Next step: Check what type of user the user is, on the result data.
     //   Control with appropriate conditional statement: Based on whether its employee, manager, or admin, 
-    //   redirect to the appropriate dashboard */
-      req.session.user_id = response[0].user_id
+    //   redirect to the appropriate dashboard 
+      req.session.user_id = response.user_id
 
       // ! Mocking the employee ID
       req.session.mock_employee_id = 2
-      req.session.user_type = response[0].user_type
-      req.session.good_user_login_attempt = 'Hey there.  Welcome.'
+      req.session.user_type = response.user_type
+      req.session.is_authorized = response.is_authorized
+
       res.redirect('/dashboard/user/' + req.session.user_id)
       // res.redirect('/dashboard/user/' + req.session.user_id, { csrfToken: req.csrfToken()})
       console.log('session info updated: ', req.session)
     } else {
-      req.session.bad_user_login_attempt = 'Sorry, your login credentials were incorrect. Please try again.'
-      res.render('/auth/login')
-      console.log('session info updated: ', req.session, { csrfToken: req.csrfToken()})
+      // req.session.bad_user_login_attempt = 'Sorry, your login credentials were incorrect. Please try again.'
+      req.flash('infoMessage', 'Sorry, your login credentials were incorrect. Please try again.')  
+      // console.log('session info updated: ', req.session, { csrfToken: req.csrfToken() })
+      res.redirect('/auth/login')
+      
     }
   })
 }
 
 const get_Logout = function (req, res) {
-  // Should probably check if the user is logged in, if so, destroy the session.
-  req.session.destroy(
-    function() {
-    //  Here, we would redirect... and perhaps even send a 'goodbye message'
-    //  Should redirect to some landing page...
-      res.send('Session deleted');
+
+  if (req.session.is_authorized === true) {
+  // If they're logged in,
+  //    regenerate the session to show that they've been logged out
+  //    then send them to the logout page.
+  const session_user_type = req.session.user_type
+  const session_mock_employee_id = req.session.mock_employee_id
+  const session_mock_user_id = req.session.user_id
+
+  req.session.regenerate(
+    function () {
+      req.session.is_authorized = false
+      req.session.has_loggedOut = true
+      req.session.user_type = session_user_type
+      req.session.mock_employee_id = session_mock_employee_id
+      req.session.user_id = session_mock_user_id
+
+      console.log('req.session after logout is', req.session)
+
+      req.flash('infoMessage', 'Thanks for your visit.')  
+      res.render('pages/logout', {
+        env: process.env.NODE_ENV,
+      })
+
     }
   )
+  } else {
+    // Otherwise, they are not logged in... but apparently are trying to 
+    // visit the logout page... so we'll just send them to it.
+    res.render('pages/logout', {
+      env: process.env.NODE_ENV,
+    })
+  }
+
+  // req.logout()
+  // res.redirect('pages/logout')
+  // res.render('pages/logout', {
+  //   env: process.env.NODE_ENV,
+  // })
 }
 
 module.exports = {

@@ -230,7 +230,6 @@ class Viewport_TaskList extends Component {
         var latitude = position.coords.latitude;
         var longitude = position.coords.longitude;
         if (isActiveTimesheet) {
-  
           SuccessCallback_submitData_ClockOut_ActiveTimesheet(latitude, longitude)
         } else {
           SuccessCallback_submitData_ClockIn_newTimesheet(latitude, longitude)
@@ -238,6 +237,9 @@ class Viewport_TaskList extends Component {
       }
       function error() {
         console.log("Unable to retrieve your location")
+        // on error, pass a bunk lat & long data, just to complete the process.
+        // 29.769 ,  -99.7479 ... 00.000, 00.0000
+        // SuccessCallback_submitData_ClockIn_newTimesheet()
       }
       console.log('############################')
       console.log("Locating... for activity_id: ", activity_id)

@@ -16,12 +16,12 @@ const get_userDashboard_byUserID = function (req, res) {
   // }
 
   // if the user session has the same user_id as the one they're trying to access
-
+  
   const param_user_id_asInt = parseInt(req.params.user_id, 10);
   console.log('for render dashboard, param_user_id_asInt is', param_user_id_asInt)
-
+  console.log('req.body is', req.body)
   console.log('req.session is ', req.session)
-  if (req.session.user_id === param_user_id_asInt) {
+  if (req.session.is_authorized === true && req.session.user_id === param_user_id_asInt) {
 
     /* on this page a place for them to create a profile.
   
@@ -82,6 +82,7 @@ const get_userDashboard_byUserID = function (req, res) {
 
   } else {
     // session ID does not equal the one passed
+    req.flash('infoMessage', 'It appears you may need to login.')
     res.redirect('/inaccessible');
   }
 

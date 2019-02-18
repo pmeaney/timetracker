@@ -101,7 +101,7 @@ const post_create_timesheet_toClockIn = (req, res) => {
   //   if so, continue. (allow access b/c they're logged in-- their session has an employee id)
 
   // ! For now, bypassing validation to prototype the route
-  // IMPORTANT__ADD_SECURITY: csurf token
+  
   if (true) {
     return Promise.try(() => {
       return Api_fns.getTimesheet_by_activity_id(activity_id_For_Timesheets_Lookup)
@@ -150,7 +150,7 @@ const post_create_timesheet_toClockIn = (req, res) => {
 
 const put_update_timesheet_toClockOut = (req, res) => {
 
-  // IMPORTANT__ADD_SECURITY: csurf token
+  
   console.log('req.body is', req.body)
   
   if (true) {
@@ -261,7 +261,7 @@ const get_PendingTasks_by_EmployeeID = (req, res) => {
 // ********************************************************
 
 const post_Profile_ContactInfo_by_EmployeeID = (req, res) => {
-  // IMPORTANT__ADD_SECURITY: csurf token
+  
 
   console.log('request body is', req.body)
   const phoneNumber_escaped = escape(req.body.phoneNumber)
@@ -328,10 +328,7 @@ const get_ListOf_activity_codes = (req, res) => {
 
 // /emp_api/activities/createSelfAssignedTask
 const post_createSelfAssignedTask = (req, res) => {
-  // IMPORTANT__ADD_SECURITY: csurf token
-
   console.log('req.body', req.body)
-  
    // IMPORTANT__CHANGE_IN_PRODUCTION: 
    // ! (Using a Mocked employee ID from session (set on login auth) -- In production, change to actual employee ID from session)
   const employee_id_asInt = parseInt(req.session.mock_employee_id, 10)

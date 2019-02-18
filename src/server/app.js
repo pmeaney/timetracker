@@ -15,6 +15,7 @@ const dotenv = require('dotenv').config({ path: './.env' });
 // const knex = require('knex');
 console.log('environment will be', process.env.NODE_ENV)
 console.log('current time is', new Date())
+
 const environment = process.env.NODE_ENV;
 const knex_config = require('./knexfile');
 const database = require('knex')(knex_config[environment]);
@@ -47,11 +48,10 @@ app.set('view engine', 'ejs');
 
 
 // error reporting
-const unhandledError = require("unhandled-error");
-
-const errorReporter = unhandledError((error, context) => {
-  console.log('unhandled-error and context is: ', error, context);
-});
+// const unhandledError = require("unhandled-error");
+// const errorReporter = unhandledError((error, context) => {
+//   console.log('unhandled-error and context is: ', error, context);
+// });
 
 
 // begin: stuff for frontend development (webpack)
@@ -129,18 +129,45 @@ app.use(function(req, res, next) {
   next(createError(404));
 });
 
+// Handle 404
+app.use(function (err, req, res, next) {
+  // err must be in arguments to intercept error
+  // next must be in arguments to intercept previous next()
+  res.status(404);
+  // console.log('404 encountered, err is:', err)
+  res.render('404_errorPage', { title: '404: File Not Found' });
+});
+
+/* Attempting to catch and respond to 500 error */
+// app.use(function (req, res, next) {
+//   next(createError(500));
+// });
+
+// app.use(function (err, req, res, next) {
+//   // err must be in arguments to intercept error
+//   // next must be in arguments to intercept previous next()
+//   res.status(500);
+//   console.log('500 encountered, err is:', err)
+//   res.render('500_errorPage', { title: '500: Internal Server Error', error: error })
+// });
+
 // error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
+  
   res.locals.message = err.message;
-  res.locals.csrfToken = req.csrfToken()
 
+  // set locals, only providing error in development
+  // ...actually, doesnt really matter since no one but me uses the production server
   // res.locals.error = req.app.get('env') === 'development' ? err : {};
   res.locals.error = req.app.get('env') === 'development' ? err : err;
 
   // render the error page
+  console.log('err is', err)
   res.status(err.status || 500);
-  res.render('error');
+  // res.render('500_errorPage', { title: '500: Internal Server Error', error: err }) // <-- experimental - 2/18/19 (previously was this next line)
+  res.render('error', { error: err }) // <-- experimental - 2/18/19 (previously was this next line)
+  // res.render(err); 
+  // }
 });
 
 console.log('Listening at: http://localhost:3000/')
