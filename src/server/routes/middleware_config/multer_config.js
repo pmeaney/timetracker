@@ -1,11 +1,5 @@
 const multer = require('multer');
-// const dotenv = require("dotenv").config({ path: '../.env' });
 
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!  This is just some configuration code
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// Todo: to make a config for pdf and .doc/.docx files
-//MULTER CONFIG: to get file photos to temp server storage
 const multerConfig_images = {
 
   storage: multer.diskStorage({
@@ -85,75 +79,14 @@ const multerConfig_docs = {
       // TODO: redirect with flash
       // save message to session:
       req.session.msg_bad_doc_mimetype = 'Sorry, only .pdf, .doc, and .docx filetypes are supported'
-      // req.flash('infoMessage', 'Sorry, a user with that email address already exists.  You may already have an account, or perhaps you mistyped your email address.')  
-      req.flash('infoMessage', req.session.msg_bad_doc_mimetype)  
+      // req.flash('success', 'Sorry, a user with that email address already exists.  You may already have an account, or perhaps you mistyped your email address.')  
       return next();
     }
   },
   // limits: { fileSize: 1000000, files: 1 },
 };
 
-const uploadedPhotoConfig = multer(multerConfig_images).single('_profilePhoto');
-const uploadedResumeConfig = multer(multerConfig_docs).single('_profileResume');
-
-
-const post_test_post = function (req, res, next) {
-  console.log('post_test_post: req is', req)
-}
-// ****************************************************
-// ***   Post: Profile photo upload
-// ****************************************************
-const post_profilePhotoUpload = function (req, res, next) {
-
-  console.log('post_profilePhotoUpload: req is', req)
-  console.log('post_profilePhotoUpload: req.file is', req.file)
-  // return Promise.try(() => {
-  //     return uploadProfilePhoto_filename(req.file.filename);
-  // })
-  //   .then((result) => { console.log('result from uploadProfilePhoto_filename is:', result)})
-
-  // .then(()=>{
-
-  // if (req.session.user_id) {
-  //   // res.redirect('/users/profile/' + req.session.user_id)
-  //   // ? This might actually need to be /user/ instead of /dashboard/user/
-  //   res.redirect('/dashboard/user/' + req.session.user_id)
-  // } else {
-  //   // if they try this without being logged in:
-  //   res.redirect('/inaccessible')
-
-  // }
-  // })
-// })
-
-}
-
-// ****************************************************
-// ***   Post: Resume file upload
-// ****************************************************
-const post_profileResumeUpload = function (req, res, next) {
-
-  // return Promise.try(() => {
-  //     return uploadProfilePhoto_filename(request.file.filename);
-  // }).then(()=>{
-
-  if (req.session.user_id) {
-    // res.redirect('/users/profile/' + req.session.user_id)
-    // ? This might actually need to be /user/ instead of /dashboard/user/
-    res.redirect('/dashboard/user/' + req.session.user_id)
-  } else {
-    // if they try this without being logged in:
-    res.redirect('/inaccessible')
-  }
-  // })
-
-}
-
-
 module.exports = {
-  post_test_post,
-  uploadedPhotoConfig,
-  uploadedResumeConfig,
-  post_profilePhotoUpload,
-  post_profileResumeUpload
+  multerConfig_images,
+  multerConfig_docs,
 }

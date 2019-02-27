@@ -2,7 +2,7 @@ const { check, validationResult } = require('express-validator/check');
 const { matchedData, sanitize } = require('express-validator/filter');
 const Promise = require('bluebird')
 
-const Auth_fns = require('../lib/authentication_fns')
+const Auth_fns = require('../lib/api_fns_authentication')
 
 // knex 
 const dotenv = require("dotenv").config({ path: '../.env' });
@@ -60,7 +60,7 @@ const post_RegistrationPage_createNewUser = (req, res) => {
   // B - if user obj does not exist, we can safely create one
   // C - if it does exist, let the visitor know so they can correct their actions
   if (mapErrors_noErrors == true) {
-    console.log('notice: there are no errors from validation result');
+    console.log('post_RegistrationPage_createNewUser: there are no errors from validation result');
     // A - Try to get user by email.  If its possible, we know that one is taken, so cant use it
     return Promise.try(() => {
       return Auth_fns.getUserByEmail(req.body.email);
@@ -69,39 +69,40 @@ const post_RegistrationPage_createNewUser = (req, res) => {
       // an empty user object appears as empty array: []
       if (user === undefined || user.length == 0) {
         // array empty or does not exist
-        console.log('user obj is empty or does not exist');
+        console.log('post_RegistrationPage_createNewUser: user obj is empty or does not exist');
         // safe to create user, b/c this one we searched for does not exist.
         // - B1. hash pw. 
-        console.log('pw avail?', req.body.password);
+        console.log('post_RegistrationPage_createNewUser: pw avail?', req.body.password);
         var password = req.body.password;
 
         return Promise.try(() => {
           // Here, we return the result of calling our own function. That return value is a Promise.
-          console.log('check pw', password)
+          console.log('post_RegistrationPage_createNewUser: check pw', password)
           return Auth_fns.hashPassword(password);
         }).then((hashed_password) => {
 
-          console.log('check hashed pw', hashed_password)
+          console.log('post_RegistrationPage_createNewUser: check hashed pw', hashed_password)
 
           return Promise.try(() => {
             return Auth_fns.createUser(req.body.email, hashed_password)
           }).then(() => {
 
             // Here is where we set user info into the session and redirect.
-            console.log('check request body', req.body)
+            console.log('post_RegistrationPage_createNewUser: check request body', req.body)
 
             return Promise.try(() => {
-              // Here, we return the result of calling our own function. That return value is a Promise.
+              console.log('post_RegistrationPage_createNewUser: Auth_fns.getUserByEmail on', req.body.email)
               return Auth_fns.getUserByEmail(req.body.email);
             }).then((user) => {
 
-              console.log('is there a user?', user)
+              console.log('post_RegistrationPage_createNewUser: is there a user?', user)
               // putting user info into session
               req.session.user_id = user[0]['user_id']
               req.session.user_email = user[0]['user_email']
               req.session.user_type = user[0]['user_type']
               req.session.new_user = true
               req.session.mock_employee_id = 2
+              req.session.is_authorized = true
               // console.log(req.session)
 
               // here I should add user info to session and redirect them to the page a new user would see:
@@ -114,7 +115,7 @@ const post_RegistrationPage_createNewUser = (req, res) => {
               // req.flash('infoMessage', 'Thanks for registering.')  
               req.session.save(function (err) {
                 // session updated
-                console.log("Session Before Redirect: ", req.session);
+                console.log('post_RegistrationPage_createNewUser: Session info updated: + (error if exists)', req.session, err)
                 res.redirect('/dashboard/user/' + req.session.user_id)
               })
             })
@@ -201,14 +202,16 @@ const post_LoginPage = function (req, res) {
       req.session.mock_employee_id = 2
       req.session.user_type = response.user_type
       req.session.is_authorized = response.is_authorized
-
-      res.redirect('/dashboard/user/' + req.session.user_id)
+      req.session.save(function (err) {
+        console.log('post_LoginPage: Session info updated:: + (error if exists)', req.session, err)
+        res.redirect('/dashboard/user/' + req.session.user_id)
+      })
       // res.redirect('/dashboard/user/' + req.session.user_id, { csrfToken: req.csrfToken()})
-      console.log('session info updated: ', req.session)
+      
     } else {
       // req.session.bad_user_login_attempt = 'Sorry, your login credentials were incorrect. Please try again.'
       req.flash('infoMessage', 'Sorry, your login credentials were incorrect. Please try again.')  
-      // console.log('session info updated: ', req.session, { csrfToken: req.csrfToken() })
+      // console.log('session info updated:: + (error if exists)', req.session, err)
       res.redirect('/auth/login')
       
     }
@@ -222,6 +225,7 @@ const get_Logout = function (req, res) {
   //    regenerate the session to show that they've been logged out
   //    then send them to the logout page.
   const session_user_type = req.session.user_type
+  // ! Mocking the employee ID
   const session_mock_employee_id = req.session.mock_employee_id
   const session_mock_user_id = req.session.user_id
 

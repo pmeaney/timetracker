@@ -2,7 +2,16 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { toggle_Visibility_Viewport_Profile } from "./redux/actions"
 import FormEmployeeProfile from './forms/Form_profile'
+import FormImageUploadTwo from './forms/form_uploadImage2'
 
+/*  
+On cWM -- Get request for user's contact info, photo, and resume.
+  Prepopulate these items if they are in the database
+  (Show their photo.)
+  (Tell them we have their resume on file, show a link to download their resume so they check which one we have on file)
+      
+    -> pass this info to each component to render (pass contact info to contact info component, pass image url to image component, resume url to resume component)
+      */
 class Viewport_Profile extends Component {
 
   constructor() {
@@ -18,14 +27,6 @@ class Viewport_Profile extends Component {
 
   render (){
     return(
-      /* Need a form with:
-      Name
-      Address
-      Email address
-      Phone number
-      Profile photo upload
-      Resume upload 
-      */
       <div>
         <article className="message is-info">
           <div className="message-header">
@@ -37,7 +38,24 @@ class Viewport_Profile extends Component {
             ></button>
           </div>
           <div className="message-body">
-            <FormEmployeeProfile />
+            <div className="box profileForm">
+            
+                <div className="columns">
+
+                  <div className="column">
+                  <FormEmployeeProfile />
+                  </div>
+
+                  <div className="column">
+                    <p>Please upload your headshot so staff can identify you</p>
+                    <FormImageUploadTwo />
+                    <br />
+                    <p>Resume upload form here</p>
+                  </div>
+
+                </div>
+                  
+            </div>
           </div>
         </article>
       </div>

@@ -21,6 +21,8 @@ const get_userDashboard_byUserID = function (req, res) {
   console.log('for render dashboard, param_user_id_asInt is', param_user_id_asInt)
   console.log('req.body is', req.body)
   console.log('req.session is ', req.session)
+  console.log('Running condition check (True = render dashboard, False = fail): req.session.is_authorized === true && req.session.user_id === param_user_id_asInt, is true?', req.session.is_authorized === true && req.session.user_id === param_user_id_asInt)
+
   if (req.session.is_authorized === true && req.session.user_id === param_user_id_asInt) {
 
     /* on this page a place for them to create a profile.
@@ -49,39 +51,18 @@ const get_userDashboard_byUserID = function (req, res) {
 
     // check user's creation date.  if it has been created within the last minute, send this:
 
-    if (req.session.new_user === true) {
-      req.flash('infoMessage', 'Thanks for registering.')
-      delete req.session.new_user
-      // Since they're a new user, instantiate their profile data as blank, but with some defaults:
-      // profile_completion_status_contactInfo: incomplete
-      // profile_completion_status_photo: incomplete
-      // profile_completion_status_application: incomplete
-      //######--> NEXT: nested outside of this if statement, check the status of these things
-      //######--> FIGURE OUT: either send status through, or based on status provide data?
-    }
-
-    if (req.session.msg_bad_image_mimetype) {
-      console.log(req.session.msg_bad_image_mimetype)
-      req.flash('infoMessage', req.session.msg_bad_image_mimetype)
-      delete req.session.msg_bad_image_mimetype;
-
-    }
-    if (req.session.msg_bad_doc_mimetype) {
-      console.log(req.session.msg_bad_doc_mimetype)
-      req.flash('infoMessage', req.session.msg_bad_doc_mimetype)
-      delete req.session.msg_bad_doc_mimetype;
-    }
-
 
     res.render('pages/employeeDashboard', {
       data: { user_id: req.session.user_id, user_type: req.session.user_type, user_email: req.session.user_email },
       errors: {},
-      // env: process.env.NODE_ENV,
-      gmaps_api_key: process.env.GMAPS_API.toString()
+      env: process.env.NODE_ENV,
+      gmaps_api_key: process.env.GMAPS_API.toString(),
+      csrfToken: req.csrfToken()
     })
 
   } else {
     // session ID does not equal the one passed
+    console.log('rendering else-- cannot route to dashboard user page')
     req.flash('infoMessage', 'It appears you may need to login.')
     res.redirect('/inaccessible');
   }

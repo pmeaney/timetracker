@@ -14,16 +14,9 @@ class FormContactInfo extends Component {
     this.state = {
       email: '',
       phoneNumber: '',
-      address: '',
+      address: ''
     }
   }
-
-  /* 
-      todo:
-        setup auto-complete of geography (address, city, state)
-        as a result, we can reduce all 3 down to 1 input!!
-        -- https://www.npmjs.com/package/react-places-autocomplete
-  */
 
   onChange = (event) => { // for general html input handlers
     this.setState({
@@ -34,7 +27,7 @@ class FormContactInfo extends Component {
   handleChange = (address) => { // for google places input handler
       this.setState({ address })
   }
-
+  
   handleSelect = (address) => {
     console.log('address is', address)
     console.log('address typeof is', typeof address)
@@ -57,6 +50,7 @@ class FormContactInfo extends Component {
 
     // submit state to post route
     // post to this url: /emp_api/profile/uploadContactInfo
+    
     axios.post('/emp_api/profile/uploadContactInfo', {
       phoneNumber: this.state.phoneNumber.value,
       email: this.state.email,
@@ -71,7 +65,6 @@ class FormContactInfo extends Component {
       phoneNumber: '',
       email: '',
       address: '',
-      
     });
 
   }
@@ -85,12 +78,9 @@ class FormContactInfo extends Component {
 
   render(){
     return (
-      <div className="box profileForm">
-
+      <div>
         <form onSubmit={this.onSubmit} >
-          <div className="columns">
 
-            <div className="column">
 
               Phone number:
               <br />
@@ -150,19 +140,9 @@ class FormContactInfo extends Component {
                   </div>
                 )}
               </PlacesAutocomplete>
-               
               <br />
-              <button className="button is-normal">Submit</button>
-            </div>
-
-            <div className="column">
-              <p>[ image upload ]</p>
-
-            </div>
-
-          </div>
+              <button className="button is-normal">Submit Contact Info</button>
         </form>
-
       </div>
     )
   }
