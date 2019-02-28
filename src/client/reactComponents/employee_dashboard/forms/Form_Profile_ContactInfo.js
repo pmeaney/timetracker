@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
 import NumberFormat from 'react-number-format';
 import axios from 'axios'
+import PlacesAutocomplete from 'react-places-autocomplete';
 
-import PlacesAutocomplete, {
-  geocodeByAddress,
-  getLatLng,
-} from 'react-places-autocomplete';
 
-class FormContactInfo extends Component {
+class Form_Profile_ContactInfo extends Component {
   constructor(props) {
     super(props);
 
@@ -148,4 +145,4 @@ class FormContactInfo extends Component {
   }
 }
 
-export default FormContactInfo
+export default Form_Profile_ContactInfo

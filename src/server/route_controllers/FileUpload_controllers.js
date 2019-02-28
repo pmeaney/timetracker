@@ -1,4 +1,5 @@
 const multer = require('multer');
+const path = require('path');
 // const dotenv = require("dotenv").config({ path: '../.env' });
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -6,12 +7,15 @@ const multer = require('multer');
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // Todo: to make a config for pdf and .doc/.docx files
 //MULTER CONFIG: to get file photos to temp server storage
+
+// TODO: Change the file name if it already exists
+// For Reference: https://stackoverflow.com/questions/36648395/upload-a-file-in-nodejs-with-multer-and-change-name-if-the-file-already-exists
 const multerConfig_images = {
 
   storage: multer.diskStorage({
     //Setup where the user's file will go
     destination: function (req, file, next) {
-      next(null, './public/profilePhoto-storage');
+      next(null, './src/server/public/profilePhoto-storage');
     },
 
     //Then give the file a unique name
@@ -51,13 +55,16 @@ const multerConfig_docs = {
   storage: multer.diskStorage({
     //Setup where the user's file will go
     destination: function (req, file, next) {
-      next(null, './public/resume-storage');
+      console.log('inside multer storage -> destination function')
+      next(null, './src/server/public/resume-storage');
     },
 
     //Then give the file a unique name
     filename: function (req, file, next) {
       // can view file info: console.log(file);
       // including this: file.fieldname
+
+      console.log('inside multer storage -> filename function')
 
       console.log('file.mimetype is ', file.mimetype);
       const fileType_extension = file.mimetype.split('/')[1];
@@ -93,7 +100,7 @@ const multerConfig_docs = {
   // limits: { fileSize: 1000000, files: 1 },
 };
 
-const uploadedPhotoConfig = multer(multerConfig_images).single('_profilePhoto');
+const uploadedPhotoConfig = multer(multerConfig_images).single('photo_file');
 const uploadedResumeConfig = multer(multerConfig_docs).single('_profileResume');
 
 
@@ -105,8 +112,18 @@ const post_test_post = function (req, res, next) {
 // ****************************************************
 const post_profilePhotoUpload = function (req, res, next) {
 
-  console.log('post_profilePhotoUpload: req is', req)
-  console.log('post_profilePhotoUpload: req.file is', req.file)
+  uploadedPhotoConfig(req, res, function(err) {
+    console.log('running uploadedPhotoConfig')
+    if (err instanceof multer.MulterError) {
+      // A Multer error occurred when uploading.
+      console.log('err MulterError: ', err)
+    } else if (err) {
+      console.log('other error during multer upload attempt', err)
+      // An unknown error occurred when uploading.
+    }
+  })
+  
+  // Next, upload the filename
   // return Promise.try(() => {
   //     return uploadProfilePhoto_filename(req.file.filename);
   // })

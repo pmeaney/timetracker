@@ -1,11 +1,5 @@
 import React, { Component } from 'react';
-import NumberFormat from 'react-number-format';
 import axios from 'axios'
-
-import PlacesAutocomplete, {
-  geocodeByAddress,
-  getLatLng,
-} from 'react-places-autocomplete';
 
 class FormImageUpload extends Component {
   constructor(props) {

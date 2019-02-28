@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { toggle_Visibility_Viewport_Profile } from "./redux/actions"
-import FormEmployeeProfile from './forms/Form_profile'
-import FormImageUploadTwo from './forms/form_uploadImage2'
+import Form_Profile_ContactInfo from './forms/Form_Profile_ContactInfo'
+import Form_Profile_ImageUpload from './forms/Form_Profile_ImageUpload'
 
 /*  
 On cWM -- Get request for user's contact info, photo, and resume.
@@ -43,14 +43,14 @@ class Viewport_Profile extends Component {
                 <div className="columns">
 
                   <div className="column">
-                  <FormEmployeeProfile />
+                  <Form_Profile_ContactInfo />
                   </div>
 
                   <div className="column">
-                    <p>Please upload your headshot so staff can identify you</p>
-                    <FormImageUploadTwo />
+
+                    <Form_Profile_ImageUpload />
                     <br />
-                    <p>Resume upload form here</p>
+                    {/* <p>Resume upload form here</p> */}
                   </div>
 
                 </div>

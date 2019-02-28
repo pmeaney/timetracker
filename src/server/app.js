@@ -125,18 +125,30 @@ app.use('/admin_api', AdminAPI_Router);
 app.use('/dashboard', renderDashboard_Router);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+app.use(function(err, req, res, next) {
+  if (err.code !== 'EBADCSRFTOKEN') return next(err)
 });
 
-// Handle 404
-app.use(function (err, req, res, next) {
-  // err must be in arguments to intercept error
-  // next must be in arguments to intercept previous next()
-  res.status(404);
-  // console.log('404 encountered, err is:', err)
-  res.render('404_errorPage', { title: '404: File Not Found' });
-});
+
+// handle CSRF token errors here
+
+// app.use(function (req, res, next) {
+//   res.status(403)
+//   res.send('form tampered with')
+// });
+// // // catch 404 and forward to error handler
+// app.use(function (req, res, next) {
+//   next(createError(404));
+// });
+
+// // Handle 4040
+// app.use(function (err, req, res, next) {
+//   // err must be in arguments to intercept error
+//   // next must be in arguments to intercept previous next()
+//   res.status(404);
+//   // console.log('404 encountered, err is:', err)
+//   res.render('404_errorPage', { title: '404: File Not Found' });
+// });
 
 /* Attempting to catch and respond to 500 error */
 // app.use(function (req, res, next) {
@@ -162,7 +174,7 @@ app.use(function(err, req, res, next) {
   res.locals.error = req.app.get('env') === 'development' ? err : err;
 
   // render the error page
-  console.log('err is', err)
+  console.log('App.js-- error is', err)
   res.status(err.status || 500);
   // res.render('500_errorPage', { title: '500: Internal Server Error', error: err }) // <-- experimental - 2/18/19 (previously was this next line)
   res.render('error', { error: err }) // <-- experimental - 2/18/19 (previously was this next line)

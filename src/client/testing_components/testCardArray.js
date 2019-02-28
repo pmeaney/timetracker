@@ -1,8 +1,6 @@
 import '../scss/bulma_sass/bulma.sass'
 import React from 'react';
 
-// NOTE: DUPLICATE THIS, AND THEN CHANGE OUT THE MAIN CONTAINING CARD FOR A MESSAGE
-  // -- It has the [X] button build in already
 // https://bulma.io/documentation/components/message/
 const Example = (props) => {
   return (
