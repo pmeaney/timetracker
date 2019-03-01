@@ -69,10 +69,18 @@ const multerConfig_docs = {
       console.log('file.mimetype is ', file.mimetype);
       const fileType_extension = file.mimetype.split('/')[1];
 
-      const fileName_prefix = 'profilePhoto_user_id__' + req.session.user_id;
-      const fileName_saved = fileName_prefix + '.' + fileType_extension;
-      console.log('fileName_saved is', fileName_saved);
-      next(null, fileName_saved);
+      const fileName_prefix = 'Resume_user_id__' + req.session.user_id;
+      console.log('fileType_extension is', fileType_extension)
+      if (fileType_extension === 'vnd.openxmlformats-officedocument.wordprocessingml.document'){
+        const fileName_saved = fileName_prefix + '.docx'
+        console.log('fileName_saved is', fileName_saved)
+        next(null, fileName_saved);
+      } else {
+        const fileName_saved = fileName_prefix + '.' + fileType_extension
+        console.log('fileName_saved is', fileName_saved)
+        next(null, fileName_saved);
+      }
+      
     }
   }),
   //A means of ensuring only images are uploaded. 
@@ -82,14 +90,18 @@ const multerConfig_docs = {
     }
 
     const fileMimetype = file.mimetype;
-    const acceptableMimetypeArray = ['application/pdf', 'application/msword', ' application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+    console.log('mimetype is', fileMimetype)
+    const acceptableMimetypeArray = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
 
-    if (acceptableMimetypeArray.includes(fileMimetype)) {
+    if (fileMimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') { 
+      console.log('photo uploaded');
+      next(null, true);
+    }
+    else if (acceptableMimetypeArray.includes(fileMimetype)) {
       console.log('photo uploaded');
       next(null, true);
     } else {
       console.log("file not supported"); // need to report this as an error to the user
-      // TODO: redirect with flash
       // save message to session:
       req.session.msg_bad_doc_mimetype = 'Sorry, only .pdf, .doc, and .docx filetypes are supported'
       // req.flash('infoMessage', 'Sorry, a user with that email address already exists.  You may already have an account, or perhaps you mistyped your email address.')  
@@ -100,8 +112,8 @@ const multerConfig_docs = {
   // limits: { fileSize: 1000000, files: 1 },
 };
 
-const uploadedPhotoConfig = multer(multerConfig_images).single('photo_file');
-const uploadedResumeConfig = multer(multerConfig_docs).single('_profileResume');
+const uploadedPhotoConfig = multer(multerConfig_images).single('fileName_input');
+const uploadedResumeConfig = multer(multerConfig_docs).single('fileName_input');
 
 
 const post_test_post = function (req, res, next) {

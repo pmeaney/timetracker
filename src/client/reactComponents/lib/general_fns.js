@@ -88,4 +88,18 @@ var combineDateTimes = (date, time) => {
  
 }
 
-export { getLuxon_local_DateTime, combineDateTimes }
+const readAndExtract_fileAndFormat = (reader_result) => {
+
+  // var str = reader.result // <-- fileDataType as a string.  // var str = 'data:image/png;base64,blahblahblah'
+  var str = reader_result // <-- fileDataType as a string.  // var str = 'data:image/png;base64,blahblahblah'
+  var n = str.indexOf(';')
+  str = str.substring(0, n != -1 ? n : str.length); // example: 'data:image/png'
+  str = str.substring(str.indexOf(":") + 1);  // example: 'image/png'
+  str = str.split("/") // <-- example: ['image', 'png']
+  var fileData_fileType = str[0] // string: image
+  var fileData_format = str[1] // string: png (or whatever format it is)
+  return [fileData_fileType,fileData_format]
+  
+}
+
+export { getLuxon_local_DateTime, combineDateTimes, readAndExtract_fileAndFormat }

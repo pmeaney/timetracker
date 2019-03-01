@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { toggle_Visibility_Viewport_Profile } from "./redux/actions"
 import Form_Profile_ContactInfo from './forms/Form_Profile_ContactInfo'
-import Form_Profile_ImageUpload from './forms/Form_Profile_ImageUpload'
+import Form_Profile_FileUpload from './forms/Form_Profile_FileUpload'
 
 /*  
 On cWM -- Get request for user's contact info, photo, and resume.
@@ -47,10 +47,24 @@ class Viewport_Profile extends Component {
                   </div>
 
                   <div className="column">
-
-                    <Form_Profile_ImageUpload />
+                    {/* 
+                     // Make into a props
+                    var acceptable_image_formats = 
+                    */}
+                    <Form_Profile_FileUpload 
+                      thing_to_upload={'photo'}
+                      acceptable_file_types={['image']}
+                      acceptable_file_formats={['png', 'jpg', 'jpeg', 'gif']}
+                      urlForHttpPostReq={'/dashboard/profile/photoUpload'}
+                    />
                     <br />
                     {/* <p>Resume upload form here</p> */}
+                    <Form_Profile_FileUpload
+                      thing_to_upload={'resume'}
+                      acceptable_file_types={['application', 'text']}
+                      acceptable_file_formats={['pdf', 'doc', 'docx', 'plain', 'txt']}
+                      urlForHttpPostReq={'/dashboard/profile/resumeUpload'}
+                    />
                   </div>
 
                 </div>
