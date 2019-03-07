@@ -14,8 +14,9 @@ const saltRounds = 10;
 ''	This file defines the functions used in the User authorization aspect of the app.
 ''	These functions handle things relevant just to user data.
 ''	Things such as: registering, logging in, and accessing the user's profile data
-''
+''	
 */
+
 
 const hashPassword = (password) => {
 	return bcrypt.hash(password, saltRounds)
@@ -31,15 +32,14 @@ const getUserByEmail = (email) => {
 }
 
 const createUser = (email, hashed_password) => {
-
-	// our default usertype is 'general-hasNot-applied'
 	return Promise.try(() => {
-		return database('users').insert([
-			{	user_email: email,
-			 	hashed_password: hashed_password,
-			 	user_type: 'general-hasNot-applied'
-			}
-		])
+		return database('users')
+			.insert([
+				{	user_email: email,
+					hashed_password: hashed_password,
+					user_type: 'general-hasNot-applied',
+				}
+			])
 	})
 }
 
@@ -82,18 +82,10 @@ const checkPasswordForEmail = (password, email)=> {
 	})
 }
 
-// need to do the same with the resume filename   !!!!!!!  #  # # # # #
-const uploadProfilePhoto_filename = (user_id, user_profile_imageFilename) => {
-
- // Just need to: 1. lookup by user_id from session, and B. insert filename string (will need another version for updating)
-
-}
-
 
 module.exports = {
     hashPassword,
     getUserByEmail,
     createUser,
     checkPasswordForEmail,
-    uploadProfilePhoto_filename
 };

@@ -24,6 +24,17 @@ const getAllActivities = () => {
 		return database("activities");
     })
 }
+/* #############	users  -- mostly for test purposes	  ################ */
+const getUsers_All = () => {
+	return Promise.try(() => {
+		return database("users");
+    })
+}
+const getUserProfiles_All = () => {
+	return Promise.try(() => {
+		return database("user_profiles");
+    })
+}
 
 const getActivitiesBy_employee_assigned_to = (emp_id) => {
 	/* Here, we are going to get all activities and join them on timesheets where timesheet has null for clockout value
@@ -117,7 +128,6 @@ const post_newActivity_employeeSelfAssignedActivity = (newActivity_objectToPost)
 }
 
 const AdditionalDataLookup_On_newActivity = (newActivity) => {
-
 	return Promise.try(() => {
 		return ForDataItem_LookUp__ActivityType_Location_ProjectMgr(newActivity)
 	}).then((newActivity_additionalData) => {
@@ -138,11 +148,11 @@ const ForDataItem_LookUp__ActivityType_Location_ProjectMgr = (dataItem) => {
 		//renaming the keys of projMgr_emp_data to add 'projMgr_' prefix to make it more clear what sort of data it is
 		let projMgr_emp_data_updatedKeys =
 		{
-			projMgr_employee_id: projMgr_emp_data[0].employee_id,
-			projMgr_firstName: projMgr_emp_data[0].firstName,
-			projMgr_lastName: projMgr_emp_data[0].lastName,
-			projMgr_phone: projMgr_emp_data[0].phone,
-			projMgr_email: projMgr_emp_data[0].email
+			projMgr_employee_id: projMgr_emp_data[0].project_manager_employee_id,
+			projMgr_firstName: projMgr_emp_data[0].project_manager_firstName,
+			projMgr_lastName: projMgr_emp_data[0].project_manager_lastName,
+			projMgr_phone: projMgr_emp_data[0].project_manager_phone,
+			projMgr_email: projMgr_emp_data[0].project_manager_email
 		}
 
 		// Merging each of the three objects into a single array set of the three objects
@@ -294,45 +304,71 @@ const get_ListOf_ActivityCodes_by_EmployeeID = (emp_id) => {
 
 
 /* #############	Employees 	  ################ */
+// getting employee user info by employee ID
 const getEmployees_All = () => {
 	return Promise.try(() => {
 		return database("employees")
 			.select(
-				'employees.employee_id',
-				'employees.firstName',
-				'employees.lastName'
+				'employees.user_id',
 			)
-    })
+			.join('user_profiles',
+						'employees.user_id',
+						'=',
+						'user_profiles.user_id',
+			)
+			.select(
+				'*',
+			)
+		}).then((res) => {
+			return res
+		})
+		
 }
 
 const getEmployee_by_id = (emp_id) => {
 	return Promise.try(() => {
 		return database("employees")
 			.where({ employee_id: emp_id })
-			.select('employees.employee_id',
-							'employees.firstName',
-							'employees.lastName',
-							'employees.phone',
-							'employees.email',
+			.select(
+				'employees.user_id',
+				'employees.employee_id',
+			)
+			.join('user_profiles',
+				'employees.user_id',
+				'=',
+				'user_profiles.user_id',
+			)
+			.select('user_profiles.user_profile_firstName as firstName',
+							'user_profiles.user_profile_lastName as lastName',
+							'user_profiles.user_profile_phoneNumber as phone',
+							'user_profiles.user_profile_email as email',
 							)
     })
 }
 
-
 const getProjectMgr_by_project_id = (project_id) => {
 	return Promise.try(() => {
-		return database('employees')
-			.select('employees.employee_id',
-							'employees.firstName',
-							'employees.lastName',
-							'employees.phone',
-							'employees.email')
-			.join('projects',
-						'employees.employee_id',
-						'=',
-						'projects.project_mgr_emp_id')
-			.where({project_id})
-    })
+		return database('projects')
+			.where({ project_id }) // get projects with matching id
+			.select('projects.project_mgr_emp_id') // take their project manager employee ID (project_mgr_emp_id)
+			.join('employees', // and query employees table with it
+				'projects.project_mgr_emp_id',
+				'=',
+				'employees.employee_id',
+				)
+			.select('employees.employee_id as project_manager_employee_id', 
+							'employees.user_id') // get the user_id from employees table
+			.join('user_profiles',	// use it to query user_profiles for user info
+				'employees.user_id',
+				'=',
+				'user_profiles.user_id',
+			)
+			.select('user_profiles.user_profile_firstName as project_manager_firstName', // select the user info from the user_profile
+				'user_profiles.user_profile_lastName as project_manager_lastName',
+				'user_profiles.user_profile_phoneNumber as project_manager_phone',
+				'user_profiles.user_profile_email as project_manager_email',
+			)
+	})
 }
 
 
@@ -386,7 +422,21 @@ const get_Locations_byProjID_byEmployeeID = (emp_id) => {
 						'employees.employee_id', // needs to be unique table alias, to keep it separate from next query using 'employee_id'
 						'=',
 						'projects.project_mgr_emp_id')
-			.select({ project_manager_firstName: 'employees.firstName', project_manager_lastName: 'employees.lastName'})
+			.select(
+				'employees.user_id',
+				'employees.employee_id',
+			)
+			.join('user_profiles',
+				'employees.user_id',
+				'=',
+				'user_profiles.user_id',
+			)
+			.select('user_profiles.user_profile_firstName as project_manager_firstName',
+				'user_profiles.user_profile_lastName as project_manager_lastName',
+				'user_profiles.user_profile_phoneNumber as project_manager_phone',
+				'user_profiles.user_profile_email as project_manager_email',
+			)
+			// .select({ project_manager_firstName: 'employees.firstName', project_manager_lastName: 'employees.lastName'})
 	})
 }
 // get_Locations_byProjID_byEmployeeID(2)
@@ -410,7 +460,20 @@ const get_Locations_byProjID_forAllProjects = () => {
 				'employees.employee_id', // needs to be unique table alias, to keep it separate from next query using 'employee_id'
 				'=',
 				'projects.project_mgr_emp_id')
-			.select({ project_manager_firstName: 'employees.firstName', project_manager_lastName: 'employees.lastName' })
+			.select(
+				'employees.user_id',
+				'employees.employee_id',
+			)
+			.join('user_profiles',
+				'employees.user_id',
+				'=',
+				'user_profiles.user_id',
+			)
+			.select('user_profiles.user_profile_firstName as project_manager_firstName',
+				'user_profiles.user_profile_lastName as project_manager_lastName',
+				'user_profiles.user_profile_phoneNumber as project_manager_phone',
+				'user_profiles.user_profile_email as project_manager_email',
+			)
 	})
 }
 
@@ -457,12 +520,21 @@ const postEmployeeProfileFormData = (dataObject) => {
 	return Promise.try(() => {
 		return database("employees")
 			.where({ employee_id: dataObject.user_id  })
+			.select(
+				'employees.user_id',
+				'employees.employee_id',
+			)
+			.join('user_profiles',
+				'employees.user_id',
+				'=',
+				'user_profiles.user_id',
+			)
 			.update({
-				phone: dataObject.phoneNumber,
-				email: dataObject.email,
-				address: dataObject.address
+				user_profile_phoneNumber: dataObject.phoneNumber,
+				user_profile_email: dataObject.email,
+				user_profile_address: dataObject.address
 			})
-			.returning(['employee_id', 'phone', 'email', 'address']) // response data to return to user upon insert
+			.returning(['employee_id', 'user_profile_phoneNumber', 'user_profile_email', 'user_profile_address']) // response data to return to user upon insert
 	})
 }
 
@@ -553,6 +625,73 @@ const put_DataForTable_update_Table_Field_withData = (tableName, tableRow_type, 
 }
 
 
+const update_FileName_ProfilePhoto_byUserID = (new_filename, user_id_passedIn, str_to_check) => {
+
+	if (str_to_check === 'profile_photo') {
+		return Promise.try(() => {
+			return database("user_profiles")
+				.where({ user_id: user_id_passedIn })
+				.update({ user_profile_imageFilename: new_filename })
+				.returning([
+					'user_id',
+					'user_profile_imageFilename'
+				]) // response data to return to user upon insert
+		})
+	}
+	
+	if (str_to_check === 'profile_resume') {
+		return Promise.try(() => {
+			return database("user_profiles")
+				.where({ user_id: user_id_passedIn })
+				.update({ user_profile_resumeFilename: new_filename })
+				.returning([
+					'user_id',
+					'user_profile_resumeFilename'
+				]) // response data to return to user upon insert
+		})
+	}
+} 
+
+const hireUser_toEmployee = (user_id_passedIn) => {
+	/* 
+	
+	Used to lookup users, and change them to employees
+	NOT to update current employees status/info
+
+	1. query employees table for user_id
+	2. query users table with user_id (to update user_type to 'employee')
+	3. query user_profiles table with user_id (to add in a blank profile image -- user_profile_imageFilename)
+	*/
+	return Promise.try(() => {
+		return database('employees')
+			.insert({ user_id: user_id_passedIn, 
+								employee_type: 'regular employee' })
+			.returning(['user_id'])
+	})
+	.then((result) => {
+
+		// console.log('result', result)
+		console.log('result[0][user_id]', result[0]['user_id'] )
+		return Promise.try(() => {
+			return database('users')
+				.where({ user_id: result[0]['user_id'] })
+				.update({ user_type: 'employee' })
+				.returning(['user_id'])
+			
+		})
+	})
+	.then((result) => {
+
+		console.log('result[0][user_id] ... updating user profile now', result[0]['user_id'])
+		return Promise.try(() => {
+			return database('user_profiles')
+			.where({ user_id: result[0]['user_id'] })
+			.insert({ user_profile_imageFilename: 'profilePhoto_user_id__0.png' })
+			.returning('user_id', 'user_profile_imageFilename')
+		})
+	})
+}	
+
 module.exports = {
 	getAllActivities,
 	getActivity_by_id,
@@ -580,5 +719,10 @@ module.exports = {
 	get_Locations_byProjID_forAllProjects,
 	get_ListOf_ActivityCodes_by_EmployeeID,
 	get_Admin_dataFor_DataTable,
-	put_DataForTable_update_Table_Field_withData
+	put_DataForTable_update_Table_Field_withData,
+	update_FileName_ProfilePhoto_byUserID,
+	hireUser_toEmployee,
+	// for testing
+	getUsers_All,
+	getUserProfiles_All,
 };

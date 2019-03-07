@@ -6,7 +6,7 @@ import {
 const initialState = {
   visibility_viewport_taskList: false,
   visibility_viewport_profile: false,
-  visibility_modal_createActivity: false
+  visibility_modal_createActivity: false,
 
 }
 

@@ -2,6 +2,8 @@ const multer = require('multer');
 const path = require('path');
 // const dotenv = require("dotenv").config({ path: '../.env' });
 
+const Api_fns = require('../lib/api_fns')
+
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!  This is just some configuration code
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -29,6 +31,7 @@ const multerConfig_images = {
       const fileName_prefix = 'profilePhoto_user_id__' + req.session.user_id;
       const fileName_saved = fileName_prefix + '.' + fileType_extension;
       console.log('fileName_saved is', fileName_saved);
+      logFilenameToDB_multerFile(fileName_saved, 'profile_photo')
       next(null, fileName_saved);
     }
   }),
@@ -74,10 +77,12 @@ const multerConfig_docs = {
       if (fileType_extension === 'vnd.openxmlformats-officedocument.wordprocessingml.document'){
         const fileName_saved = fileName_prefix + '.docx'
         console.log('fileName_saved is', fileName_saved)
+        logFilenameToDB_multerFile(fileName_saved, 'profile_resume')
         next(null, fileName_saved);
       } else {
         const fileName_saved = fileName_prefix + '.' + fileType_extension
         console.log('fileName_saved is', fileName_saved)
+        logFilenameToDB_multerFile(fileName_saved, 'profile_resume')
         next(null, fileName_saved);
       }
       
@@ -112,9 +117,17 @@ const multerConfig_docs = {
   // limits: { fileSize: 1000000, files: 1 },
 };
 
+  
 const uploadedPhotoConfig = multer(multerConfig_images).single('fileName_input');
 const uploadedResumeConfig = multer(multerConfig_docs).single('fileName_input');
 
+var logFilenameToDB_multerFile = (new_filename, photoOrResume_str) => {
+  return Promise.try(() => {
+    // note: we update the filename, because the filename is initialized in the DB call to create new user during registration
+    // note: photoOrResume_str will be 'profile_photo' or 'profile_resume'
+    return Api_fns.update_FileName_ProfilePhoto_byUserID(new_filename, req.session.user_id, photoOrResume_str)
+  })
+}
 
 const post_test_post = function (req, res, next) {
   console.log('post_test_post: req is', req)
@@ -124,16 +137,17 @@ const post_test_post = function (req, res, next) {
 // ****************************************************
 const post_profilePhotoUpload = function (req, res, next) {
 
-  uploadedPhotoConfig(req, res, function(err) {
-    console.log('running uploadedPhotoConfig')
-    if (err instanceof multer.MulterError) {
-      // A Multer error occurred when uploading.
-      console.log('err MulterError: ', err)
-    } else if (err) {
-      console.log('other error during multer upload attempt', err)
-      // An unknown error occurred when uploading.
-    }
-  })
+  // uploadedPhotoConfig(req, res, function(err) {
+  //   console.log('running uploadedPhotoConfig')
+
+  //   if (err instanceof multer.MulterError) {
+  //     // A Multer error occurred when uploading.
+  //     console.log('err MulterError: ', err)
+  //   } else if (err) {
+  //     console.log('other error during multer upload attempt', err)
+  //     // An unknown error occurred when uploading.
+  //   }
+  // })
   
   // Next, upload the filename
   // return Promise.try(() => {

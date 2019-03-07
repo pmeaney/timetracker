@@ -62,7 +62,7 @@ class Viewport_Profile extends Component {
                     <Form_Profile_FileUpload
                       thing_to_upload={'resume'}
                       acceptable_file_types={['application', 'text']}
-                      acceptable_file_formats={['pdf', 'doc', 'docx', 'plain', 'txt']}
+                      acceptable_file_formats={['pdf', 'doc', 'docx', 'txt']}
                       urlForHttpPostReq={'/dashboard/profile/resumeUpload'}
                     />
                   </div>

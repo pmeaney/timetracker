@@ -29,6 +29,43 @@ user_profiles,
 exports.up = function(knex, Promise) {
 	return Promise.all([
 
+		knex.schema.createTable('users', function (table) {
+			table.increments('user_id').primary();
+			// has employee_id or not ==> used to test for applicants vs employees
+			// 
+			// for example, if has employee_id && user_type === 'regular' => send them to employee/:employee_id with regular config
+			// for example, if has employee_id && user_type === 'manager' => send them to employee/:employee_id with manager config
+			// however, have their employee_id checked at that point to see if they're on the list of managers
+			// if so, show them their page as a manager page
+
+			// else, send them to users/:user_id
+			// table.integer('employee_id').references('employees.employee_id'); 
+			table.text('user_email');
+			table.text('hashed_password');
+			// this can be used to track whether employee is mgr, admin, or regular
+			table.text('user_type'); // this should be of type ENUM or ENU once i figure out all categories
+			// so, ill be able to access this info within the 'employees' viewport
+			// --> edit user_type for example, or hire/fire/restrict employees
+			table.timestamps(true, true);// this automatically sets 'created at' and 'updated at' timestamps
+		}),
+
+		knex.schema.createTable('user_profiles', function (table) {
+			table.increments('user_profile_id').primary();
+			table.integer('user_id').references('users.user_id');
+			table.text('user_profile_imageFilename');
+			table.text('user_profile_resumeFilename');
+			table.text('user_profile_firstName');
+			table.text('user_profile_lastName');
+			table.text('user_profile_address1');
+			table.text('user_profile_address2');
+			table.text('user_profile_city');
+			table.text('user_profile_state');
+			table.text('user_profile_zipcode');
+			table.text('user_profile_email');
+			table.text('user_profile_phoneNumber');
+			table.timestamps(true, true);// this automatically sets 'created at' and 'updated at' timestamps
+		}),
+
 	knex.schema.createTable('locations', function(table) {
 	  table.increments('location_id').primary();
 	  table.text('location_name'); 
@@ -49,18 +86,27 @@ exports.up = function(knex, Promise) {
 	knex.schema.createTable('cost_centers', function(table) {
 	  table.increments('cost_center_id').primary();
 	  table.text('cost_center_name'); 
-  	  table.timestamps(true, true);// this automatically sets 'created at' and 'updated at' timestamps
+		table.timestamps(true, true);// this automatically sets 'created at' and 'updated at' timestamps
 	}),
 
 	knex.schema.createTable('employees', function(table) {
-	  table.increments('employee_id').primary();
-	  table.text('firstName'); 
-	  table.text('lastName'); 
-	  table.text('phone'); 
-	  table.text('email'); 
-	  table.text('address'); 
-	  table.integer('pay'); 
+		table.increments('employee_id').primary();
+		table.integer('user_id').references('users.user_id');  
+		table.text('employee_type');  // regular_employee, team_manager, or some other type.  This way we can check user for user_type, and employee for employee_type, for more fine grained control of dashboard accessibility
 	  table.timestamps(true, true);// this automatically sets 'created at' and 'updated at' timestamps
+	}),
+
+		
+	knex.schema.createTable('employment_histories', function (table) {
+		table.increments('employment_history_id').primary();
+		table.integer('employee_id').references('employees.employee_id');  
+		// employee_type: regular_employee, team_manager, or some other type.  This way we can check user for user_type, and employee for employee_type, for more fine grained control of dashboard accessibility
+		// on employee hiring update, and on employee type update, this will be someting new each time-- each update representing a new row
+		table.text('employee_type'); 
+		table.text('employment_change_reason');  // hired, promotion, laid off, fired, sabbatical, etc
+		table.text('employment_change_notes');  // any text 
+		table.integer('employment_pay_rate'); 
+		table.timestamps(true, true);// this automatically sets 'created at' and 'updated at' timestamps
 	}),
 
 	knex.schema.createTable('projects', function(table) {
@@ -116,44 +162,6 @@ exports.up = function(knex, Promise) {
 	  table.timestamps(true, true);// this automatically sets 'created at' and 'updated at' timestamps
 	}),
 
-	knex.schema.createTable('users', function(table) {
-		table.increments('user_id').primary();
-		// has employee_id or not ==> used to test for applicants vs employees
-		// 
-		// for example, if has employee_id && user_type === 'regular' => send them to employee/:employee_id with regular config
-		// for example, if has employee_id && user_type === 'manager' => send them to employee/:employee_id with manager config
-			// however, have their employee_id checked at that point to see if they're on the list of managers
-			// if so, show them their page as a manager page
-			
-		// else, send them to users/:user_id
-		table.integer('employee_id').references('employees.employee_id'); 
-		table.text('user_email');
-		table.text('hashed_password');
-		// this can be used to track whether employee is mgr, admin, or regular
-		table.text('user_type'); // this should be of type ENUM or ENU once i figure out all categories
-		// so, ill be able to access this info within the 'employees' viewport
-		// --> edit user_type for example, or hire/fire/restrict employees
-		table.timestamps(true, true);// this automatically sets 'created at' and 'updated at' timestamps
-	}),
-
-		knex.schema.createTable('user_profiles', function(table) {
-		table.increments('user_profile_id').primary();
-		table.integer('user_id').references('users.user_id'); 
-		table.text('user_profile_imageFilename');
-		table.text('user_profile_resumeFilename');
-		table.text('user_profile_firstName');
-		table.text('user_profile_lastName');
-		table.text('user_profile_address1');
-		table.text('user_profile_address2');
-		table.text('user_profile_city');
-		table.text('user_profile_state');
-		table.text('user_profile_zipcode');
-
-		table.timestamps(true, true);// this automatically sets 'created at' and 'updated at' timestamps
-
-	})
-	
-
 	])
 };
 
@@ -172,15 +180,16 @@ users,
 user_profiles,
 */
 	return Promise.all([
-	    knex.schema.dropTable('user_profiles'),
-	    knex.schema.dropTable('users'),
 	    knex.schema.dropTable('timesheets'),
 	    knex.schema.dropTable('activities'),
 	    knex.schema.dropTable('projects'),
+			knex.schema.dropTable('employment_histories'),
 	    knex.schema.dropTable('employees'),
 	    knex.schema.dropTable('cost_centers'),
 	    knex.schema.dropTable('activity_codes'),
-	    knex.schema.dropTable('locations'),
+			knex.schema.dropTable('locations'),
+			knex.schema.dropTable('user_profiles'),
+			knex.schema.dropTable('users')
 	  ]);
   
 };

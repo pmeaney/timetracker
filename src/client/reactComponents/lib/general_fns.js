@@ -42,6 +42,7 @@ var combineDateTimes = (date, time) => {
   // console.log('time test utc...', getLuxon_local_DateTime(combined_DateTime_UTC, 'time'), getLuxon_local_DateTime(combined_DateTime_UTC, 'date'))
 
   // ? ISO is what our Postgres is setup to store, so we'll return that format in the function itself
+  // ? however note that combined_DateTime_UTC is available for comparison/debugging/testing purposes
   return combined_DateTime_iso
   }
   else {
@@ -88,7 +89,7 @@ var combineDateTimes = (date, time) => {
  
 }
 
-const readAndExtract_fileAndFormat = (reader_result) => {
+const readAndExtract_fileTypeAndFormat = (reader_result) => {
 
   // var str = reader.result // <-- fileDataType as a string.  // var str = 'data:image/png;base64,blahblahblah'
   var str = reader_result // <-- fileDataType as a string.  // var str = 'data:image/png;base64,blahblahblah'
@@ -102,4 +103,4 @@ const readAndExtract_fileAndFormat = (reader_result) => {
   
 }
 
-export { getLuxon_local_DateTime, combineDateTimes, readAndExtract_fileAndFormat }
+export { getLuxon_local_DateTime, combineDateTimes, readAndExtract_fileTypeAndFormat }

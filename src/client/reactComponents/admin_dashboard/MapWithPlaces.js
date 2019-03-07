@@ -31,6 +31,12 @@ const MapWithPlaces = (props) => {
 
       let lat = parseFloat(timesheet.timesheet_clockin_lat, 10);
       let lng = parseFloat(timesheet.timesheet_clockin_long, 10);
+      // should pass in the url to the user's photo if one exists, otherwise pass it a 'no photo available' template image
+      // on join of timesheet, activity, employee data, need to also select profile_image from DB
+      
+      // let user_photo = timesheet.profile_image
+      // pass this to source
+        // console.log('user_photo', user_photo)
 
         return (
           <Marker

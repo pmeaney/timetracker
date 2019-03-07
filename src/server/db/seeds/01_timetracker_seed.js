@@ -17,6 +17,7 @@ exports.seed = function(knex, Promise) {
   return knex('timesheets').del()
     .then(() => knex('activities').del())
     .then(() => knex('projects').del())
+    .then(() => knex('employment_histories').del())
     .then(() => knex('employees').del())
     .then(() => knex('cost_centers').del())
     .then(() => knex('activity_codes').del())
@@ -24,7 +25,28 @@ exports.seed = function(knex, Promise) {
 
     .then(() => {  // Using promises allows to catch errors during process
       return Promise.all([
-      
+
+      // mock users, just so we can link mock employee & user profiles accounts to them
+
+      // NOTE: To keep things simple, I am leaving user_email in the users table, b/c this is the email they use to register with.
+      // To update their email, they will have a separate option (at least a separate put request within the serverside API), 
+      // rather than updating it along with their other "profile" info.
+
+      knex('users').insert([
+        { user_email: 'mock_employee@email.com', user_type: 'employee' }, //hashed_password is also a field, but we'll skip it since we'll never log in with these users, they're just for display to admin dashboard
+        { user_email: 'mock_employee@email.com', user_type: 'employee' }, //hashed_password is also a field, but we'll skip it since we'll never log in with these users, they're just for display to admin dashboard
+        { user_email: 'mock_employee@email.com', user_type: 'employee' }, //hashed_password is also a field, but we'll skip it since we'll never log in with these users, they're just for display to admin dashboard
+        { user_email: 'mock_employee@email.com', user_type: 'employee' }, //hashed_password is also a field, but we'll skip it since we'll never log in with these users, they're just for display to admin dashboard
+      ]),
+    
+      // mock user profiles, so we have some fake employee photos to display to admin on map
+      knex('user_profiles').insert([
+        { user_id: 1, user_profile_imageFilename: 'profilePhoto_user_id__1.png', user_profile_resumeFilename: '', user_profile_firstName: 'James', user_profile_lastName: 'Bond', user_profile_phoneNumber: "123-456-7890", user_profile_email: "email@gmail.com", user_profile_address1: "testingUser default address", user_profile_address2: '', user_profile_city: '', user_profile_state: '', user_profile_zipcode: '' },
+        { user_id: 2, user_profile_imageFilename: 'profilePhoto_user_id__2.png', user_profile_resumeFilename: '', user_profile_firstName: 'Austin', user_profile_lastName: 'Powers', user_profile_phoneNumber: "123-456-7890", user_profile_email: "email@gmail.com", user_profile_address1: "testingUser default address", user_profile_address2: '', user_profile_city: '', user_profile_state: '', user_profile_zipcode: '' },
+        { user_id: 3, user_profile_imageFilename: 'profilePhoto_user_id__3.png', user_profile_resumeFilename: '', user_profile_firstName: 'Jack', user_profile_lastName: 'Ryan', user_profile_phoneNumber: "123-456-7890", user_profile_email: "email@gmail.com", user_profile_address1: "testingUser default address", user_profile_address2: '', user_profile_city: '', user_profile_state: '', user_profile_zipcode: '' },
+        { user_id: 4, user_profile_imageFilename: 'profilePhoto_user_id__4.png', user_profile_resumeFilename: '', user_profile_firstName: 'Jason', user_profile_lastName: 'Bourne', user_profile_phoneNumber: "123-456-7890", user_profile_email: "email@gmail.com", user_profile_address1: "testingUser default address", user_profile_address2: '', user_profile_city: '', user_profile_state: '', user_profile_zipcode: '' },
+      ]),
+
       knex('locations').insert([
         { location_name: 'Brisbane post office', location_address: "280 Old County Rd", location_city: "brisbane", location_state: "ca", location_zip: "94005", location_type: "commercial"},
         { location_name: 'Brisbane Hardware & Sply Inc', location_address: "1 Visitacion Ave", location_city: "brisbane", location_state: "ca", location_zip: "94005", location_type: "commercial"},
@@ -56,21 +78,29 @@ exports.seed = function(knex, Promise) {
       ]),
 
       knex('employees').insert([
-        { firstName: 'George', lastName: 'Jefferson', phone: "123-456-7890", email: "email@gmail.com", pay: "20", address: "testingUser default address" },
-        { firstName: 'Bill', lastName: 'Smith', phone: "123-456-7890", email: "email@gmail.com", pay: "20", address: "testingUser default address" },
-        { firstName: 'James', lastName: 'Bond', phone: "123-456-7890", email: "email@gmail.com", pay: "20", address: "testingUser default address" },
-        { firstName: 'Sam', lastName: 'Anderson', phone: "123-456-7890", email: "email@gmail.com", pay: "20", address: "testingUser default address" },
+        { user_id: 1, employee_type: 'regular_employee' },
+        { user_id: 2, employee_type: 'regular_employee' },
+        { user_id: 3, employee_type: 'regular_employee' },
+        { user_id: 4, employee_type: 'regular_employee' }
       ])
     ]) // end first promise.all
     .then(() => {
       return Promise.all([
-          knex('projects').insert([                                                                // this IS a "date" datatype (simple date), not timestamp
-            { location_id: 1, project_mgr_emp_id: 1, project_date_begin: '2018-01-01', project_date_end: '2018-01-20'},
-            { location_id: 2, project_mgr_emp_id: 3, project_date_begin: '2018-01-15', project_date_end: '2018-01-30'},
-            { location_id: 3, project_mgr_emp_id: 4, project_date_begin: '2018-02-02', project_date_end: '2018-02-09'},
-            { location_id: 4, project_mgr_emp_id: 2, project_date_begin: '2018-02-02', project_date_end: '2018-02-09'},
-          ])
+        
+        knex('employment_histories').insert([                                                                // this IS a "date" datatype (simple date), not timestamp
+          { employee_id: 1, employee_type: 'regular_employee', employment_change_reason: 'hired', employment_change_notes: '', employment_pay_rate: 20 },
+          { employee_id: 2, employee_type: 'regular_employee', employment_change_reason: 'hired', employment_change_notes: '', employment_pay_rate: 20 },
+          { employee_id: 3, employee_type: 'regular_employee', employment_change_reason: 'hired', employment_change_notes: '', employment_pay_rate: 20 },
+          { employee_id: 4, employee_type: 'regular_employee', employment_change_reason: 'hired', employment_change_notes: '', employment_pay_rate: 20 },
+        ]),
+      
+        knex('projects').insert([                                                                // this IS a "date" datatype (simple date), not timestamp
+          { location_id: 1, project_mgr_emp_id: 1, project_date_begin: '2018-01-01', project_date_end: '2018-01-20'},
+          { location_id: 2, project_mgr_emp_id: 3, project_date_begin: '2018-01-15', project_date_end: '2018-01-30'},
+          { location_id: 3, project_mgr_emp_id: 4, project_date_begin: '2018-02-02', project_date_end: '2018-02-09'},
+          { location_id: 4, project_mgr_emp_id: 2, project_date_begin: '2018-02-02', project_date_end: '2018-02-09'},
         ])
+      ])
     })
     .then(() => {
       return Promise.all([

@@ -14,11 +14,7 @@ router.get('/admin_dash', RenderDashboard_ctrl.get_adminDashboard)
 // * These are for Multer file uploads
 
 // For URL: url.com/dashboard/profile/photoUpload
-// router.post('/profile/photoUpload', upload_newProc, FileUpload_ctrl.post_profilePhotoUpload );
-// router.post('/profile/photoUpload', FileUpload_ctrl.uploadedPhotoConfig, FileUpload_ctrl.post_profilePhotoUpload );
-router.post('/profile/photoUpload', FileUpload_ctrl.post_profilePhotoUpload );
-// router.post('/profile/test_post', FileUpload_ctrl.post_test_post );
-
+router.post('/profile/photoUpload', FileUpload_ctrl.uploadedPhotoConfig, FileUpload_ctrl.post_profilePhotoUpload );
 
 // For URL: url.com/dashboard/profile/resumeUpload
 router.post('/profile/resumeUpload', FileUpload_ctrl.uploadedResumeConfig, FileUpload_ctrl.post_profileResumeUpload );

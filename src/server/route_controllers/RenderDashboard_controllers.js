@@ -23,6 +23,7 @@ const get_userDashboard_byUserID = function (req, res) {
   console.log('req.session is ', req.session)
   console.log('Running condition check (True = render dashboard, False = fail): req.session.is_authorized === true && req.session.user_id === param_user_id_asInt, is true?', req.session.is_authorized === true && req.session.user_id === param_user_id_asInt)
 
+  // Check that the session's user is the same as the user_id we were directed here with from login
   if (req.session.is_authorized === true && req.session.user_id === param_user_id_asInt) {
 
     /* on this page a place for them to create a profile.

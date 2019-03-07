@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios'
-import { readAndExtract_fileAndFormat } from "../../lib/general_fns"
+import { readAndExtract_fileTypeAndFormat } from "../../lib/general_fns"
 // code source: https://codepen.io/hartzis/pen/VvNGZP ####*/
 // blog about it: http://www.hartzis.me/react-image-upload/
 class Form_Profile_FileUpload extends React.Component {
@@ -54,7 +54,7 @@ class Form_Profile_FileUpload extends React.Component {
     if (this.state.thingUploaded_file !== '' && this.state.thingUploaded_file !== undefined) {
 
       // var val = document.body.getAttribute('data-csrfToken') <-- worked on body
-      var token = document.querySelector("[name=csrf-param][content]").content // <--- going with meta though b/c it is recommended
+      var token = document.querySelector("[name=csrf-param][content]").content // token is on meta tag
 
       let reader = new FileReader();
 
@@ -105,13 +105,23 @@ class Form_Profile_FileUpload extends React.Component {
 
     reader.onloadend = () => {
       
-      var [fileData_fileType, fileData_format] = readAndExtract_fileAndFormat(reader.result)
+      var [fileData_fileType, fileData_format] = readAndExtract_fileTypeAndFormat(reader.result)
       console.log('fileData_fileType', fileData_fileType)
       console.log('fileData_format', fileData_format)
       
-      
+      /* checking if it has .docx format */
       if (fileData_format === 'vnd.openxmlformats-officedocument.wordprocessingml.document') {
         console.log('fileData_format === vnd.openxmlformats - officedocument.wordprocessingml.document')
+        // docx format
+        this.setState({
+          thingUploaded_file: file,
+          thingUploaded_previewUrl: reader.result,
+          thingUploaded_type: fileData_fileType + ' + ' / ' + ' + fileData_format
+        });
+      } 
+      /* checking if file has .txt ("plain") format */
+      else if (fileData_format === 'plain') {
+        console.log('fileData_format === plain -- is plaintext aka .txt')
         // docx format
         this.setState({
           thingUploaded_file: file,

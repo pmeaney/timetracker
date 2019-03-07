@@ -5,10 +5,10 @@ sass:
   transition: opacity 300ms ease-in-out
 */
 import React from 'react'
-import FormAddNewActivity from './forms/Form_addNewActivity'
+import FormAddNewActivity from '../forms/Form_addNewActivity'
 
 
-import { toggle_Visibility_Modal_CreateActivity } from "./redux/actions"
+import { toggle_Visibility_Modal_CreateActivity } from "../redux/actions"
 import { connect } from 'react-redux'
 
 // import { library } from '@fortawesome/fontawesome-svg-core';
