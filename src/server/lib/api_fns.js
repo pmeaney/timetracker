@@ -342,6 +342,7 @@ const getEmployee_by_id = (emp_id) => {
 							'user_profiles.user_profile_lastName as lastName',
 							'user_profiles.user_profile_phoneNumber as phone',
 							'user_profiles.user_profile_email as email',
+							'user_profiles.user_profile_imageFilename as employee_profile_photo',
 							)
     })
 }
@@ -367,6 +368,7 @@ const getProjectMgr_by_project_id = (project_id) => {
 				'user_profiles.user_profile_lastName as project_manager_lastName',
 				'user_profiles.user_profile_phoneNumber as project_manager_phone',
 				'user_profiles.user_profile_email as project_manager_email',
+				'user_profiles.user_profile_imageFilename as project_manager_profile_photo',
 			)
 	})
 }
@@ -654,7 +656,7 @@ const update_FileName_ProfilePhoto_byUserID = (new_filename, user_id_passedIn, s
 
 const hireUser_toEmployee = (user_id_passedIn) => {
 	/* 
-	
+
 	Used to lookup users, and change them to employees
 	NOT to update current employees status/info
 
@@ -686,7 +688,7 @@ const hireUser_toEmployee = (user_id_passedIn) => {
 		return Promise.try(() => {
 			return database('user_profiles')
 			.where({ user_id: result[0]['user_id'] })
-			.insert({ user_profile_imageFilename: 'profilePhoto_user_id__0.png' })
+				.insert({ user_profile_imageFilename: 'profilePhoto_user_id__0.png' }) // setting profile image as a blank photo
 			.returning('user_id', 'user_profile_imageFilename')
 		})
 	})

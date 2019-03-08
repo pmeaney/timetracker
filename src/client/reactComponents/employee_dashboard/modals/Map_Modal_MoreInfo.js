@@ -13,26 +13,27 @@ import {
 } from "react-google-maps";
 import { compose, withProps } from "recompose";
 
-import { connect } from 'react-redux'
-import { toggle_InfoWindow_isOpen_State } from './redux/actions'
+// import { connect } from 'react-redux'
+// import { toggle_InfoWindow_isOpen_State } from '../redux/actions'
 import { GMAPS_API } from "babel-dotenv"
 
 // const apiKey = process.env.GMAPS_API.toString()
 const apiKey = GMAPS_API.toString()
 
-const MapWithPlaces = (props) => {
-  // console.log('props is', props)
+const Map_Modal_MoreInfo = (props) => {
+  console.log('props is', props)
   return(
-    <GoogleMap defaultZoom={props.zoom} defaultCenter={props.center}>
-      {
-        props.timesheetData &&
-        props.timesheetData.map((timesheet, i) => {
+    <GoogleMap defaultZoom={props.zoom} defaultCenter={props.center} style={{ maxHeight: '5rem', maxWidth: '5rem' }}>
+      {props.timesheetData.timesheetData &&
 
-        let employee_photo = 'http://localhost:3000/profilePhoto-storage/' + timesheet.employee_profile_photo
-        let lat = parseFloat(timesheet.timesheet_clockin_lat, 10);
-        let lng = parseFloat(timesheet.timesheet_clockin_long, 10);
+        props.timesheetData.timesheetData.map((timesheet, i) => {
+
+          let employee_photo = 'http://localhost:3000/profilePhoto-storage/' + timesheet.employee_profile_photo
+          let lat = parseFloat(timesheet.timesheet_clockin_lat, 10);
+          let lng = parseFloat(timesheet.timesheet_clockin_long, 10);
 
           return (
+
             <Marker
               id={timesheet.timesheet_id}
               key={timesheet.timesheet_id}
@@ -40,7 +41,8 @@ const MapWithPlaces = (props) => {
               title="Click to zoom"
               onClick={props.toggle_InfoWindow_isOpen_State.bind(this,i)} 
             >
-              {props.infoWindows[i].isOpen && (
+
+            { props.infoWindows[i].isOpen && (
                 <InfoWindow 
                   onCloseClick={props.toggle_InfoWindow_isOpen_State.bind(i)} 
                 >
@@ -48,23 +50,27 @@ const MapWithPlaces = (props) => {
                     <div style={{ float: 'right', margin: '0 0 0 1rem'}}>{timesheet.firstName} {timesheet.lastName}</div>
                   </div>
                 </InfoWindow>
-              )}
+            )}
+
             </Marker>
+
           );
+
         })
+
       }
     </GoogleMap>
   )
 };
 
-const mapStateToProps = (store) => ({
-  timesheetData: store.timesheetData,
-  infoWindows: store.infoWindows
-})
+// const mapStateToProps = (store) => ({
+//   timesheetData: store.timesheetData,
+//   infoWindows: store.infoWindows
+// })
 
-const mapDispatchToProps = {
-  toggle_InfoWindow_isOpen_State
-}
+// const mapDispatchToProps = {
+//   toggle_InfoWindow_isOpen_State
+// }
 
 // export default MapWithPlaces;
 const ComposedMapWrapper = compose(
@@ -77,7 +83,7 @@ const ComposedMapWrapper = compose(
   }),
   withScriptjs,
   withGoogleMap,
-  connect(mapStateToProps, mapDispatchToProps),
+  // connect(mapStateToProps, mapDispatchToProps),
 )
 
-export default ComposedMapWrapper(MapWithPlaces)
+export default ComposedMapWrapper(Map_Modal_MoreInfo)

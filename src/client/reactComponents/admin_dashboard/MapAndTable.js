@@ -1,6 +1,7 @@
 import React from "react";
 import ComposedMapWrapper from "./MapWithPlaces";
 import DataTableTimesheets from './DataTableTimesheets'
+// import CollapseVisualComponent from './testing/CollapseVisualComponent'
 import axios from 'axios'
 
 import { connect } from 'react-redux'
@@ -122,20 +123,21 @@ class MapAndTable extends React.Component {
   render(){
     
     return (
-      this.props.timesheetData.length ? 
-        <div >
-          <div className="overflowXYScroll box dataTableBox">
-            <DataTableTimesheets />
-          </div>
-
-          <div className="mapWithplaces">
-            <ComposedMapWrapper
-              center={{ lat: 37.685246, lng: -122.40277 }}
-              zoom={15}
-            />
-          </div>
-          
-        </div> : null
+      this.props.timesheetData.length 
+        ? 
+          <div >
+            <div className="overflowXYScroll box dataTableBox">
+              <DataTableTimesheets />
+            </div>
+            <div className="mapWithplaces">
+              <ComposedMapWrapper
+                center={{ lat: 37.685246, lng: -122.40277 }}
+                zoom={15}
+              />
+            </div>
+          </div> 
+        : 
+          null
     )
   }
 }

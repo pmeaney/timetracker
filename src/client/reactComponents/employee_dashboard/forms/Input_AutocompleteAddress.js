@@ -21,8 +21,6 @@ class LocationSearchInput extends React.Component {
       .catch(error => console.error('Error', error));
   };
 
-
-
   render() {
     return (
       <PlacesAutocomplete

@@ -210,11 +210,14 @@ const get_PendingTasks_by_EmployeeID = (req, res) => {
               Api_fns.getProjectMgr_by_project_id(task.project_id),
               Api_fns.getActivityType_by_activity_code_id(task.activity_code_id)
             ]).spread((locationbyProjectID, projectMgrByProjectID, ActivityType_by_activity_code_id) => {
+
+              // console.log('locationbyProjectID', locationbyProjectID)
+              // console.log('projectMgrByProjectID', projectMgrByProjectID)
+              // console.log('ActivityType_by_activity_code_id', ActivityType_by_activity_code_id)
               return { locationbyProjectID, projectMgrByProjectID, ActivityType_by_activity_code_id }
             })
           })
             .then((resultData) => {
-
               const combined_Project_Location_Data = resultData.map((currElement, index) => {  // activity set one
                 return {
                   // from location object
@@ -225,10 +228,11 @@ const get_PendingTasks_by_EmployeeID = (req, res) => {
                   location_zip: currElement.locationbyProjectID[0].location_zip,
                   location_type: currElement.locationbyProjectID[0].location_type,
                   // from project object
-                  projectMgr_firstName: currElement.projectMgrByProjectID[0].firstName,
-                  projectMgr_lastName: currElement.projectMgrByProjectID[0].lastName,
-                  projectMgr_phone: currElement.projectMgrByProjectID[0].phone,
-                  projectMgr_email: currElement.projectMgrByProjectID[0].email,
+                  project_manager_firstName: currElement.projectMgrByProjectID[0].project_manager_firstName,
+                  project_manager_lastName: currElement.projectMgrByProjectID[0].project_manager_lastName,
+                  project_manager_phone: currElement.projectMgrByProjectID[0].project_manager_phone,
+                  project_manager_email: currElement.projectMgrByProjectID[0].project_manager_email,
+                  project_manager_profile_photo: currElement.projectMgrByProjectID[0].project_manager_profile_photo,
                   // from activity type object
                   activity_type: currElement.ActivityType_by_activity_code_id[0].activity_type
                 }
