@@ -28,15 +28,16 @@ exports.seed = function(knex, Promise) {
 
       // mock users, just so we can link mock employee & user profiles accounts to them
 
-      // NOTE: To keep things simple, I am leaving user_email in the users table, b/c this is the email they use to register with.
+      // NOTE: Below, 'users' contains user_email, as does user_profile.
+      // To keep things simple, I am leaving user_email in the users table-- this is the email they use to register with.
       // To update their email, they will have a separate option (at least a separate put request within the serverside API), 
-      // rather than updating it along with their other "profile" info.
+      // rather than updating it with/along with their other "profile" info.
 
       knex('users').insert([
         { user_email: 'mock_employee@email.com', user_type: 'employee' }, //hashed_password is also a field, but we'll skip it since we'll never log in with these users, they're just for display to admin dashboard
         { user_email: 'mock_employee@email.com', user_type: 'employee' }, //hashed_password is also a field, but we'll skip it since we'll never log in with these users, they're just for display to admin dashboard
         { user_email: 'mock_employee@email.com', user_type: 'employee' }, //hashed_password is also a field, but we'll skip it since we'll never log in with these users, they're just for display to admin dashboard
-        { user_email: 'mock_employee@email.com', user_type: 'employee' }, //hashed_password is also a field, but we'll skip it since we'll never log in with these users, they're just for display to admin dashboard
+        { user_email: 'mock_employee@email.com', user_type: 'general-hasNot-applied' }, //hashed_password is also a field, but we'll skip it since we'll never log in with these users, they're just for display to admin dashboard
       ]),
     
       // mock user profiles, so we have some fake employee photos to display to admin on map

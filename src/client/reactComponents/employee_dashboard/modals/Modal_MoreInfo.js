@@ -51,7 +51,7 @@ location_zip: "94005"
     return (
     <Popup
       // trigger={<button className="button"> Open Modal </button>}
-      trigger={<a href="#" className="card-footer-item"> Open Modal </a>}
+      trigger={<a href="#" className="card-footer-item">Project Info</a>}
       modal
       closeOnDocumentClick
     > 
@@ -68,7 +68,7 @@ location_zip: "94005"
               <div className="modal-card CustomModal">
 
                 <header className="modal-card-head">
-                <p className="modal-card-title">More information about task</p>
+                <p className="modal-card-title">More information about project</p>
                 <button className="delete" onClick={close} />
                 </header>
 
@@ -78,14 +78,21 @@ location_zip: "94005"
                   <div className="columns margin_sides">
                     <div className="column">
 
-                      <div className="margin_top_bottom">
-                        <p>Activity Info</p>
+                      <div>
                         <p>
-                          <strong>Lorem, ipsum dolor sit ame</strong>
-                          <br />
-                          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sit similique fugiat deserunt ipsum architecto. Tempora quas, culpa nam facere expedita facilis accusantium delectus! Iure sed incidunt veniam eum odio repellendus?
+                          <strong>Project Type: {this.props.activity_obj.location_type}</strong>
+                          <br/>
+                          <strong>Project description:</strong>
+                          <br/>
+                          Lorem ipsum dolor sit amet consectetur,
+                          <br/>
+                          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Consequuntur sit vitae optio obcaecati beatae.
+                          <br/>
+
+                          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sit similique fugiat deserunt ipsum architecto. 
                         </p>
                       </div>
+
 
                       <div className="columns margin_top_bottom">
                         {/* <div className=""> */}
@@ -104,13 +111,11 @@ location_zip: "94005"
                               </div>
                             </div>
                           </div>
-                        <div className="column">
-                            <p>Project Address: ({this.props.activity_obj.location_type})
-                              <br />{this.props.activity_obj.location_address}
-                              <br />{this.props.activity_obj.location_city} {this.props.activity_obj.location_state} {this.props.activity_obj.location_zip}
-                            </p>
-                           
-                          </div>
+                        <div className="column noMargin_noPadding_inlineBlock">
+                          <strong>Project Address:</strong> 
+                          <br /> {this.props.activity_obj.location_address}
+                          <br /> {this.props.activity_obj.location_city} {this.props.activity_obj.location_state} {this.props.activity_obj.location_zip}
+                        </div>
                         {/* </div> */}
                       </div>
 

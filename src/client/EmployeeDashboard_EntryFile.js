@@ -13,8 +13,8 @@ import EmployeeDashboardController from "./reactComponents/employee_dashboard/Em
 
 /* Here we want to take the session and based on the user type, deliver the appropriate dashboard */
 ReactDOM.render(
-  <Provider store={store}>
-    <EmployeeDashboardController />
-  </Provider>,
+    <Provider store={store}>
+      <EmployeeDashboardController />
+    </Provider>,
   document.getElementById("react-root")
 )

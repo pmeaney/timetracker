@@ -16,8 +16,22 @@ class Viewport_Profile extends Component {
 
   constructor() {
     super();
+    this.state = {
+      user_type: ''
+    }
     
     this.HandleClick_CloseButton_VisibilityToggle_Viewport_Profile = this.HandleClick_CloseButton_VisibilityToggle_Viewport_Profile.bind(this)
+  }
+
+  
+  componentWillMount() {
+
+    var user_type = document.querySelector("[name=user_type-param][content]").content // token is on meta tag 
+    console.log('user_type: ', user_type)
+    this.setState({
+      user_type: user_type
+    })
+    
   }
   
   HandleClick_CloseButton_VisibilityToggle_Viewport_Profile(e) {
@@ -47,18 +61,24 @@ class Viewport_Profile extends Component {
                   </div>
 
                   <div className="column">
-                    {/* 
-                     // Make into a props
-                    var acceptable_image_formats = 
-                    */}
-                    <Form_Profile_FileUpload 
-                      thing_to_upload={'photo'}
-                      acceptable_file_types={['image']}
-                      acceptable_file_formats={['png', 'jpg', 'jpeg', 'gif']}
-                      urlForHttpPostReq={'/dashboard/profile/photoUpload'}
-                    />
-                    <br />
-                    {/* <p>Resume upload form here</p> */}
+                    
+                    {/* Hiding the upload image component unless user is an employee */}
+                    { this.state.user_type === "employee" 
+                      ?
+                      <div>
+                        <Form_Profile_FileUpload 
+                          thing_to_upload={'photo'}
+                          acceptable_file_types={['image']}
+                          acceptable_file_formats={['png', 'jpg', 'jpeg', 'gif']}
+                          urlForHttpPostReq={'/dashboard/profile/photoUpload'}
+                        />
+                        <br />
+                      </div>
+                      :
+                      null
+                    }
+                    
+                    
                     <Form_Profile_FileUpload
                       thing_to_upload={'resume'}
                       acceptable_file_types={['application', 'text']}

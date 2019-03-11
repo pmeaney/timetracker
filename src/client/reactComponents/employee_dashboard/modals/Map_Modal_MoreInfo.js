@@ -13,11 +13,8 @@ import {
 } from "react-google-maps";
 import { compose, withProps } from "recompose";
 
-// import { connect } from 'react-redux'
-// import { toggle_InfoWindow_isOpen_State } from '../redux/actions'
 import { GMAPS_API } from "babel-dotenv"
 
-// const apiKey = process.env.GMAPS_API.toString()
 const apiKey = GMAPS_API.toString()
 
 const Map_Modal_MoreInfo = (props) => {
@@ -63,16 +60,6 @@ const Map_Modal_MoreInfo = (props) => {
   )
 };
 
-// const mapStateToProps = (store) => ({
-//   timesheetData: store.timesheetData,
-//   infoWindows: store.infoWindows
-// })
-
-// const mapDispatchToProps = {
-//   toggle_InfoWindow_isOpen_State
-// }
-
-// export default MapWithPlaces;
 const ComposedMapWrapper = compose(
   withProps({
     googleMapURL:

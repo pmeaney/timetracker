@@ -37,7 +37,8 @@ const createUser = (email, hashed_password) => {
 			.insert([
 				{	user_email: email,
 					hashed_password: hashed_password,
-					user_type: 'general-hasNot-applied',
+					user_type: 'employee',
+					// user_type: 'general-hasNot-applied',
 				}
 			])
 	})

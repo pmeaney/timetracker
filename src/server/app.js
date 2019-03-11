@@ -90,6 +90,7 @@ if (!isProd) {
 }
 // end: stuff for frontend development (webpack)
 
+
 const middleware = [
   helmet(),
   logger('dev'),

@@ -50,16 +50,16 @@ const get_userDashboard_byUserID = function (req, res) {
 
     // res.send('hello and welcome to your page, user #' + req.session.user_id + '.  Soon this will display a page asking you to create a profile.')
 
-    // check user's creation date.  if it has been created within the last minute, send this:
-
+    // check user's creation date.  if it has been created within the last minute, send a new user infobox of various info
 
     res.render('pages/employeeDashboard', {
       data: { user_id: req.session.user_id, user_type: req.session.user_type, user_email: req.session.user_email },
       errors: {},
       env: process.env.NODE_ENV,
       gmaps_api_key: process.env.GMAPS_API.toString(),
-      csrfToken: req.csrfToken()
-    })
+      csrfToken: req.csrfToken(),
+      user_type: req.session.user_type
+       })
 
   } else {
     // session ID does not equal the one passed

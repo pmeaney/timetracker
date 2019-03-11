@@ -224,28 +224,29 @@ const get_Logout = function (req, res) {
   // If they're logged in,
   //    regenerate the session to show that they've been logged out
   //    then send them to the logout page.
-  const session_user_type = req.session.user_type
+  // const session_user_type = req.session.user_type
   // ! Mocking the employee ID
-  const session_mock_employee_id = req.session.mock_employee_id
-  const session_mock_user_id = req.session.user_id
+  // const session_mock_employee_id = req.session.mock_employee_id
+  // const session_mock_user_id = req.session.user_id
 
-  req.session.regenerate(
-    function () {
-      req.session.is_authorized = false
-      req.session.has_loggedOut = true
-      req.session.user_type = session_user_type
-      req.session.mock_employee_id = session_mock_employee_id
-      req.session.user_id = session_mock_user_id
+  req.session.destroy()
+  // req.session.regenerate(
+  //   function () {
+  //     req.session.is_authorized = false
+  //     req.session.has_loggedOut = true
+  //     // req.session.user_type = session_user_type
+  //     // req.session.mock_employee_id = session_mock_employee_id
+  //     // req.session.user_id = session_mock_user_id
 
-      console.log('req.session after logout is', req.session)
+  //     console.log('req.session after logout is', req.session)
 
-      req.flash('infoMessage', 'Thanks for your visit.')  
-      res.render('pages/logout', {
-        env: process.env.NODE_ENV,
-      })
+  //     req.flash('infoMessage', 'Thanks for your visit.')  
+  //     res.render('pages/logout', {
+  //       env: process.env.NODE_ENV,
+  //     })
 
-    }
-  )
+  //   }
+  // )
   } else {
     // Otherwise, they are not logged in... but apparently are trying to 
     // visit the logout page... so we'll just send them to it.
