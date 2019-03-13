@@ -14,44 +14,7 @@ class MapAndTable extends React.Component {
 
   constructor(props) {
     super(props);
-
   }
-
-  /* 
-
-  try this:
-  https://auth0.com/blog/developing-real-time-web-applications-with-server-sent-events/
-  it uses "eventsource.onmessage"
-  however, it has this.SomeFn instead of just SomeFn
-  (i.e. maybe I need some 'this' binding)
-  
-  MapAndTable ------
-    I dont need props here, just the dispatch functions
-  cWM --
-    load the state into redux.
-    This means we pass redux two types of data in an action:
-      - timesheet array
-      - infoWindow array
-
-    reducers then create a new state with the data passed in.
-
-  cWM --
-    pretty much the same: pass two arrays in the action,
-    but in the reducer, the arrays are concatenated to state
-
-  MapWithPlaces  ------ AND  DataTableTimesheets  ---
-  (needs props & dispatch)
-
-  Needs to be able to select & set infoWindows[i] onClick of marker (MapWithPlaces) / datatable row (DataTableTimesheets)
-    i.e. toggle open 
-
-    For this one, payload is the index to toggle.
-    in Reducer, select that object with index, and flip its boolean.
-
-   *  --> Ok, now just need to setup DataTableTimesheets with an onClick method 
-   * to open corresponding google-map's timesheet infowindow when a row is clicked.
-
-   */
   
   componentWillMount() {
     console.log('[MapAndTable cWM] -- componentWillMount')
@@ -71,22 +34,7 @@ class MapAndTable extends React.Component {
   componentDidMount() {
     console.log('[MapAndTable cDM] -- componentDidMount')
 
-
     const es = new EventSource('/admin_api/eventstream', {withCredentials: true})
-
-    // es.onopen = (e) => {
-    //   console.log('event source connection opened')
-    //   console.log('event info is ', e)
-    //   const es_data = e.data
-    //   console.log('es data is', es_data)
-
-    // }
-    
-    // es.addEventListener('message',  (e) => {
-
-    //   const es_data = JSON.parse(e.data)
-    //   console.log('[MapAndTable cDM] [addEventHandler] admin event stream data', es_data)
-    // })
 
     es.onmessage = (e) => {
       console.log('on message e', e)
@@ -121,15 +69,19 @@ class MapAndTable extends React.Component {
 
 
   render(){
-    
+
+    var slider_leftViewport_percentageString = this.props.slider_leftViewport.toString() + '%'
+    var slider_rightViewport_percentageString = this.props.slider_rightViewport.toString() + '%'
+
     return (
       this.props.timesheetData.length 
         ? 
+          
           <div >
-            <div className="overflowXYScroll box dataTableBox">
-              <DataTableTimesheets />
+          <div className="overflowXYScroll dataTableBox myBox" style={{ width: slider_leftViewport_percentageString, padding: slider_leftViewport_percentageString === '0%'? 0 : '1.25rem' }}>
+            <DataTableTimesheets />
             </div>
-            <div className="mapWithplaces">
+            <div className="mapWithplaces" style={{ width: slider_rightViewport_percentageString, }}>
               <ComposedMapWrapper
                 center={{ lat: 37.685246, lng: -122.40277 }}
                 zoom={15}
@@ -140,12 +92,13 @@ class MapAndTable extends React.Component {
           null
     )
   }
-}
-
+}  
 
 const mapStateToProps = (store) => ({
   timesheetData: store.timesheetData,
-  infoWindows: store.infoWindows
+  infoWindows: store.infoWindows,
+  slider_leftViewport: store.slider_leftViewport,
+  slider_rightViewport: store.slider_rightViewport
 })
 
 const mapDispatchToProps = {

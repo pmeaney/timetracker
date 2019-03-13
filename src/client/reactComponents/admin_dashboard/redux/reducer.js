@@ -4,7 +4,9 @@ const initialState = {
   visibility_viewport_newItemDashboard: false,
   visibility_viewport_adminDataTable: false,
   timesheetData: [],
-  infoWindows: []
+  infoWindows: [],
+  slider_leftViewport: 50,
+  slider_rightViewport: 50
 }
 
 const reducer = (state = initialState, action) => {
@@ -72,6 +74,12 @@ const reducer = (state = initialState, action) => {
           }
           return timesheet
         })
+      })
+    case "SETSTATE_SLIDER_VS_SUBVIEWPORT_WIDTH":
+      return (state = {
+        ...state,
+        slider_leftViewport: action.payload1,
+        slider_rightViewport: action.payload2,
       })
 
     default:

@@ -36,3 +36,9 @@ export const update_ClockedOut_Timesheet_Data = (value1, value2) => ({
   payload2: value2
 })
 
+export const setReduxState_Slider_vs_SubViewportWidth = (value1, value2) => ({
+  type: "SETSTATE_SLIDER_VS_SUBVIEWPORT_WIDTH",
+  payload1: value1,
+  payload2: value2
+})
+

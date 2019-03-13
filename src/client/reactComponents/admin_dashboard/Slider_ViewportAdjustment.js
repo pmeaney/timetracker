@@ -1,5 +1,6 @@
 import React from 'react'
-
+import { connect } from 'react-redux'
+import { setReduxState_Slider_vs_SubViewportWidth } from "./redux/actions"
 /* Source: 
 - https://github.com/react-component/slider
 - https://react-component.github.io/slider/examples/slider.html  
@@ -16,15 +17,23 @@ class Slider_ViewportAdjustment extends React.Component {
     };
   }
   onSliderChange = (value) => {
-      this.setState({
-        value,
-      });
+      
+    this.setState({
+      value,
+    });
+
   }
   onAfterChange = (value) => {
-    var left_side_width_percentage = Math.round(((-50 + value)* (-1)) + 50)
-    console.log('left window should be:', left_side_width_percentage)
+    
+
+    // console.log('left window should be:', left_side_width_percentage)
+    // console.log('right window should be:', right_side_width_percentage)
+    var left_side_width_percentage = Math.round(((-50 + value) * (-1)) + 50)
     var right_side_width_percentage = Math.round(((-50 + value) + 50))
-    console.log('right window should be:', right_side_width_percentage)
+
+    this.props.setReduxState_Slider_vs_SubViewportWidth(left_side_width_percentage, right_side_width_percentage)
+
+    
   }
   render() {
 
@@ -44,4 +53,15 @@ class Slider_ViewportAdjustment extends React.Component {
   }
 }
 
-export default Slider_ViewportAdjustment
+// const mapStateToProps = store => ({
+//   someReduxStateProp: store.someReduxStateProp
+// })
+
+const mapDispatchToProps = {
+  setReduxState_Slider_vs_SubViewportWidth
+}
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(Slider_ViewportAdjustment)
