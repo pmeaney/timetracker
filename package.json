@@ -1,7 +1,7 @@
 {
-  "name": "timetracker",
+  "name": "timetracker_client",
   "version": "1.0.0",
-  "description": "Webpack: Beyond the Basics Course",
+  "description": "Timetracker",
   "repository": "https://github.com/pmeaney/timetracker.git",
   "main": "app.js",
   "license": "MIT",
