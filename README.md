@@ -7,28 +7,32 @@ I had initially written a frontend prototype with jQuery, but decided to switch 
 - Backend: ExpressJS, NodeJS
 - Database: PostgreSQL -> KnexJS
 
-Frontend business logic, UX/UI, and configuration frameworks used:
+#### Frontend business logic, UX/UI, and configuration frameworks used:
 
-| Framework                          | Language      | Purpose  |
-| ---------------------------------- |---------------|-------|
+| Framework                          | Language      | Purpose  
+| ---------------------------------- |---------------|-------
 | [ReactJS](https://reactjs.org/)    | Javascript    | Main structure of frontend application logic, including user experience and backend communication 
 | [Redux](https://redux.js.org/)     | Javascript    | Maintains application state in centralized location
 | [Webpack](https://webpack.js.org)  | Javascript    | Bundles multiple project files and packages together into single files and transforms them for optimized browser experience
 | [Babel](https://babeljs.io)        | Javascript    | Compiles ReactJS components & css
 
-Frontend formatting and design frameworks:
-| Sass          | CSS           | | An enhanced version of css, allowing for programmatic, extendible, compiled type of css (sass/scss) |
-| Bulma         | CSS           | | A simple css frontend design and formatting package |
-| Bootstrap     | CSS           | | A responsive, sass package (used with react-bootstrap-table) |
+#### Frontend css frameworks for formatting and UX design:
 
-Frontend REST API:
+| Framework                          | Language      | Purpose  
+| ---------------------------------- |---------------|-------
+| Sass          | CSS           | An enhanced version of css, allowing for programmatic, extendible, compiled type of css (sass/scss) 
+| Bulma         | CSS           | A simple css frontend design and formatting package 
+| Bootstrap     | CSS           | A responsive, sass package (used with react-bootstrap-table) 
+
+#### Frontend REST API:
+
 | API                                | Purpose  |
 | ---------------------------------- |-------|
 | [Google Map Mapping](https://github.com/tomchentw/react-google-maps) & [Google Map address auto-complete](https://github.com/hibiken/react-places-autocomplete) | Mapping employee system users (timesheet clockin/clockout)
 | [App's ackend REST API](https://github.com/pmeaney/timetracker/tree/master/src/server/) | Database communication including user authentication & business data CRUD
 
 
-Important backend (NodeJS) packages include:
+#### Important backend (NodeJS) packages include:
 
 | Package      |  Purpose  
 | -------------|-----------
@@ -41,7 +45,7 @@ Important backend (NodeJS) packages include:
 | KnexJS | Interacting with PostgreSQL database via KnexJS's javascript API, improving security and reducing complexity
 | multer | File uploads
 
-Other important project platforms:
+#### Other important project platforms:
 
 | Platform      |  Purpose  
 |---------------|-----------
