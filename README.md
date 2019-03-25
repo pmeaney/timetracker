@@ -1,6 +1,15 @@
 
 A fullstack javscript app (expressjs/reactjs) for tracking timesheets for hourly employees.
 
+To set this up locally for yourself would require a few steps:
+- Clone & install
+- Install & configure postgreSQL 
+- Create .env file credentials (DB, API)
+- Run knex db migrations & seeding, and manually create sessions table for express-sessions
+- Compile frontend client with webpack configuration files
+- Run server ("npm run dev" -- see clientside package.json)
+
+
 #### Frontend business logic, UX/UI, and configuration frameworks used:
 
 | Framework                          | Language      | Purpose  
@@ -37,7 +46,7 @@ A fullstack javscript app (expressjs/reactjs) for tracking timesheets for hourly
 | [CSURF](https://www.npmjs.com/package/csurf)        | API communication validation & form security (Http post & put requests)
 | [bcrypt](https://www.npmjs.com/package/bcrypt)       | Oneway password encryption in user authentication system (salt & hash)
 | [express-session](https://www.npmjs.com/package/express-session) | Stores temporary backend user communication information (sessions)
-| [KnexJS](https://knexjs.org) | Interacts with PostgreSQL database to implment database retrieval in javascript (allows for databas + JS program interaction, improves security, reduces complexity)
+| [KnexJS](https://knexjs.org) | Interacts with PostgreSQL database to implment database retrieval in javascript (allows for database + JS program interaction including migration and seeding, improves security, reduces complexity)
 | [multer](https://www.npmjs.com/package/multer) | File uploads
 
 #### Other important project platforms:
