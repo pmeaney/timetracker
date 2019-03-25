@@ -10,20 +10,20 @@ To set this up locally for yourself would require a few steps:
 - Run server ("npm run dev" -- see clientside package.json)
 
 
-#### Frontend business logic, UX/UI, and configuration frameworks used:
+#### Frontend javascript frameworks (business logic, configuration, user interface):
 
-| Framework                          | Language      | Purpose  
-| ---------------------------------- |---------------|-------
-| [ReactJS](https://reactjs.org/)    | Javascript    | Main structure of frontend application logic, including user experience and backend communication 
-| [Redux](https://redux.js.org/)     | Javascript    | Maintains application state in centralized location
-| [Webpack](https://webpack.js.org)  | Javascript    | Bundles multiple project files and packages together into single files and transforms them for optimized browser experience
-| [Babel](https://babeljs.io)        | Javascript    | Compiles ReactJS components & css
+| Framework                          | Purpose  
+| ---------------------------------- | -------
+| [ReactJS](https://reactjs.org/)    | Main structure of frontend application logic, including user experience and backend communication 
+| [Redux](https://redux.js.org/)     | Maintains application state in centralized location
+| [Webpack](https://webpack.js.org)  | Bundles multiple project files and packages together into single files and transforms them for optimized browser experience
+| [Babel](https://babeljs.io)        | Compiles ReactJS components & css
 
-#### Frontend css frameworks for formatting and UX design:
+#### Frontend css frameworks (user interface design):
 
 | Framework                          | Purpose  
 | ---------------------------------- |-------
-| [Sass](https://sass-lang.com/libsass)          | An enhanced version of css, allowing for programmatic, extendible, compiled type of css (sass/scss) 
+| [Sass](https://sass-lang.com/libsass)  | An enhanced version of css, allowing for programmatic, extendible, compiled type of css (sass/scss) 
 | [Bulma](https://bulma.io)         | A simple css frontend design and formatting package 
 | [Bootstrap](https://allenfang.github.io/react-bootstrap-table/)     | A responsive, sass package (used with react-bootstrap-table) 
 
