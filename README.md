@@ -37,7 +37,7 @@ I had initially written a frontend prototype with jQuery, but decided to switch 
 
 | Package      |  Purpose  
 | -------------|-----------
-| NodeJS       | Underlying runtime environment which executes javascript servercode
+| NodeJS       | Underlying runtime environment which executes javascript server code
 | ExpressJS    | Web application business logic, middleware, and routing
 | bluebird     | Enhances asynchronous programming 
 | CSURF        | API communication validation & form security (Http post & put requests)
