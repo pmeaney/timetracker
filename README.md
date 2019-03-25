@@ -33,7 +33,7 @@ To set this up locally for yourself would require a few steps:
 | ---------------------------------- |-------|
 | [Google Map Mapping](https://github.com/tomchentw/react-google-maps) | Mapping employee system users (timesheet clockin/clockout)
 | [Google Map address auto-complete](https://github.com/hibiken/react-places-autocomplete) | Automatically completes geographical address information as user type (employee/user profile) |
-| [App's ackend REST API](https://github.com/pmeaney/timetracker/tree/master/src/server/) | Database communication including user authentication & business data CRUD
+| [App's backend REST API](https://github.com/pmeaney/timetracker/tree/master/src/server/) | Database communication including user authentication & business data CRUD
 
 
 #### Important backend (NodeJS) packages include:
