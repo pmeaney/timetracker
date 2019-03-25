@@ -135,16 +135,14 @@ class FormAddNewActivity extends Component {
 
   // General html input handlers
   onChange = (string_nameOfThingToChange, event) => { 
-    
+    // console.log('data from event ', event._d)
     if(event._isAMomentObject && string_nameOfThingToChange === 'timepicker_beginTime') {
-      // console.log('data from timepicker received with time: ', event._d)
       this.setState({
         timepicker_beginTime: event._d
       })
     }
 
     if(event._isAMomentObject && string_nameOfThingToChange === 'timepicker_endTime') {
-      // console.log('data from timepicker received with time: ', event._d)
       this.setState({
         timepicker_endTime: event._d
       })
@@ -170,7 +168,6 @@ class FormAddNewActivity extends Component {
   }
 
   handleValidation() {
-    let fields = this.state.fields;
     let errors = {};
     let formIsValid = true;
     // check if exists, if not, create error
@@ -242,20 +239,39 @@ class FormAddNewActivity extends Component {
     console.log('Attempting validation before submitting...' )
     if (this.handleValidation()) {
       console.log('Form is valid, next will submit form.')
-      axios.post('/emp_api/activities/create/selfAssignedTask', {
+
+      var token = document.querySelector("[name=csrf-param][content]").content // token is on meta tag
+      let post_config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'CSRF-Token': token,
+          'Content-Type': false
+        }
+      }
+
+      var dataObj_toUpload = {
         newActivity_project_id: this.state.selectedRow['project_id'],
         newActivity_notes: this.state.newActivityNotes,
         newActivity_type: this.state.dropdownSelected_ActivityType['value'],
         newActivity_begin: iso_timestamp_activity_begin,
         newActivity_end: iso_timestamp_activity_end,
-      })
+      }
+
+      axios
+        .post(
+          '/emp_api/activities/create/selfAssignedTask', 
+          dataObj_toUpload,
+          post_config
+        )
         .then((response) => {
           console.log('response from server is', response)
         })
+        .catch((error) => { console.log('error: ', error) });
 
       // clear state when all done
       console.log('Clearing state after form submit')
       this.setState(initialState);
+      // keeping formsubmit as true, after resetting state
       this.setState({
         formSubmit_success: true
       })

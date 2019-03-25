@@ -297,6 +297,19 @@ const get_Activities_All = (req, res) => {
   }
 }
 
+
+const get_Projects_WithLocation_and_ProjectMgr = (req, res) => {
+  return Promise.try(() => {
+    return Api_fns.get_retrieve_Projects_WithLocation_and_ProjectMgr()
+  }).then((results) => {
+    res.status(200).json(results);
+  })
+}
+
+const post_createNewProject = (req, res) => {
+  console.log('post_createNewProject -- req.body ', req.body)
+}
+
 module.exports = { 
   AdminEventStream,
   get_Timesheets_All,
@@ -306,4 +319,6 @@ module.exports = {
   get_Employees_All,
   get_DataForTable,
   put_DataForTable_update,
+  get_Projects_WithLocation_and_ProjectMgr,
+  post_createNewProject
 }

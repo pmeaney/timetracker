@@ -694,6 +694,64 @@ const hireUser_toEmployee = (user_id_passedIn) => {
 	})
 }	
 
+
+const get_retrieve_Projects_WithLocation_and_ProjectMgr = () => {
+	/* 
+	First get all projects
+	then join on locations by project_id = location_id 
+	then join on employees by project_mgr_id = employee_id
+	*/
+	return Promise.try(() => {
+		return database('projects')
+			.select('*')
+			.join('locations',
+				'projects.location_id',
+				'=',
+				'locations.location_id')
+			.select('locations.location_id',
+				'locations.location_name',
+				'locations.location_address',
+				'locations.location_city',
+				'locations.location_state',
+				'locations.location_zip',
+				'locations.location_type')
+			.join('employees',
+				'employees.employee_id',
+				'=',
+				'projects.project_mgr_emp_id')
+			.select('employees.user_id')
+			.join('user_profiles',
+				'user_profiles.user_id',
+				'=',
+				'employees.user_id')
+			.select('user_profiles.user_profile_firstName', 'user_profiles.user_profile_lastName')
+			// .returning(['project_id', 'location_id', 'project_mgr_emp_id', 'project_date_begin', 'project_date_end', 'created_at', 'updated_at', 'location_name', 'location_address', 'location_city', 'location_state', 'location_zip', 'location_type', 'user_profile_firstName', 'user_profile_lastName'])
+			// .returning(['user_profiles.user_profile_firstName', 'user_profiles.user_profile_lastName'])
+			// .returning(['projects.project_id', 'projects.location_id', 'projects.project_mgr_emp_id', 'projects.project_date_begin', 'projects.project_date_end', 'projects.created_at', 'projects.updated_at', 'locations.location_name', 'locations.location_address', 'locations.location_city', 'locations.location_state', 'locations.location_zip', 'locations.location_type', 'user_profiles.user_profile_firstName', 'user_profiles.user_profile_lastName'])
+	})
+	.then((results) => {
+		// .returning() wasn't working, so I am making the selection of items to keep, below
+		var objToRespond = results.map((currEl, i) => {
+			var tempObj = []
+			return tempObj[i] = {
+				pid: currEl.project_id,
+				project_mgr: currEl.user_profile_firstName + ' ' + currEl.user_profile_lastName,
+				lid: currEl.location_id,
+				location_name: currEl.location_name,
+				location_address: currEl.location_address,
+				location_city: currEl.location_city,
+				location_state: currEl.location_state,
+				location_type: currEl.location_type,
+				project_date_begin: currEl.project_date_begin,
+				project_date_end: currEl.project_date_end,
+				created_at: currEl.created_at,
+				updated_at: currEl.updated_at,
+			}
+		})
+		return objToRespond
+	})
+}
+
 module.exports = {
 	getAllActivities,
 	getActivity_by_id,
@@ -724,7 +782,9 @@ module.exports = {
 	put_DataForTable_update_Table_Field_withData,
 	update_FileName_ProfilePhoto_byUserID,
 	hireUser_toEmployee,
+	get_retrieve_Projects_WithLocation_and_ProjectMgr,
 	// for testing
 	getUsers_All,
 	getUserProfiles_All,
+	
 };

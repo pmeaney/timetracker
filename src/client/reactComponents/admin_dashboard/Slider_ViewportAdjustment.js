@@ -26,10 +26,22 @@ class Slider_ViewportAdjustment extends React.Component {
   onAfterChange = (value) => {
     
 
-    // console.log('left window should be:', left_side_width_percentage)
-    // console.log('right window should be:', right_side_width_percentage)
-    var left_side_width_percentage = Math.round(((-50 + value) * (-1)) + 50)
-    var right_side_width_percentage = Math.round(((-50 + value) + 50))
+   
+    var left_side_width_percentage = Math.floor(((-49 + value) * (-1)) + 50)
+    var right_side_width_percentage = Math.floor(((-50 + value) + 49))
+
+    if (left_side_width_percentage < 0 ) {
+      left_side_width_percentage = 0
+    }
+
+    if (right_side_width_percentage < 0 ) {
+      right_side_width_percentage = 0
+    }
+    console.log('left window should be:', left_side_width_percentage)
+    console.log('right window should be:', right_side_width_percentage)
+
+    var total = Math.floor(left_side_width_percentage + right_side_width_percentage)
+    console.log('total is:', total)
 
     this.props.setReduxState_Slider_vs_SubViewportWidth(left_side_width_percentage, right_side_width_percentage)
 

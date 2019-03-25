@@ -11,11 +11,13 @@ import FormAddNewActivity from '../forms/Form_addNewActivity'
 import { toggle_Visibility_Modal_CreateActivity } from "../redux/actions"
 import { connect } from 'react-redux'
 
-// import { library } from '@fortawesome/fontawesome-svg-core';
+
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+{/* <FontAwesomeIcon
+  icon={faPlusCircle}
+/> */}
 
-// library.add(faPlusCircle);
 
 
 const Modal = ({ children, closeModal, modalState, title }) => {

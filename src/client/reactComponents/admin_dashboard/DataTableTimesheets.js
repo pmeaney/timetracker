@@ -5,7 +5,7 @@ import { toggle_InfoWindow_isOpen_State } from './redux/actions'
 
 const DataTableTimesheets = (props) => {
 
-  const list = props.timesheetData.map((item, i) => {
+  const listOfTimesheets_as_dataTable_rows = props.timesheetData.map((item, i) => {
 
   // if timesheet's scheduled activity has a start time, display that scheduled start time in a readable format.  otherwise, display null
   const activity_begin_time = item.activity_datetime_begin ? getLuxon_local_DateTime(item.activity_datetime_begin, 'time') : null
@@ -47,7 +47,7 @@ const DataTableTimesheets = (props) => {
           </tr>
         </thead>
         <tbody>
-          { list }
+          { listOfTimesheets_as_dataTable_rows }
         </tbody>
       </table>
     </div>

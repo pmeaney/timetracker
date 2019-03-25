@@ -28,6 +28,8 @@ const initiallyLoadedOption = {
 
 const options = [
   { value: 'activities', label: 'activities' },
+  { value: 'users', label: 'users' },
+  { value: 'user_profiles', label: 'user_profiles' },
   { value: 'activity_codes', label: 'activity_codes' },
   { value: 'employees', label: 'employees' },
   { value: 'timesheets', label: 'timesheets' },
@@ -89,7 +91,7 @@ class Viewport_AdminDataTable extends Component {
     return (
       <article className="message is-link">
         <div className="message-header">
-          <span className="customPaddingForText_adminDataTable">Admin Data Table</span>
+          <span className="customPaddingForText_adminDataTable">Review and edit data</span>
           <span className="customSpan_adminDataTableSelector">
             <Select
               value={this.state.selectedOption}

@@ -69,9 +69,9 @@ const EmployeeEventStream = (req, res) => {
 
 const post_create_timesheet_toClockIn = (req, res) => {
 
-  console.log('req.body', req.body)
-  console.log('req.session', req.session)
-  console.log('req.session.mock_employee_id', req.session.mock_employee_id)
+  console.log('post_create_timesheet_toClockIn -- req.body', req.body)
+  console.log('post_create_timesheet_toClockIn -- req.session', req.session)
+  console.log('post_create_timesheet_toClockIn -- req.session.mock_employee_id', req.session.mock_employee_id)
 
   // ! Using a Mocked employee ID from session -- In production, change to actual employee ID from session
 
@@ -104,6 +104,7 @@ const post_create_timesheet_toClockIn = (req, res) => {
   
   if (true) {
     return Promise.try(() => {
+      console.log('going to get activity ID for', activity_id_For_Timesheets_Lookup)
       return Api_fns.getTimesheet_by_activity_id(activity_id_For_Timesheets_Lookup)
     })
       .then((timesheets_per_activity_id) => {

@@ -11,6 +11,9 @@ import { connect } from 'react-redux'
 import { toggle_Visibility_Modal_CreateActivity } from "../redux/actions"
 import { getLuxon_local_DateTime, combineDateTimes } from '../../lib/general_fns'
 
+// NOTE: Need to update the post call to emp_api: '/emp_api/activities/create/selfAssignedTask', 
+// It needs to be an admin_api call, not employee api.
+// we'll be linking it to the employee(s) selected from the dropdown
 /* 
 emp_assigned_by -- will be admin's session's employee_id
 emp_assigned_to -- will be an array of objects, so that multiple employees can be assigned same task
@@ -124,31 +127,7 @@ class FormAddNewActivity extends Component {
         })
       })
 
-    axios.get('/admin_api/employees/')
-      .then((response) => {
-        console.log('response data for admin_api/employees_all', response.data)
-
-        const employee_labels_ForDropdown = response.data.map((currElement) => {
-          const employee_firstName = currElement.firstName.replace(/^\w/, function (chr) {
-            return chr.toUpperCase();
-          })
-
-          const employee_lastName = currElement.lastName.replace(/^\w/, function (chr) {
-            return chr.toUpperCase();
-          })
-        
-          const obj = {
-            value: currElement.employee_id,
-            // uppercase the first letter
-            label: employee_firstName + ' ' + employee_lastName
-          }
-          return obj
-        })
-
-        this.setState({
-          dropdownOptions_Employees: employee_labels_ForDropdown
-        })
-      })
+    
   }
 
   handleRowSelect(row, isSelected, e) {
@@ -279,24 +258,39 @@ class FormAddNewActivity extends Component {
 
       // => Need to include: selected_employees_assigned_to
       console.log('Form is valid, next will submit form.')
-      axios.post('/emp_api/activities/create/selfAssignedTask', {
+
+      var token = document.querySelector("[name=csrf-param][content]").content // token is on meta tag
+
+      var dataObj_toUpload = {
         newActivity_project_id: this.state.selectedRow_projectLocation['project_id'],
         newActivity_notes: this.state.newActivityNotes,
         newActivity_type: this.state.dropdownSelected_ActivityType['value'],
         newActivity_begin: iso_timestamp_activity_begin,
         newActivity_end: iso_timestamp_activity_end,
-      })
+      }
+
+      let post_config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'CSRF-Token': token,
+          'Content-Type': false
+        }
+      }
+      
+      axios
+        .post(
+          '/emp_api/activities/create/selfAssignedTask', 
+          dataObj_toUpload,
+          post_config
+        )
         .then((response) => {
           console.log('response from server is', response)
         })
-
+        .catch((error) => { console.log('error: ', error) });
+        
       // clear state when all done
       console.log('Clearing state after form submit')
       this.setState(initialState);
-      this.setState({
-        formSubmit_success: true
-      })
-
       // closing modal:
       // Connected to Redux.  Set modal open = false, after a 2 second interval. (need to connect modal visibility state to redux as well)
       // TODO: => this isn't working
@@ -345,7 +339,10 @@ class FormAddNewActivity extends Component {
             <div className="columns">
               <div className="column">
                 
+
                 <p>Select employee(s) to assign task to:</p>
+
+                {/* NOTE: This is a multi (1+) item selector */}
                 {dropdownSelected_EmployeeSelection < 1 && formSubmit_attempt &&
                   <span className="myCustomError">{errors["dropdownSelected_EmployeeSelection"]}</span>
                 }

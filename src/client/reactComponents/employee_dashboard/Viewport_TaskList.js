@@ -127,16 +127,31 @@ class Viewport_TaskList extends Component {
 
       var clockInTime = new Date()
       console.log('Clocking In... at time: ', clockInTime, ' and location: ', latitude, ', ', longitude)
+      
+      
+      var token = document.querySelector("[name=csrf-param][content]").content // token is on meta tag
 
-      // this.setState({
-      //   loading: true,
-      //   clicked_activity_id: activity_id }, () => {
-      axios.post('/emp_api/timesheets/create', {
+      let post_config = {
+        headers: {
+          'CSRF-Token': token,
+        }
+      }
+
+      var dataObj_toUpload = {
         activity_id: activity_id,
         timesheet_clockin: clockInTime,
         latitude: latitude,
         longitude: longitude
-      })
+      }
+
+
+      console.log('dataObj_toUpload-- ', dataObj_toUpload)
+      axios
+        .post(
+          '/emp_api/timesheets/create', 
+          dataObj_toUpload,
+          post_config 
+        )
         .then((response) => {
           if (response.status == 200) {
             console.log('post (create) response for activity_id: ', response.data[0].activity_id);
@@ -173,8 +188,6 @@ class Viewport_TaskList extends Component {
         .catch((error) => {
           console.log(error);
         })
-      // })
-
     }
 
     const SuccessCallback_submitData_ClockOut_ActiveTimesheet = (latitude, longitude) => {
@@ -182,12 +195,24 @@ class Viewport_TaskList extends Component {
       var clockOutTime = new Date()
       console.log('Clocking Out... at time: ', clockOutTime, ' and location: ', latitude, ', ', longitude)
 
-      axios.put('/emp_api/timesheets/update', {
+      var token = document.querySelector("[name=csrf-param][content]").content // token is on meta tag
+      let post_config = {
+        headers: {
+          'CSRF-Token': token,
+        }
+      }
+
+      var dataObj_toUpload = {
         activity_id: activity_id,
         timesheet_clockout: clockOutTime,
         latitude: latitude,
         longitude: longitude
-      })
+      }
+
+      axios.put('/emp_api/timesheets/update', 
+        dataObj_toUpload,
+        post_config
+        )
         .then((response) => {
           if (response.status == 200) {
             console.log('put (update) response for activity_id: ', response.data[0].activity_id);

@@ -3,6 +3,8 @@
 const get_adminDashboard = function (req, res) {
   res.render('pages/adminDashboard', {
     errors: {},
+    csrfToken: req.csrfToken(),
+    user_type: req.session.user_type
     // gmaps_api_key: process.env.GMAPS_API.toString()
   }) 
 }
@@ -31,9 +33,13 @@ const get_userDashboard_byUserID = function (req, res) {
     1. Do a profile look up.
      if there is no profile assoc. w/ user_id, makes this display in css
           'hey make a profile -- click this button'
+          -- Show a 'general info' viewport, relevant to their employment status
+          (i.e. non-employee? tell them about job opps)
   
      else, show the profile
-  
+       -- Show a 'general info' viewport, relevant to their employment status
+          (i.e. is employee? tell them about recent company news and things relevant to them/their team)
+
     2. when the click the profile creation button, it accordions out into a form.
     then they click save, the profile data is created, and it re-directs them back to the page.
     have a place for photo upload as well
@@ -42,7 +48,6 @@ const get_userDashboard_byUserID = function (req, res) {
   
     4.  If there is a profile but their status is 'has not applied yet', ask them to apply
       when they click the apply button, it shows them an application form and lets them upload their resume.
-  
   
     4.  If there is a profile but their status is 'not hired', display a condolences message and ask them to apply for future <projects/campaigns/etc.>
   
@@ -53,7 +58,7 @@ const get_userDashboard_byUserID = function (req, res) {
     // check user's creation date.  if it has been created within the last minute, send a new user infobox of various info
 
     res.render('pages/employeeDashboard', {
-      data: { user_id: req.session.user_id, user_type: req.session.user_type, user_email: req.session.user_email },
+      // data: { user_id: req.session.user_id, user_type: req.session.user_type, user_email: req.session.user_email },
       errors: {},
       env: process.env.NODE_ENV,
       gmaps_api_key: process.env.GMAPS_API.toString(),

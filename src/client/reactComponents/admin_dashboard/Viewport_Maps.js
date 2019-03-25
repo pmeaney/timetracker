@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { toggle_Visibility_Viewport_Maps } from "./redux/actions"
 import MapAndTable from './MapAndTable';
-import Slider_ViewportAdjustment from './Slider_ViewportAdjustment'
+
 
 class Viewport_Maps extends Component {
 
@@ -22,9 +22,6 @@ class Viewport_Maps extends Component {
       <article className="message is-primary">
         <div className="message-header">
           <p>Timesheet tracker</p>
-          <div>
-            <Slider_ViewportAdjustment />
-          </div>
 
           <button 
             className="delete" 

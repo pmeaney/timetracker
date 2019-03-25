@@ -24,24 +24,24 @@ class Modal_MoreInfo extends React.Component {
   */
 
   
-  componentWillMount() {
+//   componentWillMount() {
 
-    console.log(' componentWillMount this.props.activity_obj', this.props.activity_obj)
-    /* 
+//     // console.log(' componentWillMount this.props.activity_obj', this.props.activity_obj)
+//     /* 
 
-location_address: "1 Visitacion Ave"
-location_city: "brisbane"
-location_name: "Brisbane Hardware & Sply Inc"
-location_state: "ca"
-location_type: "commercial"
-location_zip: "94005"
+// location_address: "1 Visitacion Ave"
+// location_city: "brisbane"
+// location_name: "Brisbane Hardware & Sply Inc"
+// location_state: "ca"
+// location_type: "commercial"
+// location_zip: "94005"
 
 
-    https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=YOUR_API_KEY
-    https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=YOUR_API_KEY
- */
+//     https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=YOUR_API_KEY
+//     https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=YOUR_API_KEY
+//  */
     
-  }
+//   }
   
 
   render (){

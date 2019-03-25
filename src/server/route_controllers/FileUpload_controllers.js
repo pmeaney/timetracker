@@ -53,6 +53,23 @@ const multerConfig_images = {
   // limits: { fileSize: 1000000, files: 1 },
 };
 
+/* 
+In the future:
+When someone uploads a resume, IF a resume already exists, copy it into another folder with a timestamp in the name 
+
+Update idea:
+Change this format:
+Resume_user_id__2.png to
+
+Resume_user_id__2__at_2019-03-23T19:30:51.825Z.png
+
+then trim off:
+Resume_user_id__
+and the final 
+"_2019-03-23T19:30:51.825Z".length (25 characters) 
+to be left with the id
+*/
+
 const multerConfig_docs = {
 
   storage: multer.diskStorage({

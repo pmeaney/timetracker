@@ -5,8 +5,8 @@ const initialState = {
   visibility_viewport_adminDataTable: false,
   timesheetData: [],
   infoWindows: [],
-  slider_leftViewport: 50,
-  slider_rightViewport: 50
+  slider_leftViewport: 49,
+  slider_rightViewport: 49
 }
 
 const reducer = (state = initialState, action) => {

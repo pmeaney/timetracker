@@ -2,7 +2,13 @@ import React from "react"
 import axios from 'axios'
 
 export const getData_forDataTable = (selectedOption) => {
-  const nameOfDataTable = selectedOption.value
+  console.log('selectedOption is...', selectedOption)
+  if (typeof selectedOption.value !== 'undefined') {
+    var nameOfDataTable = selectedOption.value
+  } else if (typeof selectedOption.value === 'undefined') {
+    console.log('setting table name as...', selectedOption )
+    var nameOfDataTable = selectedOption
+  }
     return axios.get('/admin_api/getDataForTable/' + nameOfDataTable)
 }
 

@@ -47,23 +47,38 @@ class Form_Profile_ContactInfo extends Component {
 
     // submit state to post route
     // post to this url: /emp_api/profile/uploadContactInfo
-    
-    axios.post('/emp_api/profile/uploadContactInfo', {
+
+    var token = document.querySelector("[name=csrf-param][content]").content // token is on meta tag
+    let post_config = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'CSRF-Token': token,
+        'Content-Type': false
+      }
+    }
+
+    var dataObj_toUpload = {
       phoneNumber: this.state.phoneNumber.value,
       email: this.state.email,
       address: this.state.address
-    })
+    }
+    
+    axios
+      .post(
+        '/emp_api/profile/uploadContactInfo', 
+        dataObj_toUpload,
+        post_config
+      )
       .then((response) => {
         console.log('response from server is', response)
       })
-
+      .catch((error) => { console.log('error: ', error) });
     // clear state when all done
     this.setState({
       phoneNumber: '',
       email: '',
       address: '',
     });
-
   }
 
   inputChangedHandler = (value) => {

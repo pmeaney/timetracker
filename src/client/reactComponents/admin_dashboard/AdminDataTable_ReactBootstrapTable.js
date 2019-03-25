@@ -213,6 +213,7 @@ export default class CustomInsertModalBodyTable extends React.Component {
               console.log('at index of array', index, ' we have a ', keyOfFirstElement, 'of: ', this.props.retrievedTable[index][keyOfFirstElement])
               var uniqueID_for_rowKey = this.props.retrievedTable[index][keyOfFirstElement] // e.g. activities object's current element's activity_id
               if (index === 0) {
+                // index 0 will always be the table's main id, so we will set it as the key
                 // index 0 will always be the table's main id, so we want to hide it on the insert modal.
                 return <TableHeaderColumn key={uniqueID_for_rowKey} isKey={true} hiddenOnInsert={true} dataField={this.props.columnNames[0][index]}>{this.props.columnNames[1][index]}</TableHeaderColumn>
               } else {

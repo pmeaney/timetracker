@@ -3,6 +3,9 @@ import { connect } from 'react-redux'
 import { toggle_Visibility_Viewport_NewItemDashboard } from "./redux/actions"
 import Select from 'react-select';
 import AdminForm_activities from './forms/Form_adminAddNewActivity'
+import Form_adminAddNewActivityCode from './forms/Form_adminAddNewActivityCode'
+import Form_adminAddNewLocation from './forms/Form_adminAddNewLocation'
+import Form_adminAddNewProject from './forms/Form_adminAddNewProject'
 
 const initiallyLoadedOption = {
   // This simply sets up a default value for the table, when the viewport is initially loaded
@@ -13,7 +16,7 @@ const initiallyLoadedOption = {
 const options = [
   { value: 'activities', label: 'activities' },
   { value: 'activity_codes', label: 'activity_codes' },
-  { value: 'employees', label: 'employees' },
+  // { value: 'employees', label: 'employees' },
   { value: 'projects', label: 'projects' },
   { value: 'locations', label: 'locations' }
 ];
@@ -66,21 +69,22 @@ class Viewport_NewItemDashboard extends Component {
             : null
           }
           {this.state.selectedOption.value === 'activity_codes' ?
-            <div>Showing activity_codes form...</div>
+            <Form_adminAddNewActivityCode />
             : null
           }
-          {this.state.selectedOption.value === 'employees' ?
+          {/* {this.state.selectedOption.value === 'employees' ?
             <div>Showing employees form...</div>
+            : null
+          } */}
+          {this.state.selectedOption.value === 'locations' ?
+            <Form_adminAddNewLocation />
             : null
           }
           {this.state.selectedOption.value === 'projects' ?
-            <div>Showing projects form...</div>
+            <Form_adminAddNewProject />
             : null
           }
-          {this.state.selectedOption.value === 'locations' ?
-            <div>Showing locations form...</div>
-            : null
-          }
+          
         </div>
       </article>
     )
