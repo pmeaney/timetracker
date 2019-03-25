@@ -57,13 +57,15 @@ To set this up locally for yourself would require a few steps:
 | [Nginx](https://www.nginx.com)         | Web server software (reverse proxy)
 | [Ubuntu Server](https://www.ubuntu.com/server) | Server operating system (Open source linux distribution)
 
+
+#### Project ERD
+(Generated with [DbVis](https://www.dbvis.com))
+![Project ERD](https://github.com/pmeaney/timetracker/blob/master/src/server/public/project_documentation/ERD_3_25_2019.png)
 <!-- 
-![alt screenshot1](https://github.com/pmeaney/timetracker/blob/master/src/server/public/screenshots/1.png)
+![alt screenshot2](https://github.com/pmeaney/timetracker/blob/master/src/server/public/project_documentation/screenshots/2.png)
 
-![alt screenshot2](https://github.com/pmeaney/timetracker/blob/master/src/server/public/screenshots/2.png)
+![alt screenshot3](https://github.com/pmeaney/timetracker/blob/master/src/server/public/project_documentation/screenshots/3.png)
 
-![alt screenshot3](https://github.com/pmeaney/timetracker/blob/master/src/server/public/screenshots/3.png)
+![alt screenshot4](https://github.com/pmeaney/timetracker/blob/master/src/server/public/project_documentation/screenshots/4.png)
 
-![alt screenshot4](https://github.com/pmeaney/timetracker/blob/master/src/server/public/screenshots/4.png)
-
-![alt screenshot5](https://github.com/pmeaney/timetracker/blob/master/src/server/public/screenshots/5.png) -->
+![alt screenshot5](https://github.com/pmeaney/timetracker/blob/master/src/server/public/project_documentation/screenshots/5.png) -->
