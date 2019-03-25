@@ -42,8 +42,8 @@ I had initially written a frontend prototype with jQuery, but decided to switch 
 | bluebird     | Enhances asynchronous programming 
 | CSURF        | API communication validation & form security (Http post & put requests)
 | bcrypt       | Oneway password encryption in user authentication system (salt & hash)
-| express-session | Storing temporary backend user communication information (sessions)
-| KnexJS | Interacting with PostgreSQL database via KnexJS's javascript API, improving security and reducing complexity
+| express-session | Stores temporary backend user communication information (sessions)
+| KnexJS | Interacts with PostgreSQL database to implment database retrieval in javascript (allows for databas + JS program interaction, improves security, reduces complexity)
 | multer | File uploads
 
 #### Other important project platforms:
