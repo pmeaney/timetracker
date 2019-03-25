@@ -1,11 +1,5 @@
 
-This is an fullstack javscript app (expressjs/reactjs) for tracking timesheets for hourly employees.
-
-I had initially written a frontend prototype with jQuery, but decided to switch to ReactJS.  
-
-- Frontend: ReactJS, Sass, Webpack
-- Backend: ExpressJS, NodeJS
-- Database: PostgreSQL -> KnexJS
+A fullstack javscript app (expressjs/reactjs) for tracking timesheets for hourly employees.
 
 #### Frontend business logic, UX/UI, and configuration frameworks used:
 
