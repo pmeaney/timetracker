@@ -12,11 +12,11 @@ A fullstack javscript app (expressjs/reactjs) for tracking timesheets for hourly
 
 #### Frontend css frameworks for formatting and UX design:
 
-| Framework                          | Language      | Purpose  
-| ---------------------------------- |---------------|-------
-| Sass          | CSS           | An enhanced version of css, allowing for programmatic, extendible, compiled type of css (sass/scss) 
-| Bulma         | CSS           | A simple css frontend design and formatting package 
-| Bootstrap     | CSS           | A responsive, sass package (used with react-bootstrap-table) 
+| Framework                          | Purpose  
+| ---------------------------------- |-------
+| [Sass](https://sass-lang.com/libsass)          | An enhanced version of css, allowing for programmatic, extendible, compiled type of css (sass/scss) 
+| [Bulma](https://bulma.io)         | A simple css frontend design and formatting package 
+| [Bootstrap](https://allenfang.github.io/react-bootstrap-table/)     | A responsive, sass package (used with react-bootstrap-table) 
 
 #### Frontend REST API:
 
@@ -31,22 +31,22 @@ A fullstack javscript app (expressjs/reactjs) for tracking timesheets for hourly
 
 | Package      |  Purpose  
 | -------------|-----------
-| NodeJS       | Underlying runtime environment which executes javascript server code
-| ExpressJS    | Web application business logic, middleware, and routing
-| bluebird     | Enhances asynchronous programming 
-| CSURF        | API communication validation & form security (Http post & put requests)
-| bcrypt       | Oneway password encryption in user authentication system (salt & hash)
-| express-session | Stores temporary backend user communication information (sessions)
-| KnexJS | Interacts with PostgreSQL database to implment database retrieval in javascript (allows for databas + JS program interaction, improves security, reduces complexity)
-| multer | File uploads
+| [NodeJS](https://nodejs.org/en/)       | Underlying runtime environment which executes javascript server code
+| [ExpressJS](https://expressjs.com/)    | Minimalist server web application framework & REST API
+| [bluebird](https://www.npmjs.com/package/bluebird)     | Enhances asynchronous programming 
+| [CSURF](https://www.npmjs.com/package/csurf)        | API communication validation & form security (Http post & put requests)
+| [bcrypt](https://www.npmjs.com/package/bcrypt)       | Oneway password encryption in user authentication system (salt & hash)
+| [express-session](https://www.npmjs.com/package/express-session) | Stores temporary backend user communication information (sessions)
+| [KnexJS](https://knexjs.org) | Interacts with PostgreSQL database to implment database retrieval in javascript (allows for databas + JS program interaction, improves security, reduces complexity)
+| [multer](https://www.npmjs.com/package/multer) | File uploads
 
 #### Other important project platforms:
 
 | Platform      |  Purpose  
 |---------------|-----------
-| Postgres      | SQL Database
-| Nginx         | Web server software (reverse proxy)
-| Ubuntu Server | Server operating system (Open source linux distribution)
+| [PostgreSQL](https://www.postgresql.org/)      | SQL Database
+| [Nginx](https://www.nginx.com)         | Web server software (reverse proxy)
+| [Ubuntu Server](https://www.ubuntu.com/server) | Server operating system (Open source linux distribution)
 
 <!-- 
 ![alt screenshot1](https://github.com/pmeaney/timetracker/blob/master/src/server/public/screenshots/1.png)
