@@ -1,6 +1,6 @@
 import React from 'react'
 import Popup from 'reactjs-popup'
-import ComposedMapWrapper from './Map_Modal_MoreInfo'
+import ComposedMapWrapper from '../employee_dashboard/modals/Map_Modal_MoreInfo'
 // import { faReply } from '@fortawesome/free-solid-svg-icons';
 // import { faHeart } from '@fortawesome/free-solid-svg-icons';
 // import { faRetweet } from '@fortawesome/free-solid-svg-icons';

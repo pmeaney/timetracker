@@ -5,7 +5,10 @@ import "../../scss/scss-ReactBootstrapTable/bootstrap.scss"
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css'
 // import 'react-bootstrap-table/css/react-bootstrap-table.css'
 import axios from 'axios'
+import moment from 'moment'
+import { getLuxon_local_DateTime, formatDate } from "../lib/general_fns"
 
+const toConvert = ['activity_datetime_begin', 'activity_datetime_end']
 /* // -> Project needs:
   => Populate rows
   => Single selection
@@ -104,24 +107,39 @@ export default class CustomInsertModalBodyTable extends React.Component {
     this.HandleClick_CloseButton_VisibilityToggle_ErrorNotification = this.HandleClick_CloseButton_VisibilityToggle_ErrorNotification.bind(this)
   }
   
-  createCustomModalBody = (columns, validateState, ignoreEditable) => {
-    return (
-      <MyCustomBody columns={columns}
-        validateState={validateState}
-        ignoreEditable={ignoreEditable} />
-    );
-  }
+  // createCustomModalBody = (columns, validateState, ignoreEditable) => {
+  //   return (
+  //     <MyCustomBody columns={columns}
+  //       validateState={validateState}
+  //       ignoreEditable={ignoreEditable} />
+  //   );
+  // }
 
   beforeSaveCellAsync (row, cellName, cellValue, done){
     // documentation: https://github.com/AllenFang/react-bootstrap-table/blob/master/examples/js/cell-edit/cell-edit-hook-table.js
+
+    var token = document.querySelector("[name=csrf-param][content]").content // token is on meta tag
+
+    var dataObj_toUpload = {
+      tableName: this.props.value.value,
+      tableRow_type: Object.keys(row)[0],
+      tableRow_id: Object.values(row)[0],
+      fieldName: cellName,
+      newValueToPut: cellValue,
+    }
+
+    let post_config = {
+      headers: {
+        'CSRF-Token': token,
+      }
+    }
+
     axios
-      .put('/admin_api/updateDataForTable', {
-        tableName: this.props.value.value,
-        tableRow_type: Object.keys(row)[0], 
-        tableRow_id: Object.values(row)[0],
-        fieldName: cellName,
-        newValueToPut: cellValue,
-      })
+      .put(
+        '/admin_api/updateDataForTable', 
+        dataObj_toUpload,
+        post_config
+      )
       .then((response) => {
         console.log('response is:', response)
         if (response.data.name === 'error') {
@@ -170,11 +188,12 @@ export default class CustomInsertModalBodyTable extends React.Component {
     };
 
     const options = {
-      insertModalBody: this.createCustomModalBody,
+      // insertModalBody: this.createCustomModalBody,
       afterDeleteRow: onAfterDeleteRow  // A hook for after droping rows.
     };
 
-    const listFor_hideInsertModalField = ['updated_at', 'created_at']
+    var wide_row = ['created_at', 'updated_at']
+    var short_row_suffixes = ['id', 'to', 'by']
 
     const cellEdit = {
       mode: 'click', // click cell to edit
@@ -182,7 +201,8 @@ export default class CustomInsertModalBodyTable extends React.Component {
       beforeSaveCell: this.beforeSaveCellAsync
     }
 
-
+    // console.log('this.props.retrievedTable', this.props.retrievedTable)
+    // console.log('this.props.columnNames', this.props.columnNames)
 
     return (
 
@@ -200,36 +220,41 @@ export default class CustomInsertModalBodyTable extends React.Component {
         </div>
       : null }
 
-      <BootstrapTable data={this.props.retrievedTable} selectRow={selectRowProp} search={true} options={options} deleteRow={true} cellEdit={cellEdit} insertRow>
-      
+        <BootstrapTable data={this.props.retrievedTable} selectRow={selectRowProp} search={true} options={options} deleteRow={true} cellEdit={cellEdit}>
+          {this.props.columnNames.length > 0 ?
+            this.props.columnNames[0].map((currElement, index) => {
+              // console.log('index', index)
+              // console.log('currElement', currElement)
+              // here we take the current object property's name and slice the last 2 characters off.
+              // if they match the an item in short_row_suffixes, then we know that row should have a narrower horizontal width
+              var currentItemIndexName_2_char_suffix = currElement.slice(-2)
+              console.log('currentItemIndexName_2_char_suffix', currentItemIndexName_2_char_suffix)
 
-        {this.props.columnNames.length > 0 ?
-          this.props.columnNames[0].map((currElement, index) => {
-            
-            // Guard condition: don't flow over-- stop when index is one less than same length of retrievedTable length
-            // Keep running the loop, until we reach point just before index = this.props.retrievedTable.length (because one more increment, and it runs off the top of the target)
-            if (index < this.props.retrievedTable.length) {
-              var keyOfFirstElement = this.props.columnNames[0][Object.keys(currElement)[0]] // takes array of names of keys, then takes the first one. Example: activities --> takes activity_id
-              console.log('at index of array', index, ' we have a ', keyOfFirstElement, 'of: ', this.props.retrievedTable[index][keyOfFirstElement])
-              var uniqueID_for_rowKey = this.props.retrievedTable[index][keyOfFirstElement] // e.g. activities object's current element's activity_id
               if (index === 0) {
                 // index 0 will always be the table's main id, so we will set it as the key
-                // index 0 will always be the table's main id, so we want to hide it on the insert modal.
-                return <TableHeaderColumn key={uniqueID_for_rowKey} isKey={true} hiddenOnInsert={true} dataField={this.props.columnNames[0][index]}>{this.props.columnNames[1][index]}</TableHeaderColumn>
-              } else {
-                // here, we add an if statement to check if it's in a list of other things we want to hide on the insert modal
-                if (listFor_hideInsertModalField.includes(currElement)) {
-                  return <TableHeaderColumn key={uniqueID_for_rowKey} hiddenOnInsert={true} dataField={this.props.columnNames[0][index]}>{this.props.columnNames[1][index]}</TableHeaderColumn>
-                } else {
-                  return <TableHeaderColumn key={uniqueID_for_rowKey} dataField={this.props.columnNames[0][index]}>{this.props.columnNames[1][index]}</TableHeaderColumn>
+                return <TableHeaderColumn key={index} isKey={true} thStyle={{ margin: 0, padding: 0, width: '8rem' }} tdStyle={{ margin: 0, padding: 0, width: '8rem' }} dataField={this.props.columnNames[0][index]}>{this.props.columnNames[1][index]}</TableHeaderColumn>
+              } 
+              else {
+                // here, checking whether to have a wide or narrow table-cell width-- if the item is in wide_row, vs short_row_suffixes
+                if (wide_row.includes(currElement)) {
+                  // return null // <-- commented.  but we could uncomment to hide these rows.  returning null because there's no need to see those particular rows (created_at, updated_at)
+                  return <TableHeaderColumn thStyle={{ margin: 0, padding: 0, width: '17rem' }} tdStyle={{ margin: 0, padding: 0, width: '17rem' }} key={index} dataField={this.props.columnNames[0][index]}>{this.props.columnNames[1][index]}</TableHeaderColumn>
+                }
+                // checking if currElement ends with id, to, by, then we know it's an ID type string, so reduce horizontal width of the cells
+                if (short_row_suffixes.includes(currentItemIndexName_2_char_suffix)) {
+                  return <TableHeaderColumn thStyle={{ margin: 0, padding: 0, width: '8rem' }} tdStyle={{ margin: 0, padding: 0, width: '8rem' }} key={index} dataField={this.props.columnNames[0][index]}>{this.props.columnNames[1][index]}</TableHeaderColumn>
+                }
+                  // Resume_user_id__
+                  // 'http://localhost:3000/resume-storage/' + user_profile_resumeFilename
+                else {
+                  return <TableHeaderColumn thStyle={{ margin: 0, padding: 0, width: '15rem' }} tdStyle={{ margin: 0, padding: 0, width: '15rem' }} key={index} dataField={this.props.columnNames[0][index]}>{this.props.columnNames[1][index]}</TableHeaderColumn>
                 }
               }
-            } 
-          })
-          :
-          null
-        }
-      </BootstrapTable>
+            })
+            :
+            null
+          }
+        </BootstrapTable>
       </div>
 
     );

@@ -69,6 +69,7 @@
     "react-cookie": "^3.0.8",
     "react-day-picker": "^7.2.4",
     "react-dom": "^16.6.3",
+    "react-dropdown": "^1.6.4",
     "react-google-maps": "^9.4.5",
     "react-hot-loader": "^4.6.0",
     "react-input-mask": "^2.0.4",

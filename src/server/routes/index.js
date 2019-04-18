@@ -12,7 +12,6 @@ router.get('/', WebpageContent_ctrl.get_indexPage)
 // router.get('/make_error_500', function (req, res, next) {
 //   res.status(500).send()
 // })
-
 router.get('/timetracker', WebpageContent_ctrl.get_timetrackerLandingPage)
 
 router.get('/stats_data/assault', WebpageContent_ctrl.local_data_statsProject)

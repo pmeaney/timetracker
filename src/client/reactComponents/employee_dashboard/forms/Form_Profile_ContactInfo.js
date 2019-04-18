@@ -48,19 +48,31 @@ class Form_Profile_ContactInfo extends Component {
     // submit state to post route
     // post to this url: /emp_api/profile/uploadContactInfo
 
+    var splitAddress = this.state.address.split(",")
+    splitAddress = splitAddress.map((currEl) => {
+      return currEl.trim()
+    })
+
+    console.log('splitAddress', splitAddress)
+    var address = splitAddress[0]
+    var city = splitAddress[1]
+    var state = splitAddress[2]
+
     var token = document.querySelector("[name=csrf-param][content]").content // token is on meta tag
     let post_config = {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        // 'Content-Type': 'multipart/form-data',
         'CSRF-Token': token,
-        'Content-Type': false
+        // 'Content-Type': false
       }
     }
 
     var dataObj_toUpload = {
-      phoneNumber: this.state.phoneNumber.value,
+      phoneNumber: this.state.phoneNumber,
       email: this.state.email,
-      address: this.state.address
+      address: address,
+      city: city,
+      state: state
     }
     
     axios
@@ -81,9 +93,10 @@ class Form_Profile_ContactInfo extends Component {
     });
   }
 
-  inputChangedHandler = (value) => {
+  inputChangedHandler = (input) => {
+    console.log('phone number input.value', input.value)
     this.setState({
-      phoneNumber: value,
+      phoneNumber: input.value,
     });
   }
 

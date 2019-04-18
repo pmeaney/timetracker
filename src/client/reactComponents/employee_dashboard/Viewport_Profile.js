@@ -61,9 +61,11 @@ class Viewport_Profile extends Component {
                   </div>
 
                   <div className="column">
-                    
+                    {/* // IMPORTANT__CHANGE_IN_PRODUCTION: 
+                      Change this back to hiding the image.  Only want employees
+                      to be able to upload images, not non-employees */}
                     {/* Hiding the upload image component unless user is an employee */}
-                    { this.state.user_type === "employee" 
+                    {/* { this.state.user_type === "employee" 
                       ?
                       <div>
                         <Form_Profile_FileUpload 
@@ -76,13 +78,25 @@ class Viewport_Profile extends Component {
                       </div>
                       :
                       null
-                    }
+                    } */}
+                    <Form_Profile_FileUpload
+                      thing_to_upload={'photo'}
+                      acceptable_file_types={['image']}
+                      acceptable_file_formats={['png', 'jpg', 'jpeg', 'gif']}
+                      urlForHttpPostReq={'/dashboard/profile/photoUpload'}
+                    />
+                    <br />
                     
                     
                     <Form_Profile_FileUpload
                       thing_to_upload={'resume'}
                       acceptable_file_types={['application', 'text']}
-                      acceptable_file_formats={['pdf', 'doc', 'docx', 'txt']}
+                      // Since we can't view .doc or .docx files in the browser,
+                      // I am going to remove them.  This simplifies resume viewing.
+                      // However, at /src/server/route_controllers/FileUpload_controllers.js
+                      // I will leave the upcode code in place so that a person could revert to allowing .doc and .docx uploads if they want
+                      // acceptable_file_formats={['pdf', 'doc', 'docx', 'txt']}
+                      acceptable_file_formats={['pdf', 'txt']}
                       urlForHttpPostReq={'/dashboard/profile/resumeUpload'}
                     />
                   </div>

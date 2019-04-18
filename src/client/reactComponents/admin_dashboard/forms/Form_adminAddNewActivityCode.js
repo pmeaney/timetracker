@@ -3,37 +3,7 @@ import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import { getData_forDataTable, extractObjectKeys_into2D_array } from './../../lib/getData_fns'
 import "../../../scss/scss-ReactBootstrapTable/bootstrap.scss"
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css'
-
-// Form_adminAddNewActivityCode
-
-/* 
-- cWM - retrieve current activity codes
-- Show table of: Activity code ID & activity code name
-- Post -- Receive params on server.  Escape characters.  Make a post request.
-
-var token = document.querySelector("[name=csrf-param][content]").content // token is on meta tag
-let post_config = {
-  headers: {
-    'Content-Type': 'multipart/form-data',
-    'CSRF-Token': token,
-    'Content-Type': false
-  }
-}
-
-var dataObj_toUpload = {}
-
-axios
-  .post(
-    this.props.urlForHttpPostReq,
-    dataObj_toUpload,
-    post_config
-  )
-  .then((result) => {
-    console.log('response result', result)
-  })
-  .catch((error) => { console.log('error: ', error) });
-
-*/
+import axios from 'axios'
 
 class Form_adminAddNewActivityCode extends Component {
 
@@ -51,7 +21,7 @@ class Form_adminAddNewActivityCode extends Component {
   }
 
   onChangeInput = (event) => {
-    console.log('onChangeInput event.target.value', event.target.value)
+    // console.log('onChangeInput event.target.value', event.target.value)
     {
       this.setState({
         [event.target.name]: event.target.value
@@ -61,17 +31,51 @@ class Form_adminAddNewActivityCode extends Component {
 
   onSubmit = (event) => {
     event.preventDefault()
-    console.log('on submit, this.state.input_item_activityCodeName', this.state.input_item_activityCodeName)
+    console.log('form submitted')
+    // console.log('access form data directly from event this way -->', event.target[0].value)
+    console.log('form state', this.state)
+
+    // submit state to post route
+    // post to this url: /emp_api/profile/uploadContactInfo
+
+    
+
+    var token = document.querySelector("[name=csrf-param][content]").content // token is on meta tag
+    let post_config = {
+      headers: {
+        'CSRF-Token': token,
+      }
+    }
+
+    var dataObj_toUpload = {
+      activity_type: this.state.input_item_activityCodeName
+    }
+
+    axios
+      .post(
+        '/admin_api/createRow/activity_codes',
+        dataObj_toUpload,
+        post_config
+      )
+      .then((response) => {
+        console.log('response from server is', response)
+      })
+      .catch((error) => { console.log('error: ', error) })
+    // clear state when all done
+    this.setState({
+      input_item_activityCodeName: '',
+    })
   }
+
 
   componentWillMount() {
     // Here, we're just getting data for the default selectedOption within this.state, which is 'activities'
     getData_forDataTable('activity_codes')
     // axios.get('/admin_api/activity_codes/')
       .then((result) => {
-        console.log('activity_codes result.data', result.data)
+        // console.log('activity_codes result.data', result.data)
         const setOfKeys_2D_array = extractObjectKeys_into2D_array(result.data)
-        console.log('setOfKeys_2D_array', setOfKeys_2D_array)
+        // console.log('setOfKeys_2D_array', setOfKeys_2D_array)
         this.setState({
           retrievedTable: result.data,
           columnNames: setOfKeys_2D_array
@@ -80,7 +84,7 @@ class Form_adminAddNewActivityCode extends Component {
   }
   
   render () {
-    console.log('this.state', this.state)
+    // console.log('this.state', this.state)
     return (
       <div>
         <div className="container">
@@ -105,41 +109,14 @@ class Form_adminAddNewActivityCode extends Component {
               >Submit</button>
             </form>
           </div>
-        {/* <div className="box">
-          {this.state.retrievedTable.length > 0 ?  // <-- If we don't check this exists before rendering, then will break: b/c will render before async get request is finished
-            <BootstrapTable data={this.state.retrievedTable} search>
-              {this.state.columnNames.length > 0 ?
-                this.state.columnNames[0].map((currElement, index) => {
-                  // Guard condition: don't flow over-- stop when index is one less than same length of retrievedTable length
-                  // Keep running the loop, until we reach point just before index = this.state.retrievedTable.length (because one more increment, and it runs off the top of the target)
-                  if (index < this.state.retrievedTable.length) {
-                    var keyOfFirstElement = this.state.columnNames[0][Object.keys(currElement)[0]] // takes array of names of keys, then takes the first one. Example: activities --> takes activity_id
-                    console.log('at index of array', index, ' we have a ', keyOfFirstElement, 'of: ', this.state.retrievedTable[index][keyOfFirstElement])
-                    var uniqueID_for_rowKey = this.state.retrievedTable[index][keyOfFirstElement] // e.g. activities object's current element's activity_id
-                    if (index === 0) {
-                      // index 0 will always be the table's main id, so we will set it as the key
-                      return <TableHeaderColumn key={uniqueID_for_rowKey} isKey={true} dataField={this.state.columnNames[0][index]}>{this.state.columnNames[1][index]}</TableHeaderColumn>
-                    } else {
-                      return <TableHeaderColumn key={uniqueID_for_rowKey} dataField={this.state.columnNames[0][index]}>{this.state.columnNames[1][index]}</TableHeaderColumn>
-                    }
-                  }
-                })
-                :
-                null
-              }
-            </BootstrapTable>
-              :
-              null
-            }
-          </div> */}
           <div className="box overflowXYScroll">
             {this.state.columnNames.length > 0 ?  // <-- If we don't check this exists before rendering, then will break: b/c will render before async get request is finished
               <BootstrapTable condensed style={{ display: 'table' }} trClassName="projects_table_tr" data={this.state.retrievedTable} search>
               {this.state.columnNames.length > 0 ?
                   
                 this.state.columnNames[0].map((currElement, index) => {
-                  console.log('currElement', currElement)
-                  console.log('index', index)
+                  // console.log('currElement', currElement)
+                  // console.log('index', index)
                   
                   // Guard condition: don't flow over-- stop when index is one less than same length of retrievedTable length
                   // Keep running the loop, until we reach point just before index = this.state.retrievedTable.length (because one more increment, and it runs off the top of the target)

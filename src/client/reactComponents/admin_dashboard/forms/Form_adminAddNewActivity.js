@@ -11,22 +11,16 @@ import { connect } from 'react-redux'
 import { toggle_Visibility_Modal_CreateActivity } from "../redux/actions"
 import { getLuxon_local_DateTime, combineDateTimes } from '../../lib/general_fns'
 
-// NOTE: Need to update the post call to emp_api: '/emp_api/activities/create/selfAssignedTask', 
-// It needs to be an admin_api call, not employee api.
-// we'll be linking it to the employee(s) selected from the dropdown
-/* 
-emp_assigned_by -- will be admin's session's employee_id
-emp_assigned_to -- will be an array of objects, so that multiple employees can be assigned same task
 
+/* 
+Future Improvement:
+- Keep a visual log of all new items created.  
+This way it will be easy to go back and edit, delete, or cancel new things, 
+such as if an activity is created for two employees, it will show these activities info, especially
+the employee IDs and schedule timestamps, so that the activities can be easily tracked down and modified or deleted
 */
-const initialData = [{ // must be an array of an object
-  activity_datetime_begin: '',
-  activity_id: '',
-  activity_notes: '',
-  emp_assigned_by: '',
-  emp_assigned_by_firstName: '',
-  emp_assigned_by_lastName: '',
-  employees_assigned_to: [],
+
+const initial_LocationsAndProjects_ListData = [{ // must be an array of an object
   location_address: '',
   location_city: '',
   location_id: '',
@@ -37,29 +31,39 @@ const initialData = [{ // must be an array of an object
   project_id: '',
   project_manager_firstName: '',
   project_manager_lastName: '',
-  project_mgr_emp_id: '', 
 }]
 
 const initialErrorData = {
-  selected_employees_assigned_to: [],
-  selected_projectLocation: '',
-  selected_activity: '',
+  selectedRow_projectLocation: null, // location selected
+  dropdownSelected_ActivityType: null, // activity_type selected
+  dropdownSelected_EmployeeSelection: [], // employee(s) selected
+  newActivityNotes: '', // activity notes
   selectedDay_date: '',
   timepicker_beginTime: '',
   timepicker_endTime: '',
 }
 
 const initialState = {
-  dropdownOptions_LocationsByProjects: initialData,
+  // location/project selectors: options, and the one selected
+  dropdownOptions_LocationsByProjects: initial_LocationsAndProjects_ListData,
   selectedRow_projectLocation: null,
-  newActivityNotes: '',
-  dropdownSelected_ActivityType: null,
+
+  // activity_type selectors: options, and the one selected
   dropdownOptions_ActivityTypes: [],
-  dropdownSelected_EmployeeSelection: [],
+  dropdownSelected_ActivityType: null,
+  
+  // employee selectors: options, and the one(s) selected
   dropdownOptions_Employees: [],
+  dropdownSelected_EmployeeSelection: [],
+
+  // activity notes
+  newActivityNotes: '',
+
+  // One date, two times (begin and end)  
   selectedDay_date: undefined,
   timepicker_beginTime: undefined,
   timepicker_endTime: undefined,
+
   errors: initialErrorData,
   formSubmit_attempt: false,
   formSubmit_success: false
@@ -88,6 +92,29 @@ class FormAddNewActivity extends Component {
   }
 
   componentWillMount() {
+
+    axios.get('/admin_api/employees/')
+      .then((response) => {
+        // console.log('response data for admin_api/employees_all', response.data)
+
+        const employee_labels_ForDropdown = response.data.map((currElement) => {
+          const employee_firstName = currElement.user_profile_firstName.replace(/^\w/, function (chr) {
+            return chr.toUpperCase();
+          })
+          const employee_lastName = currElement.user_profile_lastName.replace(/^\w/, function (chr) {
+            return chr.toUpperCase();
+          })
+          const obj = {
+            value: currElement.employee_id,
+            // uppercase the first letter
+            label: employee_firstName + ' ' + employee_lastName
+          }
+          return obj
+        })
+        this.setState({
+          dropdownOptions_Employees: employee_labels_ForDropdown
+        })
+      })
 
     axios.get('/admin_api/locationsByProjects/')
       .then((response) => {
@@ -183,44 +210,63 @@ class FormAddNewActivity extends Component {
   handleValidation() {
     let errors = {};
     let formIsValid = true;
-    // check if exists, if not, create error
-    // <span className="myCustomError">{this.state.errors["selected_projectLocation"]}</span>
+
+    console.log('running handleValidation on this state:', this.state)
+                
     if (!this.state.selectedRow_projectLocation) {
+      // console.log('ran check on selectedRow_projectLocation, here is result:', !this.state.selectedRow_projectLocation)
+      // console.log('setting error: selectedRow_projectLocation -- here is state:', this.state.selectedRow_projectLocation)
+
       formIsValid = false;
       errors["selectedRow_projectLocation"] = "Please select the project location.";
     }
 
-    if (!this.state.newActivityNotes) {
-      formIsValid = false;
-      errors["newActivityNotes"] = "Please enter activity notes.";
-    }
-
-    // check if exists, if not, create error
-    // <span className="myCustomError">{this.state.errors["dropdownSelected_ActivityType"]}</span>
     if (!this.state.dropdownSelected_ActivityType) {
+      // console.log('ran check on !this.state.dropdownSelected_ActivityType, here is result:', !this.state.dropdownSelected_ActivityType)
+      // console.log('setting error: dropdownSelected_ActivityType -- here is state:', this.state.dropdownSelected_ActivityType)
+
       formIsValid = false;
       errors["dropdownSelected_ActivityType"] = "Please select the type of work activity";
     }
 
-    if (!this.state.dropdownSelected_EmployeeSelection < 1) {
+    
+    if (!this.state.dropdownSelected_EmployeeSelection.length >= 1) {
+      // console.log('ran check on !this.state.dropdownSelected_EmployeeSelection.length >= 1, here is result:', !this.state.dropdownSelected_EmployeeSelection.length >= 1)
+      // console.log('this.state.dropdownSelected_EmployeeSelection.length', this.state.dropdownSelected_EmployeeSelection.length)
+      // console.log('setting error: dropdownSelected_EmployeeSelection -- here is state:', this.state.dropdownSelected_EmployeeSelection)
+
       formIsValid = false;
       errors["dropdownSelected_EmployeeSelection"] = "Please select at least one employee";
     }
+
+    if (!this.state.newActivityNotes) {
+      // console.log('ran check on !this.state.newActivityNotes, here is result:', !this.state.newActivityNotes)
+      // console.log('setting error: newActivityNotes -- here is state:', this.state.newActivityNotes)
+
+      formIsValid = false;
+      errors["newActivityNotes"] = "Please enter activity notes.";
+    }
     
-    // <span className="myCustomError">{this.state.errors["selectedDay_date"]}</span>
     if (!this.state.selectedDay_date) {
+      // console.log('ran check on !this.state.selectedDay_date, here is result:', !this.state.selectedDay_date)
+      // console.log('setting error: selectedDay_date -- here is state:', this.state.selectedDay_date)
+
       formIsValid = false;
       errors["selectedDay_date"] = "Please select the date of the work activity";
     }
 
-    // <span className="myCustomError">{this.state.errors["timepicker_beginTime"]}</span>
     if (!this.state.timepicker_beginTime) {
+      // console.log('ran check on !this.state.timepicker_beginTime, here is result:', !this.state.timepicker_beginTime)
+      // console.log('setting error: timepicker_beginTime -- here is state:', this.state.timepicker_beginTime)
+
       formIsValid = false;
       errors["timepicker_beginTime"] = "Please select the beginning time of the work activity";
     }
 
-    // <span className="myCustomError">{this.state.errors["timepicker_endTime"]}</span>
     if (!this.state.timepicker_endTime) {
+      // console.log('ran check on !this.state.timepicker_endTime, here is result:', !this.state.timepicker_endTime)
+      // console.log('setting error: timepicker_endTime -- here is state:', this.state.timepicker_endTime)
+
       formIsValid = false;
       errors["timepicker_endTime"] = "Please select the ending time of the work activity";
     }
@@ -256,45 +302,55 @@ class FormAddNewActivity extends Component {
     console.log('Attempting validation before submitting...' )
     if (this.handleValidation()) {
 
-      // => Need to include: selected_employees_assigned_to
       console.log('Form is valid, next will submit form.')
+
+      // Extract employee_id from employee(s) selected
+      let arrayOfEmployeesSelected_employeeID = []
+      this.state.dropdownSelected_EmployeeSelection.map((employeeObj) => {
+        arrayOfEmployeesSelected_employeeID.push(employeeObj.value)
+      })
 
       var token = document.querySelector("[name=csrf-param][content]").content // token is on meta tag
 
       var dataObj_toUpload = {
         newActivity_project_id: this.state.selectedRow_projectLocation['project_id'],
-        newActivity_notes: this.state.newActivityNotes,
         newActivity_type: this.state.dropdownSelected_ActivityType['value'],
-        newActivity_begin: iso_timestamp_activity_begin,
-        newActivity_end: iso_timestamp_activity_end,
+        newActivity_employee_ids_selected: arrayOfEmployeesSelected_employeeID, 
+        newActivity_notes: this.state.newActivityNotes,
+        newActivity_begin_dateTime: iso_timestamp_activity_begin,
+        newActivity_end_dateTime: iso_timestamp_activity_end,
       }
 
       let post_config = {
         headers: {
-          'Content-Type': 'multipart/form-data',
           'CSRF-Token': token,
-          'Content-Type': false
         }
       }
       
       axios
         .post(
-          '/emp_api/activities/create/selfAssignedTask', 
+          '/admin_api/createRow/activities', 
           dataObj_toUpload,
           post_config
         )
         .then((response) => {
-          console.log('response from server is', response)
+          console.log('axios post-- /createRow/activities -- response from server is', response)
         })
         .catch((error) => { console.log('error: ', error) });
         
       // clear state when all done
       console.log('Clearing state after form submit')
-      this.setState(initialState);
-      // closing modal:
-      // Connected to Redux.  Set modal open = false, after a 2 second interval. (need to connect modal visibility state to redux as well)
-      // TODO: => this isn't working
-      // setInterval(function () { this.props.toggle_Visibility_Modal_CreateActivity(false) }, 2000);
+
+      const kept_LocationListData = this.state.dropdownOptions_LocationsByProjects
+      const kept_employees_data = this.state.dropdownOptions_Employees
+      // keeping formsubmit as true, after resetting state
+      this.setState({
+        initial_LocationsAndProjects_ListData: kept_LocationListData,
+        dropdownOptions_Employees: kept_employees_data,
+        formSubmit_success: true,
+        ...initialState
+      })
+      
     } else {
       console.log('On attempt to submit form, validation returned 1+ errors.')
     }

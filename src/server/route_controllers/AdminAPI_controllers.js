@@ -1,5 +1,6 @@
 const Promise = require('bluebird')
 const merge = require('array-object-merge')
+var axios = require('axios')
 
 // knex 
 const dotenv = require("dotenv").config({ path: '../.env' });
@@ -72,7 +73,7 @@ const EmployeeAPI_EventsEmitter = require('./EmployeeAPI_controllers').EmployeeA
 
 
 /*//=>###########################################
-//=>###     EVENT STREAM -- Route controllers
+//=>###     Event stream -- Emitting to Client
 //=>##########################################*/
 
 const AdminEventStream = (req, res) => { 
@@ -86,7 +87,6 @@ const AdminEventStream = (req, res) => {
 
   AdminAPI_EventStream_EventEmitter.on('message', data => {
     console.log('[Emitting event: new timesheet clockin] Step 4 - Final data received in Admin API event stream.  Sending it into the data stream where the client will find it.')
-
     console.log('data in step 4 is', data)
     if (data.timesheet_main_type === 'livestream_timesheet') {
       console.log('writing data to stream now')
@@ -108,25 +108,34 @@ const AdminEventStream = (req, res) => {
 const get_DataForTable = (req, res) => {
 
   console.log('params received for db lookup: table name: ', req.params.tableName)
-
-  // note on regex character escape:  \W is the equivalent of [^0-9a-zA-Z_]
+  // note on regex character escape:  \W is the equivalent of [^0-9a-zA-Z_] -- so, we keep only those characters and discard anything else such as strange characters
   const escaped_tableName = req.params.tableName.replace(/\W/g, '')
-   
+
+  // need to change if (true) to check session for user_type of admin, once an admin account registration system is set up.
   if (true) {
     return Promise.try(() => {
       return Api_fns.get_Admin_dataFor_DataTable(escaped_tableName);
     })
     .then((dataResponse) => {
-      console.log('dataResponse is ', dataResponse)
+      // console.log('dataResponse is ', dataResponse)
 
-      // console.log('data response Object.keys(dataResponse[0])[0] is ', Object.keys(dataResponse[0])[0])
-      // need to sort by the first key (in first object) which will be primary key of the table selected: Object.keys(dataResponse[0])[0]
-      const keyToSortBy = Object.keys(dataResponse[0])[0]
-      
-      const sortedDataResponse = dataResponse.sort(General_fns.sort_by_object_field(keyToSortBy, false, parseInt))
+      /* Here, after receiving the data, we submit this array of the properties of datetime data to convert 
+        which might be in the object returned.  We then sort by primary key & format the date time
+        before sending the data object to the frontend
+      */
 
-      console.log('sortedDataResponse', sortedDataResponse)
-      res.status(200).json(sortedDataResponse)
+      const DateTimes_need_converting_toBeReadable = [
+        'activity_datetime_begin',
+        'activity_datetime_end',
+        'timesheet_submitted_datetime',
+        'timesheet_clockin',
+        'timesheet_clockout',
+        'created_at',
+        'updated_at' ]
+
+      var SortedAndFormattedData = General_fns.SortData_ByPrimaryKey_And_Format_DateTimes(dataResponse, DateTimes_need_converting_toBeReadable)
+
+    res.status(200).json(SortedAndFormattedData)
     })
   }
 }
@@ -136,6 +145,7 @@ const put_DataForTable_update = (req, res) => {
   /* 
   besides tablename, fieldname, and newValue, we also need the ID of the row.
   */
+  // need to change if (true) to check session for user_type of admin, once an admin account registration system is set up.
   if (true) {
     return Promise.try(() => {
       return Api_fns.put_DataForTable_update_Table_Field_withData(
@@ -161,15 +171,24 @@ const put_DataForTable_update = (req, res) => {
 ##            Timesheets
 ##########################################*/
 const get_Timesheets_All = (req, res) => {
-   
+
+  console.log('checking req.query', req.query)
+  console.log('req.query.begin_timestamp', req.query.begin_timestamp)
+  console.log('typeof req.query.begin_timestamp', typeof req.query.begin_timestamp)
+  
+  // reference: stack overflow comment w/ good info: https://stackoverflow.com/a/21045779
+  var escaped_begin_timestamp = req.query.begin_timestamp.replace(/^([^0-9a-zA-Z_:.]+)$/g, '') 
+  var escaped_end_timestamp = req.query.end_timestamp.replace(/^([^0-9a-zA-Z_:.]+)$/g, '')
+
+// need to change if (true) to check session for user_type of admin, once an admin account registration system is set up.
   if (true) {
     return Promise.try(() => {
-      return Api_fns.getAllTimesheets();
+      return Api_fns.get_AllTimesheets_WithinRange(escaped_begin_timestamp, escaped_end_timestamp);
     }).then((timesheets) => {
         return Api_fns.AdditionalDataLookup_On_Timesheets_array(timesheets)
-      }) // completion of Promise.map
+      })
       .then((resultData) => {
-        // console.log('resultData', resultData)
+        console.log('get_AllTimesheets_WithinRange resultData', resultData)
         res.status(200).json(resultData);
       })
   } else {
@@ -189,6 +208,17 @@ const get_locationsByProjects_All = (req, res) => {
     res.status(200).json(response);
   })
 }
+
+const get_Locations_All = (req, res) => {
+
+  return Promise.try(() => {
+    return Api_fns.getLocations_All()
+  }).then((response) => {
+    // console.log('get_RecentWorkActivityInfo_ByEmpID response is ', response)
+    res.status(200).json(response);
+  })
+}
+
 
 /*##########################################
 ##            Activity codes
@@ -216,88 +246,6 @@ const get_Employees_All = (req, res)  => {
   })
 } 
 
-/*##########################################
-##            Activities //! Unused. This is just for reference
-##########################################*/
-const get_Activities_All = (req, res) => {
-   
-  if (true) {
-    return Promise.try(() => {
-      return Api_fns.getAllActivities();
-    }).then((activities) => {
-      return Promise.map(activities, (activity) => {
-        return Promise.all([
-          Api_fns.getEmployee_by_id(req.session.mock_employee_id), /*  emp completing the task */
-          Api_fns.getEmployee_by_id(activity['emp_assigned_by']), /*  emp who assigned the task (activity mgr -- above them is project mgr.  We can always add that on later (involved small DB model update) but let's focus on basic activity info for now) */
-          Api_fns.getActivityType_by_activity_code_id(activity['activity_code']), /* activity type info: such as 'painting', by code (i.e. activity_code is basically activity type's uniqueID)*/
-          Api_fns.getLocation_by_project_id(activity['project_id']), /* work-activity location info by for employee (activity's project id) */
-          Api_fns.getProjectMgr_by_project_id(activity['project_id'])
-        ]).spread((employee_assignedTo_activity, employee_whoIs_activityMgr, activity_type, location, employee_WhoIs_projectMgr) => {
-          return { employee_assignedTo_activity, employee_whoIs_activityMgr, activity_type, location, employee_WhoIs_projectMgr }
-        });
-      }).then((finalData) => {
-
-        var perActivity_mainData = activities.map((currElement, index) => {  // activity set one
-
-          var activity_readable_date_begin = General_fns.get_readable_date(currElement.activity_datetime_begin)
-          var activity_readable_date_end = General_fns.get_readable_date(currElement.activity_datetime_end)
-          var activity_readable_time_begin = General_fns.get_readable_time(currElement.activity_datetime_begin)
-          var activity_readable_time_end = General_fns.get_readable_time(currElement.activity_datetime_end)
-          var activity_notes_summary = General_fns.summarize_string(currElement.activity_notes)
-
-          return {
-            activity__activity_id: currElement.activity_id,
-            activity__emp_id_assigned_to: currElement.emp_assigned_to,
-            activity__emp_id_assigned_by: currElement.emp_assigned_by,
-            activity__project_id: currElement.project_id,
-            activity__activity_notes: currElement.activity_notes,
-            activity__activity_datetime_begin: currElement.activity_datetime_begin,
-            activity__activity_datetime_end: currElement.activity_datetime_end,
-            // processed items
-            activity__activity_notes_summary: activity_notes_summary,
-            activity__activity_readable_date_begin: activity_readable_date_begin,
-            activity__activity_readable_date_end: activity_readable_date_end,
-            activity__activity_readable_time_begin: activity_readable_time_begin,
-            activity__activity_readable_time_end: activity_readable_time_end,
-          }
-        })
-
-        var perActivity_additionalData = finalData.map((currElement, index) => { // activity set two
-
-          return {
-            activity__activity_type: currElement.activity_type[0]['activity_type'],
-
-            activity__location_id: currElement.location[0]['location_id'],
-            activity__location_type: currElement.location[0]['location_type'],
-            activity__location_address: currElement.location[0]['location_address'],
-            activity__location_city: currElement.location[0]['location_city'],
-            activity__location_state: currElement.location[0]['location_state'],
-            activity__location_zip: currElement.location[0]['location_zip'],
-
-            activity__employee_firstName: currElement.employee_assignedTo_activity[0]['firstName'],
-            activity__employee_lastName: currElement.employee_assignedTo_activity[0]['lastName'],
-            activity__mgr_firstName: currElement.employee_whoIs_activityMgr[0]['firstName'],
-            activity__mgr_lastName: currElement.employee_whoIs_activityMgr[0]['lastName'],
-            activity__projMgr_firstName: currElement.employee_WhoIs_projectMgr[0]['firstName'],
-            activity__projMgr_lastName: currElement.employee_WhoIs_projectMgr[0]['lastName'],
-          }
-
-        })
-        const perActivity_mergedData = merge(perActivity_mainData, perActivity_additionalData) // combined activity sets
-        console.log('perActivity_mergedData', perActivity_mergedData)
-
-        return { perActivity_mergedData }
-      }).then((perActivity_mergedData) => {
-        res.status(200).json(perActivity_mergedData);
-      })
-    })
-  }
-  else {
-    res.status(500).json({ error: 'sorry, we were unable to fulfill your request for activity data.' });
-  }
-}
-
-
 const get_Projects_WithLocation_and_ProjectMgr = (req, res) => {
   return Promise.try(() => {
     return Api_fns.get_retrieve_Projects_WithLocation_and_ProjectMgr()
@@ -306,19 +254,163 @@ const get_Projects_WithLocation_and_ProjectMgr = (req, res) => {
   })
 }
 
-const post_createNewProject = (req, res) => {
-  console.log('post_createNewProject -- req.body ', req.body)
+const get_User_applicantData = (req, res) => {
+  return Promise.try(() => {
+    return Api_fns.getUserApplicantData(req.body)
+  }).then((results) => {
+    res.status(200).json(results);
+  })
 }
+
+const post_createTableRow = (req, res) => { 
+  console.log('/createRow/:tableName -- request received for table name: ', req.params.tableName)
+  // note on regex character escape:  \W is the equivalent of [^0-9a-zA-Z_] -- so, we keep only those characters and discard anything else such as strange characters
+  const escaped_tableName = req.params.tableName.replace(/\W/g, '')
+
+  /* Currently, admin user can add new rows to four tables:
+  activities, activity_codes, projects, locations.
+  For each of them, escape the posted object values,
+  and then insert them into DB
+  */
+
+  const tables_available = ['activities', 'activity_codes', 'projects', 'locations']
+
+  if (!tables_available.includes(escaped_tableName)){
+    res.status(500).json({ error: 'Sorry, that table does not exist or is not available for editing.' });
+  }
+
+  if (escaped_tableName === 'activities') {
+    console.log('Request for "activities" table update received-- req.body', req.body)
+    // TODO: Once admin user is incorporated into registration system, provide their user ID in "newActivity_objectToPost" object a few lines below
+
+    req.body.newActivity_employee_ids_selected.map((emp_id) => {
+      console.log('newActivity_employee_ids_selected emp_id', emp_id)
+      console.log('will insert data for this employee.')
+
+
+      var newActivity_objectToPost = {
+        newActivity_emp_assigned_by: null, // TODO: Once admin user is incorporated into registration system, provide their user ID here.
+        newActivity_emp_assigned_to: emp_id,
+
+        newActivity_notes: req.body.newActivity_notes,
+        newActivity_type: req.body.newActivity_type,
+        newActivity_project_id: req.body.newActivity_project_id,
+        newActivity_begin_dateTime: req.body.newActivity_begin_dateTime,
+        newActivity_end_dateTime: req.body.newActivity_end_dateTime,
+      }
+
+      return Promise.try(() => {
+        return Api_fns.post_createRow_Activities(newActivity_objectToPost)
+      })
+      .then((results) => {
+        console.log('post_createTableRow -- results', results)
+        // res.status(200).json(results)
+      })
+
+    })
+  }
+
+  if (escaped_tableName === 'activity_codes') {
+    console.log('Request for "activity_codes" table update received-- req.body', req.body)
+
+    return Promise.try(() => {
+      return Api_fns.post_createRow_ActivityCodes(req.body)
+    }).then((results) => {
+      res.status(200).json(results);
+    })
+  }
+
+  if (escaped_tableName === 'projects') {
+    console.log('Request for "projects" table update received-- req.body', req.body)
+
+    return Promise.try(() => {
+      return Api_fns.post_createRow_Projects(req.body)
+    }).then((results) => {
+      res.status(200).json(results);
+    })
+  }
+
+  if (escaped_tableName === 'locations') {
+    console.log('Request for "locations" table update received-- req.body', req.body)
+
+    // Here, we need to do a gps lookup.  Add the coordinates into this DB insert function below (post_createRow_Locations)
+    // info: https://developers.google.com/maps/documentation/geocoding/start?csw=1
+    // example: https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=YOUR_API_KEY
+    const gmaps_key = process.env.GMAPS_API.toString()
+
+    // replace all spaces with plus signs, so we can put each piece of address data into the url string
+    const formattedAddress = []
+    Object.values(req.body).map((currentElement) => {
+      formattedAddress.push(currentElement.replace(/ /g, "+"))
+    })
+
+    const gmaps_api_url = 'https://maps.googleapis.com/maps/api/geocode/json?key=' + gmaps_key 
+    const url_query_addressLine = gmaps_api_url + '&address=' + formattedAddress[0] + ',' // address
+                                              + formattedAddress[1] + ',' // city
+                                              + formattedAddress[2]       // state
+    /* 
+    req.body { 
+  location_address
+  location_city
+  location_state
+  location_name
+  location_type
+   */
+    axios
+      .get(url_query_addressLine)
+      .then((response) => {
+        // console.log('response from gmaps coordinates lookup are: response.data', response.data)
+        // console.log('response from gmaps coordinates lookup are:  response.data[0]', response.data.results[0])
+        // console.log('response response.data.geometry ', response.data.results[0].geometry)
+        // console.log('response response.data.geometry ', response.data.results[0].geometry.location.lat)
+        // console.log('response response.data.geometry ', response.data.results[0].geometry.location.lng)
+        // console.log('results lng: ', results.data.geometry.location.lng)
+        const location_latitude = response.data.results[0].geometry.location.lat
+        const location_longitude = response.data.results[0].geometry.location.lng
+        return { location_latitude, location_longitude }
+      })
+      .then((objectReturned) => {
+        return Promise.try(() => {
+          return Api_fns.post_createRow_Locations({ ...req.body, ...objectReturned}) // just add in lat, lng
+        })
+      })
+      .then((results) => {
+        res.status(200).json(results);
+      })
+      .catch(function (error) {
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        } else if (error.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+          // http.ClientRequest in node.js
+          console.log(error.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log('Error', error.message);
+        }
+        console.log(error.config);
+      })
+
+ 
+  }
+}
+
 
 module.exports = { 
   AdminEventStream,
   get_Timesheets_All,
-  get_Activities_All,
   get_locationsByProjects_All,
+  get_Locations_All,
   get_activityCodes_All,
   get_Employees_All,
   get_DataForTable,
   put_DataForTable_update,
   get_Projects_WithLocation_and_ProjectMgr,
-  post_createNewProject
+  get_User_applicantData,
+  post_createTableRow
 }

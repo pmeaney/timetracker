@@ -36,13 +36,15 @@ class Viewport_TaskList extends Component {
   }
 
   componentWillMount() {
-    console.log('TaskList has mounted.')
+    console.log('componentWillMount begin.')
     const existingTimesheets = []
     const newTasks = []
+
 
     // Going to be working with employee_id 2, as the test employee user account
     axios.get('/emp_api/activities/getPendingTasks/')
       .then((response) => {
+        console.log('Viewport_TaskList -- componentWillMount -- get: /emp_api/activities/getPendingTasks/ response -- ', response)
         response.data.map((obj, i) => {
           if (Object.keys(obj).includes("timesheet_id")) {
             // console.log('We have an existing timesheet for this task -- it is this object:', obj)
@@ -130,6 +132,7 @@ class Viewport_TaskList extends Component {
       
       
       var token = document.querySelector("[name=csrf-param][content]").content // token is on meta tag
+      console.log('Viewport_TaskList -- token ', token)
 
       let post_config = {
         headers: {

@@ -1,8 +1,8 @@
 import React from 'react';
+import './../../scss/bulma_sass/bulma.sass'
+
 import { connect } from 'react-redux'
-
 import NavigationBar from './NavigationBar'
-
 import Viewport_TaskList from './Viewport_TaskList'
 import Viewport_Profile from './Viewport_Profile'
 

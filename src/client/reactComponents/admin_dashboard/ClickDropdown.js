@@ -1,6 +1,12 @@
 import React, { Component } from 'react';
-import { toggle_Visibility_Viewport_Maps, toggle_Visibility_Viewport_AdminDataTable, toggle_Visibility_Viewport_NewItemDashboard } from "./redux/actions"
 import { connect } from 'react-redux'
+
+import { 
+  toggle_Visibility_Viewport_Maps, 
+  toggle_Visibility_Viewport_AdminDataTable, 
+  toggle_Visibility_Viewport_NewItemDashboard,
+  toggle_Visibility_Viewport_ResumeReview_Hiring } from "./redux/actions"
+  
 
 class ClickDropdown extends Component {
   constructor() {
@@ -65,6 +71,11 @@ class ClickDropdown extends Component {
     this.props.toggle_Visibility_Viewport_NewItemDashboard(!this.props.visibility_viewport_newItemDashboard)
   }
 
+  HandleClick_VisibilityToggle_Viewport_ResumeReview_Hiring(e) {
+    e.stopPropagation(); // stop bubbling up to parent div
+    this.props.toggle_Visibility_Viewport_ResumeReview_Hiring(!this.props.visibility_viewport_resumeReview_Hiring)
+  }
+
   render() {
     return (
       <div>
@@ -111,6 +122,14 @@ class ClickDropdown extends Component {
                       Admin DataTable
                     </button>
                   </li>
+                  <li>
+                    <button
+                      className="button"
+                      onClick={e => this.HandleClick_VisibilityToggle_Viewport_ResumeReview_Hiring(e)}
+                    >
+                      Resume Review &amp; Hiring
+                    </button>
+                  </li>
                 </ul>
               </div>
 
@@ -127,13 +146,15 @@ class ClickDropdown extends Component {
 const mapStateToProps = store => ({
   visibility_viewport_maps: store.visibility_viewport_maps,
   visibility_viewport_newItemDashboard: store.visibility_viewport_newItemDashboard,
-  visibility_viewport_adminDataTable: store.visibility_viewport_adminDataTable
+  visibility_viewport_adminDataTable: store.visibility_viewport_adminDataTable,
+  visibility_viewport_resumeReview_Hiring: store.visibility_viewport_resumeReview_Hiring
 })
 
 const mapDispatchToProps = {
   toggle_Visibility_Viewport_Maps,
   toggle_Visibility_Viewport_NewItemDashboard,
-  toggle_Visibility_Viewport_AdminDataTable
+  toggle_Visibility_Viewport_AdminDataTable,
+  toggle_Visibility_Viewport_ResumeReview_Hiring
 }
 
 export default connect(

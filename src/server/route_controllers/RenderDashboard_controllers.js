@@ -4,8 +4,8 @@ const get_adminDashboard = function (req, res) {
   res.render('pages/adminDashboard', {
     errors: {},
     csrfToken: req.csrfToken(),
-    user_type: req.session.user_type
-    // gmaps_api_key: process.env.GMAPS_API.toString()
+    user_type: req.session.user_type,
+    gmaps_api_key: process.env.GMAPS_API.toString(),
   }) 
 }
 
@@ -21,7 +21,7 @@ const get_userDashboard_byUserID = function (req, res) {
   
   const param_user_id_asInt = parseInt(req.params.user_id, 10);
   console.log('for render dashboard, param_user_id_asInt is', param_user_id_asInt)
-  console.log('req.body is', req.body)
+  // console.log('req.body is', req.body)
   console.log('req.session is ', req.session)
   console.log('Running condition check (True = render dashboard, False = fail): req.session.is_authorized === true && req.session.user_id === param_user_id_asInt, is true?', req.session.is_authorized === true && req.session.user_id === param_user_id_asInt)
 

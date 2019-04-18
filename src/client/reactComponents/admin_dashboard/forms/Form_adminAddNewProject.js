@@ -68,7 +68,7 @@ class Form_adminAddNewProject extends Component {
         })
       })
 
-    axios.get('/admin_api/locationsByProjects/')
+    axios.get('/admin_api/locations/')
       .then((response) => {
         var locationPerProject_Data = response.data.map((currElement) => {
           var location_address_oneLine = currElement.location_address + " " + currElement.location_city + ", " + currElement.location_state
@@ -161,11 +161,6 @@ class Form_adminAddNewProject extends Component {
 
       var token = document.querySelector("[name=csrf-param][content]").content // token is on meta tag
 
-      console.log('this.state.dropdownSelected_EmployeeSelection', this.state.dropdownSelected_EmployeeSelection)
-      console.log('this.state.selectedDay_dateBegin', this.state.selectedDay_dateBegin)
-      console.log('this.state.selectedDay_dateEnd', this.state.selectedDay_dateEnd)
-      console.log('this.state.selectedRow_projectLocation', this.state.selectedRow_projectLocation)
-
       var dataObj_toUpload = {
         selected_projectMgr_employee_id: this.state.dropdownSelected_EmployeeSelection.value,
         selectedDay_dateBegin: this.state.selectedDay_dateBegin,
@@ -181,7 +176,8 @@ class Form_adminAddNewProject extends Component {
 
       axios
         .post(
-          '/admin_api/projects/create/',
+          '/admin_api/createRow/projects', 
+          // '/admin_api/projects/create/',
           dataObj_toUpload,
           post_config
         )
@@ -245,12 +241,6 @@ class Form_adminAddNewProject extends Component {
               options={dropdownOptions_Employees}
             />
             <br />
-            <br />
-              {/* Need a dropdown for employee */}
-              {/* Need two date pickets: project begin date and end date */}
-              {/* { location_id: 1, project_mgr_emp_id: 1, project_date_begin: '2018-01-01', project_date_end: '2018-01-20'},
-             */}
-
                 {selectedDay_dateBegin && <p>Select date for project begin: {getLuxon_local_DateTime(selectedDay_dateBegin, 'date')}</p>}
                 {!selectedDay_dateBegin && <p>Select date for project begin</p>}
                 {!selectedDay_dateBegin && formSubmit_attempt &&
@@ -282,7 +272,7 @@ class Form_adminAddNewProject extends Component {
               :
               null}
 
-              <br /><br />
+              <br />
               {Object.keys(errors).length > 0 && formSubmit_attempt && !formSubmit_success
                 ?
                 <div className="notification is-warning">
@@ -290,7 +280,7 @@ class Form_adminAddNewProject extends Component {
                 </div>
                 : null
               }
-              <br /><br />
+              <br />
               <button 
                 className="button is-normal" 
                 type="submit"

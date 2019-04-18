@@ -126,7 +126,7 @@ class FormAddNewActivity extends Component {
   }
 
   handleRowSelect(row, isSelected, e) {
-    console.log('row selected', row)
+    console.log('Project/location row selected', row)
     // console.log('e', e)
     this.setState({
       selectedRow: row
@@ -243,9 +243,7 @@ class FormAddNewActivity extends Component {
       var token = document.querySelector("[name=csrf-param][content]").content // token is on meta tag
       let post_config = {
         headers: {
-          'Content-Type': 'multipart/form-data',
           'CSRF-Token': token,
-          'Content-Type': false
         }
       }
 

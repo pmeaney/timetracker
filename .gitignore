@@ -10,11 +10,18 @@
 **/config.json
 **/testScripts
 
+src/client/scss/bootstrap4Styles/*
+src/server/public/bootstrap4-resumeTemplateStartBootstrap/*
+src/server/public/resume-storage/*
+src/client/scss/bootstrap4Styles/currentlyUnused-bootstrap4-resumeTemplateStartBootstrap/*
 # ignore file:
 projectNotes.txt
 ircNotes.txt
 notesForGoogleDrive.txt
+src/client/reactComponents/admin_dashboard/sample.pdf
+
 
 # recursively ignore directory:
 fontAwesome/
 my-resume/
+

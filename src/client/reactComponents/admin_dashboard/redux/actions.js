@@ -13,6 +13,11 @@ export const toggle_Visibility_Viewport_NewItemDashboard = (value) => ({
   payload: value
 })
 
+export const toggle_Visibility_Viewport_ResumeReview_Hiring = (value) => ({
+  type: "TOGGLE_VISIBILITY_VIEWPORT_RESUME_REVIEW_HIRING",
+  payload: value
+})
+
 export const setup_Initial_Timesheet_Data = (value1, value2) => ({
   type: "SETUP_INITIAL_TIMESHEET_DATA",
   payload1: value1,

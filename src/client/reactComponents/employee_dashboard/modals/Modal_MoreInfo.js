@@ -84,12 +84,7 @@ class Modal_MoreInfo extends React.Component {
                           <br/>
                           <strong>Project description:</strong>
                           <br/>
-                          Lorem ipsum dolor sit amet consectetur,
-                          <br/>
-                          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Consequuntur sit vitae optio obcaecati beatae.
-                          <br/>
-
-                          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sit similique fugiat deserunt ipsum architecto. 
+                          {this.props.activity_obj.project_description}
                         </p>
                       </div>
 
@@ -120,7 +115,7 @@ class Modal_MoreInfo extends React.Component {
                       </div>
 
                       <div className="margin_top_bottom">
-                        <ComposedMapWrapper
+                        <ComposedMapWrapper // this is ./modals/Map_Modal_MoreInfo.js
                               timesheetData={this.props.activity_obj}
                               center={{ lat: 37.685246, lng: -122.40277 }}
                               zoom={15}

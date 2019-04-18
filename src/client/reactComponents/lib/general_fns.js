@@ -1,6 +1,46 @@
 import moment from 'moment'
 import { DateTime } from "luxon"
 
+var getClockTime = (timeInput) => {
+  var now = timeInput
+  var hour = now.getHours()
+  var minute = now.getMinutes()
+  var second = now.getSeconds()
+  var ap = "AM"
+  if (hour > 11) { ap = "PM" }
+  if (hour > 12) { hour = hour - 12 }
+  if (hour == 0) { hour = 12 }
+  if (hour < 10) { hour = "0" + hour }
+  if (minute < 10) { minute = "0" + minute }
+  if (second < 10) { second = "0" + second }
+  // var timeString = hour + ':' + minute + ':' + second + " " + ap
+  var timeString = hour + ':' + minute + ap
+  return timeString
+}
+
+var formatDate = (date) => {
+  // var monthNames = [
+  //   "January", "February", "March",
+  //   "April", "May", "June", "July",
+  //   "August", "September", "October",
+  //   "November", "December"
+  // ]
+
+  var parsedDate = new Date(date)
+  // console.log('parsedDate', parsedDate)
+  var day = parsedDate.getDate()
+  // var monthIndex = date.getMonth()
+  // for month names: monthNames[monthIndex]
+  var monthNumber = parsedDate.getMonth() + 1
+  var year = parsedDate.getFullYear()
+
+  var clockTime = getClockTime(parsedDate)
+
+  var minutes = parsedDate.getMinutes()
+  return monthNumber + '/' + day + '/' + year + ', ' + clockTime
+}
+
+
 var getLuxon_local_DateTime = (js_datetime, value) => {
   const lux_jsDateTime = DateTime.fromJSDate(new Date(js_datetime))
 
@@ -12,6 +52,11 @@ var getLuxon_local_DateTime = (js_datetime, value) => {
   if (value === 'time') {
     let luxon_formattedTime = lux_jsDateTime.toLocaleString(DateTime.TIME_SIMPLE)
     return luxon_formattedTime
+  }
+
+  if (value === 'datetime') {
+    let luxon_formattedFullDateTime = lux_jsDateTime.toLocaleString(DateTime.DATETIME_FULL)
+    return luxon_formattedFullDateTime
   }
 }
 
@@ -103,4 +148,4 @@ const readAndExtract_fileTypeAndFormat = (reader_result) => {
   
 }
 
-export { getLuxon_local_DateTime, combineDateTimes, readAndExtract_fileTypeAndFormat }
+export { getLuxon_local_DateTime, combineDateTimes, readAndExtract_fileTypeAndFormat, formatDate }

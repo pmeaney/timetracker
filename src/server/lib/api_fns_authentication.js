@@ -37,11 +37,47 @@ const createUser = (email, hashed_password) => {
 			.insert([
 				{	user_email: email,
 					hashed_password: hashed_password,
-					user_type: 'employee',
-					// user_type: 'general-hasNot-applied',
+					user_type: 'general-hasNot-applied',
 				}
 			])
+			.returning('*')
 	})
+	.then((result) => {
+		console.log('createUser result', result)
+		console.log('createUser result[0].user_id', result[0].user_id)
+		return Promise.try(() => {
+			return database('user_profiles')
+				.insert([
+					{	
+						user_id: result[0].user_id,
+						user_profile_email: result[0].user_email,
+						user_profile_firstName: 'not-yet-completed',
+						user_profile_lastName: 'not-yet-completed',
+						user_profile_phoneNumber: 'not-yet-completed',
+						user_profile_address: 'not-yet-completed',
+						user_profile_city: 'not-yet-completed',
+						user_profile_state: 'not-yet-completed',
+						user_profile_imageFilename: 'not-yet-completed',
+						user_profile_resumeFilename: 'not-yet-completed.pdf',
+					}
+				])
+		})
+	})
+
+
+
+	/* 
+	Set profile as incomplete
+	{
+	user_profile_phoneNumber: 'not-yet-completed',
+	user_profile_email: 'not-yet-completed',
+	user_profile_address: 'not-yet-completed',
+	user_profile_city: 'not-yet-completed',
+	user_profile_state: 'not-yet-completed',
+	user_profile_imageFilename: 'not-yet-completed',
+	user_profile_resumeFilename: 'not-yet-completed',
+	}
+			 */
 }
 
 const checkPasswordForEmail = (password, email)=> {

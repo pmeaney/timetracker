@@ -4,13 +4,8 @@ const path = require('path');
 
 const Api_fns = require('../lib/api_fns')
 
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!  This is just some configuration code
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// Todo: to make a config for pdf and .doc/.docx files
-//MULTER CONFIG: to get file photos to temp server storage
-
-// TODO: Change the file name if it already exists
+// -> Multer config
+// Future update: Change the file name if it already exists
 // For Reference: https://stackoverflow.com/questions/36648395/upload-a-file-in-nodejs-with-multer-and-change-name-if-the-file-already-exists
 const multerConfig_images = {
 

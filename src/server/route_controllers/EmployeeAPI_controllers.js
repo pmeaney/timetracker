@@ -12,19 +12,9 @@ const Api_fns = require('../lib/api_fns')
 /*//=>###########################################
 //=>###   Event emitters 
 //=>##########################################*/
-/*
-  We have two classes (i.e. kinds) of event emitters:
-  1. Client-event-stream updaters:  AKA "serverToClient_MessageEmitter" For updating the 'eventstream' route with server 
-   client messages.  This is because there are client subscribers to updates to employee tables.
-    (E.g. Admin timesheets map&table -- they're updated every time an employee clocks in / clocks out)
 
-  2. Employee event emitters: AKA "EmployeeAPI_EventsEmitter" -- for running tasks after the completion of other tasks.
-    (E.g. Upon updating the timesheets table when a user clocks in, we run an internal event: Do database lookups
-      on that timesheet, to get additionl data about it.  (On completion of those lookups, we then run another event
-        emitter, this time a serverToClient_MessageEmitter to send to the client the data we looked up)
-*/
 /*//=>###########################################
-//=>###   Employee view, listening to Employee Event emitter
+//=>###   Employee view, listening to Employee Event emitter ( EmployeeAPI_EventsEmitter )
 //=>##########################################*/
 
 //=> SECTION FOR: Instantiation.  This instantiates event emitter, which is imported to AdminAPI_controller.js so that it can listen for specific employee actions (Such as clockin/clockout to update admin view)
@@ -37,7 +27,7 @@ const EmployeeAPI_EventsEmitter = new EmployeeAPI_EventEmitterClass();
 
 
 /*//=>###########################################
-//=>###     EVENT STREAM -- Route controllers
+//=>###     Event stream -- Emitting to Client
 //=>##########################################*/
 
 const EmployeeEventStream = (req, res) => {
@@ -117,7 +107,7 @@ const post_create_timesheet_toClockIn = (req, res) => {
           return Promise.try(() => {
 
             // (employee_id_accepted_by, activity_id, clockin_time, latitude, longitude)
-            return Api_fns.createNewTimesheet_onClockin(
+            return Api_fns.post_createNewTimesheet_onClockin(
               employee_id_asInt,
               activity_id_For_Timesheets_Lookup,
               timesheet_clockin,
@@ -185,11 +175,11 @@ const put_update_timesheet_toClockOut = (req, res) => {
 const get_PendingTasks_by_EmployeeID = (req, res) => {
 
   // ! Using a Mocked employee ID from session -- In production, change to actual employee ID from session
-  console.log('req.session.mock_employee_id', req.session.mock_employee_id)
+  // console.log('req.session.mock_employee_id', req.session.mock_employee_id)
   const employee_id_asInt = parseInt(req.session.mock_employee_id, 10)
 
 
-  console.log('getting pending tasks for employee_id', employee_id_asInt)
+  // console.log('getting pending tasks for employee_id', employee_id_asInt)
 
   if (true) {
 
@@ -204,23 +194,30 @@ const get_PendingTasks_by_EmployeeID = (req, res) => {
           return array_task_list
         })
         .then((array_task_list) => {
-
+          // console.log('get_PendingTasks_by_EmployeeID -- array_task_list', array_task_list)
           return Promise.map(array_task_list, (task) => {
             return Promise.all([
+              // -> These first three functions could be combined into one DB join.
+              // -> However, currently, within Api_fns, one or two of them are being used individually by other functions.
+              // -> So for now, I am keeping them separate.  
               Api_fns.getLocation_by_project_id(task.project_id),
               Api_fns.getProjectMgr_by_project_id(task.project_id),
+              Api_fns.getProject_by_project_id(task.project_id),
               Api_fns.getActivityType_by_activity_code_id(task.activity_code_id)
-            ]).spread((locationbyProjectID, projectMgrByProjectID, ActivityType_by_activity_code_id) => {
+            ]).spread((locationbyProjectID, projectMgrByProjectID, projectByProjectID, ActivityType_by_activity_code_id) => {
 
               // console.log('locationbyProjectID', locationbyProjectID)
               // console.log('projectMgrByProjectID', projectMgrByProjectID)
               // console.log('ActivityType_by_activity_code_id', ActivityType_by_activity_code_id)
-              return { locationbyProjectID, projectMgrByProjectID, ActivityType_by_activity_code_id }
+              console.log('projectByProjectID', projectByProjectID)
+              return { locationbyProjectID, projectMgrByProjectID, projectByProjectID, ActivityType_by_activity_code_id }
             })
           })
             .then((resultData) => {
+              // console.log('get_PendingTasks_by_EmployeeID -- resultData', resultData)
               const combined_Project_Location_Data = resultData.map((currElement, index) => {  // activity set one
                 return {
+                  
                   // from location object
                   location_name: currElement.locationbyProjectID[0].location_name,
                   location_address: currElement.locationbyProjectID[0].location_address,
@@ -228,12 +225,14 @@ const get_PendingTasks_by_EmployeeID = (req, res) => {
                   location_state: currElement.locationbyProjectID[0].location_state,
                   location_zip: currElement.locationbyProjectID[0].location_zip,
                   location_type: currElement.locationbyProjectID[0].location_type,
-                  // from project object
+                  // from project mgr (employee) object
                   project_manager_firstName: currElement.projectMgrByProjectID[0].project_manager_firstName,
                   project_manager_lastName: currElement.projectMgrByProjectID[0].project_manager_lastName,
                   project_manager_phone: currElement.projectMgrByProjectID[0].project_manager_phone,
                   project_manager_email: currElement.projectMgrByProjectID[0].project_manager_email,
                   project_manager_profile_photo: currElement.projectMgrByProjectID[0].project_manager_profile_photo,
+                  // from project object (project)
+                  project_description: currElement.projectByProjectID[0].project_description,
                   // from activity type object
                   activity_type: currElement.ActivityType_by_activity_code_id[0].activity_type
                 }
@@ -267,15 +266,42 @@ const get_PendingTasks_by_EmployeeID = (req, res) => {
 
 const post_Profile_ContactInfo_by_EmployeeID = (req, res) => {
   
+  // TODO: Needs update
+
+  // - Call up user profiles, based on user_id
+  // - If user profile exists, then run an update (Api_fn).
+  // - If it doesnt exist then run an insert (Api_fn).
+
+
+  /*  Either update this route (post_Profile_ContactInfo_by_EmployeeID)
+  or the DB API function: postUserProfileFormData
+  
+  Why?  I need to differentiate:
+  Check:
+  if User
+    - Has profile info already? -> update ELSE -> insert 
+  if Employee: 
+    - Has profile info already? -> update ELSE -> insert
+
+    OR Rather...
+  since user_profile references user_id, 
+  check session:
+  if it has employee_ID,
+    check if:
+      - (query db) -> Has profile info  already? -> update ELSE -> insert  
+  */
 
   console.log('request body is', req.body)
+
   const phoneNumber_escaped = escape(req.body.phoneNumber)
   const email_escaped = escape(req.body.email)
   const address_escaped = escape(req.body.address)
+  const city_escaped = escape(req.body.city)
+  const state_escaped = escape(req.body.state)
   const user_id = req.session.user_id
-  // ** Once we're into production mode, we need to check for proper user type in order to receive form data
-  // const user_type = req.session.user_type  
- 
+  // // ** Once we're into production mode, we need to check for proper user type in order to receive form data
+  // // const user_type = req.session.user_type  
+
   const address_fix1 = address_escaped.replace(/%20/g, " ") // fix spaces
   const address_fix2 = address_fix1.replace(/%2C/g, ",")    // fix commas
   const address_fix3 = address_fix2.replace(/%23/g, "#")    // fix pound sign
@@ -285,17 +311,24 @@ const post_Profile_ContactInfo_by_EmployeeID = (req, res) => {
   const dataToPost = {
     phoneNumber: phoneNumber_escaped,
     email: email_escaped,
+    city: city_escaped,
+    state: state_escaped,
     address: address_fix4,
     user_id: user_id
   }
 
-  // insert the data into employees
-  return Promise.try(() => {
-    return Api_fns.postEmployeeProfileFormData(dataToPost)
-
-  }).then((response) => {
-    console.log('response is ', response)
-  })
+  // Check if user has a user_profile.
+  // If they do (response array has more than 0 objects), we will update.
+  // Else they do not, so we will insert a new row.
+  // getEmployeeProfileFormData_byUserID
+  
+// insert the data into user profiles
+return Promise.try(() => {
+  return Api_fns.post_updateOrInsert_UserProfileFormData_byUserID(dataToPost)
+}).then((response) => {
+  console.log('response is ', response)
+})
+  
 }
 
 const get_RecentWorkActivityInfo_ByEmpID = (req, res) => {
@@ -333,7 +366,8 @@ const get_ListOf_activity_codes = (req, res) => {
 
 // /emp_api/activities/createSelfAssignedTask
 const post_createSelfAssignedTask = (req, res) => {
-  console.log('req.body', req.body)
+  console.log('post_createSelfAssignedTask -- req.body', req.body)
+  console.log('post_createSelfAssignedTask -- req.session', req.session)
    // IMPORTANT__CHANGE_IN_PRODUCTION: 
    // ! (Using a Mocked employee ID from session (set on login auth) -- In production, change to actual employee ID from session)
   const employee_id_asInt = parseInt(req.session.mock_employee_id, 10)
@@ -369,9 +403,9 @@ const post_createSelfAssignedTask = (req, res) => {
 
   // post the new activity via DB api function...
   return Promise.try(() => {
-    return Api_fns.post_newActivity_employeeSelfAssignedActivity(newActivity_objectToPost)
+    return Api_fns.post_createRow_Activities(newActivity_objectToPost)
   }).then((newActivity) => {
-    console.log('post_newActivity_employeeSelfAssignedActivity newActivity response is ', newActivity)
+    console.log('post_createRow_Activities newActivity response is ', newActivity)
     return Api_fns.AdditionalDataLookup_On_newActivity(newActivity[0])
   }).then((newActivity_plus_AdditionalActivityData) => {
 

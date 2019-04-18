@@ -1,11 +1,11 @@
-const Promise = require('bluebird');
+const Promise = require('bluebird')
 const merge = require('array-object-merge')
 
 // knex
-const dotenv = require("dotenv").config({ path: '../.env'}); // access .env dotfile settings
-const environment = process.env.NODE_ENV;
-const knex_config = require('../knexfile');
-const database = require('knex')(knex_config[environment]);
+const dotenv = require("dotenv").config({ path: '../.env'}) // access .env dotfile settings
+const environment = process.env.NODE_ENV
+const knex_config = require('../knexfile')
+const database = require('knex')(knex_config[environment])
 
 /*
 ''
@@ -21,18 +21,24 @@ const database = require('knex')(knex_config[environment]);
 /* #############	Activities 	  ################ */
 const getAllActivities = () => {
 	return Promise.try(() => {
-		return database("activities");
+		return database("activities")
     })
 }
 /* #############	users  -- mostly for test purposes	  ################ */
 const getUsers_All = () => {
 	return Promise.try(() => {
-		return database("users");
+		return database("users")
     })
 }
 const getUserProfiles_All = () => {
 	return Promise.try(() => {
-		return database("user_profiles");
+		return database("user_profiles")
+    })
+}
+
+const getLocations_All = () => {
+	return Promise.try(() => {
+		return database("locations")
     })
 }
 
@@ -41,7 +47,7 @@ const getActivitiesBy_employee_assigned_to = (emp_id) => {
 	for matching activity ids
 	(on frontend, we'll be returning unstarted or started-but-unfinished timesheets.) */
 	return Promise.try(() => {
-		return database("activities").where({ emp_assigned_to: emp_id });
+		return database("activities").where({ emp_assigned_to: emp_id })
     })
 }
 
@@ -66,7 +72,7 @@ const getActivityType_by_activity_code_id = (activity_code_id) => {
 	return Promise.try(() => {
 		return database("activity_codes")
 			.select('activity_codes.activity_type')
-			.where({ activity_code_id: activity_code_id });
+			.where({ activity_code_id: activity_code_id })
 		})
 }
 
@@ -99,31 +105,6 @@ const getActivities_forWhich_timesheetsDoNotExist = (emp_id) => {
 							)
 			.where({ emp_assigned_to: emp_id })
 			.whereNotIn('activity_id', subquery)
-	})
-}
-
-const post_newActivity_employeeSelfAssignedActivity = (newActivity_objectToPost) => {
-	return Promise.try(() => {
-		return database("activities")
-			.returning([
-				'activity_id',
-				'activity_code_id',
-				'project_id',
-				'emp_assigned_by',
-				'emp_assigned_to',
-				'activity_notes',
-				'activity_datetime_begin',
-				'activity_datetime_end'
-			]) // response data to return to user upon insert
-			.insert({
-				activity_code_id: newActivity_objectToPost.newActivity_type,
-				project_id: newActivity_objectToPost.newActivity_project_id,
-				emp_assigned_by: newActivity_objectToPost.newActivity_emp_assigned_by,
-				emp_assigned_to: newActivity_objectToPost.newActivity_emp_assigned_to,
-				activity_notes: newActivity_objectToPost.newActivity_notes_escaped,
-				activity_datetime_begin: newActivity_objectToPost.newActivity_begin,
-				activity_datetime_end: newActivity_objectToPost.newActivity_end,
-			})
 	})
 }
 
@@ -163,7 +144,44 @@ const ForDataItem_LookUp__ActivityType_Location_ProjectMgr = (dataItem) => {
 }
 
 /* #############	Timesheets 	  ################ */
-const getAllTimesheets = () => {
+// const getAllTimesheets = () => {
+// 	return Promise.try(() => {
+// 		return database("timesheets")
+// 			.select('timesheets.activity_id',
+// 				'timesheets.timesheet_id',
+// 				'timesheets.emp_accepted_by',
+// 				'timesheets.cost_center_id',
+// 				'timesheets.timesheet_notes',
+// 				'timesheets.timesheet_clockin',
+// 				'timesheets.timesheet_clockout',
+// 				'timesheets.timesheet_clockin_lat',
+// 				'timesheets.timesheet_clockin_long',
+// 				'timesheets.timesheet_clockout_lat',
+// 				'timesheets.timesheet_clockout_long')
+//     })
+// }
+
+const get_AllTimesheets_WithinRange = (begin_timestamp, end_timestamp) => {
+	// => Leave this code, in case we move default timerange here.
+	/* 
+		// setting up default values for timesheet timeranges
+		var right_now = new Date()
+		var MS_PER_MINUTE = 60000;
+		var MINUTES_PER_DAY = 60 * 24
+		// two weeks = 14 days
+		var default_timeframe = 14 * MINUTES_PER_DAY * MS_PER_MINUTE
+		var two_weeks_ago = new Date(right_now - default_timeframe)
+		var thisMorning_at_midnight = new Date().setHours(0, 0, 0, 0)
+
+		// setting default variables
+		// Begin default datetime: two weeks ago at midnight
+		const default_beginDate = two_weeks_ago     // only the date matters
+		const default_beginTime = thisMorning_at_midnight // only the time matters: midnight
+		const default_endDate = right_now // only the date matters
+		const default_endTime = right_now // only the time matters
+*/
+	console.log('begin_timestamp', begin_timestamp) // begin_timestamp  2019-03-26T05:00:00.000Z
+	console.log('end_timestamp', end_timestamp) 		// end_timestamp 		2019-04-09T17:27:54.761Z
 	return Promise.try(() => {
 		return database("timesheets")
 			.select('timesheets.activity_id',
@@ -171,13 +189,16 @@ const getAllTimesheets = () => {
 				'timesheets.emp_accepted_by',
 				'timesheets.cost_center_id',
 				'timesheets.timesheet_notes',
-				'timesheets.timesheet_clockin',
-				'timesheets.timesheet_clockout',
+				'timesheets.timesheet_clockin',  // seed data example:  timesheet_clockin: '2018-01-01T16:15:00.000Z'
+				'timesheets.timesheet_clockout', // seed data example: timesheet_clockout: '2018-01-01T00:00:00.000Z'
 				'timesheets.timesheet_clockin_lat',
 				'timesheets.timesheet_clockin_long',
 				'timesheets.timesheet_clockout_lat',
-				'timesheets.timesheet_clockout_long');
-    })
+				'timesheets.timesheet_clockout_long')
+			.where('timesheets.timesheet_clockin', '>', begin_timestamp)
+			// .where('timesheets.timesheet_clockout', '<', end_timestamp)
+			.andWhere('timesheets.timesheet_clockout', '<', end_timestamp)
+	})
 }
 
 const getTimesheet_by_timesheet_id = (timesheet_id) => {
@@ -194,7 +215,7 @@ const getTimesheet_by_timesheet_id = (timesheet_id) => {
 				'timesheets.timesheet_clockin_long',
 				'timesheets.timesheet_clockout_lat',
 				'timesheets.timesheet_clockout_long')
-			.where({ timesheet_id: timesheet_id });
+			.where({ timesheet_id: timesheet_id })
 			
 	})
 }
@@ -213,7 +234,7 @@ const getTimesheet_by_activity_id = (activity_id) => {
 				'timesheets.timesheet_clockin_long',
 				'timesheets.timesheet_clockout_lat',
 				'timesheets.timesheet_clockout_long')
-			.where({ activity_id: activity_id });
+			.where({ activity_id: activity_id })
 	})
 }
 
@@ -250,7 +271,7 @@ const getTimesheetsAndActivities_forWhich_Timesheets_haveNullClockOut_forEmploye
 	})
 }
 
-const createNewTimesheet_onClockin = (employee_id_accepted_by, activity_id, clockin_time, latitude, longitude) => {
+const post_createNewTimesheet_onClockin = (employee_id_accepted_by, activity_id, clockin_time, latitude, longitude) => {
 	return Promise.try(() => {
 		return database("timesheets")
 			.returning(['activity_id', 'timesheet_id', 'timesheet_clockin']) // response data to return to user upon insert
@@ -492,7 +513,7 @@ const AdditionalDataLookup_On_Timesheets_array = (timesheets) => {
 			let mergedData = merge(first_mergedData, timesheet)
 			// console.log('mergedData', mergedData)
 			return { mergedData }
-		});
+		})
 	})
 	.then((resultData) => {
 		let itemArray = []
@@ -517,27 +538,74 @@ const AdditionalDataLookup_On_Timesheets_array = (timesheets) => {
 	})
 }
 
-const postEmployeeProfileFormData = (dataObject) => {
-	console.log('[lib/Api_fns.js] data obj posted', dataObject)
+const getEmployeeProfileFormData_byUserID = (user_id) => {
 	return Promise.try(() => {
-		return database("employees")
-			.where({ employee_id: dataObject.user_id  })
-			.select(
-				'employees.user_id',
-				'employees.employee_id',
-			)
-			.join('user_profiles',
-				'employees.user_id',
-				'=',
-				'user_profiles.user_id',
-			)
-			.update({
-				user_profile_phoneNumber: dataObject.phoneNumber,
-				user_profile_email: dataObject.email,
-				user_profile_address: dataObject.address
-			})
-			.returning(['employee_id', 'user_profile_phoneNumber', 'user_profile_email', 'user_profile_address']) // response data to return to user upon insert
+		return database("user_profiles")
+			.where({ user_id: user_id })
+			.select('*')
 	})
+}
+
+
+const post_updateOrInsert_UserProfileFormData_byUserID = (dataObject) => {
+	console.log('[lib/Api_fns.js] data obj posted-- Going to check if this user exists before either inserting or updating', dataObject)
+
+	// var user_id = parseInt(dataObject.user_id,10)
+
+	return Promise.try(() => {
+		return getEmployeeProfileFormData_byUserID(dataObject.user_id)
+	}).then((response) => {
+		console.log('response is ', response)
+		if (response.length > 0) {
+			console.log('this user has profile info already, so we will do a put/update')
+
+			return Promise.try(() => {
+				return database("user_profiles")
+					.where({
+						user_id: dataObject.user_id })
+					.update({
+						user_profile_phoneNumber: dataObject.phoneNumber,
+						user_profile_email: dataObject.email,
+						user_profile_address: dataObject.address,
+						user_profile_city: dataObject.city,
+						user_profile_state: dataObject.state,
+					})
+					.returning(['user_profiles.user_id', 'user_profile_phoneNumber', 'user_profile_email', 'user_profile_address', 'user_profile_city', 'user_profile_state']) // response data to return to user upon insert
+			})
+
+		} else {
+			console.log('this user does not have a profile yet.')
+
+			return Promise.try(() => {
+				return database("user_profiles")
+					.insert({
+						user_id: dataObject.user_id,
+						user_profile_phoneNumber: dataObject.phoneNumber,
+						user_profile_email: dataObject.email,
+						user_profile_address: dataObject.address,
+						user_profile_city: dataObject.city,
+						user_profile_state: dataObject.state,
+					})
+					.returning(['user_profiles.user_id', 'user_profile_phoneNumber', 'user_profile_email', 'user_profile_address', 'user_profile_city', 'user_profile_state']) // response data to return to user upon insert
+			})
+
+		}
+	})
+	/* 
+	 { user_id: 1,
+		user_profile_imageFilename: 'profilePhoto_user_id__1.png',
+	  user_profile_resumeFilename: '',
+	  user_profile_firstName: 'James',
+	  user_profile_lastName: 'Bond',
+	  user_profile_phoneNumber: "123-456-7890",
+	  user_profile_email: "email@gmail.com",
+	  user_profile_address1: "testingUser default address",
+	  user_profile_address2: '',
+	  user_profile_city: '',
+	  user_profile_state: '' },
+	  */
+	/* need to check if user is an  */
+	
 }
 
 
@@ -621,9 +689,9 @@ const put_DataForTable_update_Table_Field_withData = (tableName, tableRow_type, 
 			return updatedRow
 		})
 		.catch(function (error) {
-			console.error('Error from api_fns.js in function put_DataForTable_update_Table_Field_withData: ', error);
+			console.error('Error from api_fns.js in function put_DataForTable_update_Table_Field_withData: ', error)
 			return error
-		});
+		})
 }
 
 
@@ -752,39 +820,190 @@ const get_retrieve_Projects_WithLocation_and_ProjectMgr = () => {
 	})
 }
 
+const post_createRow_Activities = (newActivity_objectToPost) => {
+
+	// console.log('newActivity_objectToPost', newActivity_objectToPost)
+	return Promise.try(() => {
+		return database("activities")
+			.returning([
+				'activity_id',
+				'activity_code_id',
+				'project_id',
+				'emp_assigned_by',
+				'emp_assigned_to',
+				'activity_notes',
+				'activity_datetime_begin',
+				'activity_datetime_end'
+			]) // response data to return to user upon insert
+			.insert({
+				activity_code_id: newActivity_objectToPost.newActivity_type,
+				project_id: newActivity_objectToPost.newActivity_project_id,
+				emp_assigned_by: newActivity_objectToPost.newActivity_emp_assigned_by,
+				emp_assigned_to: newActivity_objectToPost.newActivity_emp_assigned_to,
+				activity_notes: newActivity_objectToPost.newActivity_notes,
+				activity_datetime_begin: newActivity_objectToPost.newActivity_begin_dateTime,
+				activity_datetime_end: newActivity_objectToPost.newActivity_end_dateTime,
+			})
+	}).then((results) => {
+		console.log('post_createRow_Activities -- New data added:', results)
+	})
+}
+
+
+const post_createRow_ActivityCodes = (objectToPost) => {
+	console.log('post_createRow_ActivityCodes -- objectToPost', objectToPost)
+	return Promise.try(() => {
+		return database("activity_codes")
+			.returning([
+				'activity_code_id', 'activity_type'
+			])
+			.insert({
+				activity_type: objectToPost.activity_type,
+			})
+	})
+	.then((results) => {
+		console.log('results from post_createRow_ActivityCodes:', results)
+	})
+}
+
+
+const post_createRow_Projects = (objectToPost) => {
+	console.log('post_createRow_Projects -- objectToPost', objectToPost)
+
+	return Promise.try(() => {
+		return database("projects")
+			.returning([
+				'project_id', 'location_id', 'project_mgr_emp_id', 'project_date_begin', 'project_date_end'
+			])
+			.insert({
+				location_id: objectToPost.selected_location_id_forProject,
+				project_mgr_emp_id: objectToPost.selected_projectMgr_employee_id,
+				project_date_begin: objectToPost.selectedDay_dateBegin,
+				project_date_end: objectToPost.selectedDay_dateEnd,
+			})
+	})
+		.then((results) => {
+			console.log('results from post_createRow_Projects:', results)
+		})
+}
+
+
+const post_createRow_Locations = (objectToPost) => {
+	console.log('post_createRow_Locations -- objectToPost', objectToPost)
+
+	
+	return Promise.try(() => {
+		return database("locations")
+			.returning([
+				'location_name',
+				'location_address',
+				'location_city',
+				'location_state',
+				'location_type',
+				'location_latitude',
+				'location_longitude',
+			])
+			.insert({
+				location_name: objectToPost.location_name,
+				location_address: objectToPost.location_address,
+				location_city: objectToPost.location_city,
+				location_state: objectToPost.location_state,
+				location_zip: null, // not gonna worry about zipcode for now
+				location_type: objectToPost.location_type,
+				location_latitude: objectToPost.location_latitude,
+				location_longitude: objectToPost.location_longitude,
+			})
+	})
+	.then((results) => {
+		console.log('results from post_createRow_Locations:', results)
+	})
+}
+
+
+const getUserApplicantData = () => {
+	// All users with user_type which is not "employee"
+	let non_employee_users = 
+		database("users")
+			.select('users.user_id')
+			.whereNot({ user_type: 'employee'})
+
+	return Promise.try(() => {
+		return database("user_profiles")
+			.select(
+				'user_profiles.user_id',
+				'user_profiles.user_profile_firstName',
+				'user_profiles.user_profile_lastName',
+				'user_profiles.user_profile_resumeFilename',
+				'user_profiles.user_profile_phoneNumber',
+				// 'user_profiles.user_profile_email', email is coming from users.user_email instead.  will eventually remove email field from user_profiles
+				// 'user_profiles.user_profile_address',
+				// 'user_profiles.user_profile_city',
+				// 'user_profiles.user_profile_state',
+				)
+			.join(
+				'users',
+				'users.user_id',
+				'=',
+				'user_profiles.user_id')
+			.select('users.user_email',
+							'users.user_type')
+			.whereIn('user_profiles.user_id', non_employee_users)
+	})
+}
+		
+const getProject_by_project_id = (project_id_passedIn) => {
+return Promise.try(() => {
+		return database("projects")
+			.where({ project_id: project_id_passedIn })
+			.select('projects.project_description')
+	})
+}
+
 module.exports = {
+	// get
 	getAllActivities,
 	getActivity_by_id,
 	getActivitiesBy_employee_assigned_to,
-	post_newActivity_employeeSelfAssignedActivity,
 	getActivityType_by_activity_code_id,
 	getActivityCodes_All,
 	getActivities_forWhich_timesheetsDoNotExist,
-	AdditionalDataLookup_On_newActivity,
 	getEmployees_All,
 	getEmployee_by_id,
-	getAllTimesheets,
+	get_AllTimesheets_WithinRange,
 	getTimesheet_by_timesheet_id,
 	getTimesheet_by_activity_id,
-	createNewTimesheet_onClockin,
-	updateExistingTimesheet_onClockout,
 	getLocation_by_project_id,
 	getProjectMgr_by_project_id,
 	getTimesheetsAndActivities_forWhich_Timesheets_haveNullClockOut_forEmployee,
-	AdditionalDataLookup_On_Timesheets_array,
-	postEmployeeProfileFormData,
-	populateTestUserData,
-	checkIfNeedToRepopulateTaskQueue,
+	getEmployeeProfileFormData_byUserID,
 	get_Locations_byProjID_byEmployeeID,
 	get_Locations_byProjID_forAllProjects,
 	get_ListOf_ActivityCodes_by_EmployeeID,
 	get_Admin_dataFor_DataTable,
-	put_DataForTable_update_Table_Field_withData,
-	update_FileName_ProfilePhoto_byUserID,
-	hireUser_toEmployee,
 	get_retrieve_Projects_WithLocation_and_ProjectMgr,
-	// for testing
 	getUsers_All,
 	getUserProfiles_All,
+	getLocations_All,
+	getUserApplicantData,
+	AdditionalDataLookup_On_Timesheets_array,
+	AdditionalDataLookup_On_newActivity,
+	getProject_by_project_id,
+
+	// post
+	post_updateOrInsert_UserProfileFormData_byUserID,
+	post_createRow_Activities,
+	post_createRow_ActivityCodes,
+	post_createRow_Projects,
+	post_createRow_Locations,
+	post_createNewTimesheet_onClockin,
+
+	// put
+	put_DataForTable_update_Table_Field_withData,
+	hireUser_toEmployee,
+	updateExistingTimesheet_onClockout,
+	update_FileName_ProfilePhoto_byUserID,
 	
-};
+	// for testing
+	checkIfNeedToRepopulateTaskQueue, // for testing -- when scheduled activities reach zero, new such data are seeded ('repopulated') so that we have activity data to work with.
+	populateTestUserData, // for testing -- when scheduled activities reach zero, new such data are seeded so that we have activity data to work with.
+}
