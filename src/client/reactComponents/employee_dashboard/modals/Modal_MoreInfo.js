@@ -36,9 +36,6 @@ class Modal_MoreInfo extends React.Component {
 // location_type: "commercial"
 // location_zip: "94005"
 
-
-//     https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=YOUR_API_KEY
-//     https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=YOUR_API_KEY
 //  */
     
 //   }
@@ -80,11 +77,12 @@ class Modal_MoreInfo extends React.Component {
 
                       <div>
                         <p>
-                          <strong>Project Type: {this.props.activity_obj.location_type}</strong>
-                          <br/>
-                          <strong>Project description:</strong>
+                          <strong style={{ textDecoration: 'underline' }}>Project description:</strong>
                           <br/>
                           {this.props.activity_obj.project_description}
+                          <br />
+                          <strong><span style={{ textDecoration: 'underline' }}>Project Type:</span> {this.props.activity_obj.location_type}</strong>
+                          <br />
                         </p>
                       </div>
 
@@ -94,7 +92,7 @@ class Modal_MoreInfo extends React.Component {
                           <div className="column">
                             <div className="columns">
                               <div className="column noMargin_noPadding_inlineBlock" style={{ width: '65%' }}>
-                                <strong>Proj Mgr: {this.props.activity_obj.project_manager_firstName} {this.props.activity_obj.project_manager_lastName}&nbsp;</strong>
+                              <strong><span style={{ textDecoration: 'underline' }}>Proj Mgr:</span> {this.props.activity_obj.project_manager_firstName} {this.props.activity_obj.project_manager_lastName}&nbsp;</strong>
                                 <br />
                                 <small>email: {this.props.activity_obj.project_manager_email}&nbsp;</small>
                                 <br />
@@ -106,8 +104,10 @@ class Modal_MoreInfo extends React.Component {
                               </div>
                             </div>
                           </div>
+                          <br/>
                         <div className="column noMargin_noPadding_inlineBlock">
-                          <strong>Project Address:</strong> 
+                          <strong style={{ textDecoration: 'underline'}}>Project Address:</strong> 
+                          <br /> <strong>{this.props.activity_obj.location_name}</strong>
                           <br /> {this.props.activity_obj.location_address}
                           <br /> {this.props.activity_obj.location_city} {this.props.activity_obj.location_state} {this.props.activity_obj.location_zip}
                         </div>
@@ -115,9 +115,15 @@ class Modal_MoreInfo extends React.Component {
                       </div>
 
                       <div className="margin_top_bottom">
-                        <ComposedMapWrapper // this is ./modals/Map_Modal_MoreInfo.js
+                        {/* <ComposedMapWrapper // this is ./modals/Map_Modal_MoreInfo.js
                               timesheetData={this.props.activity_obj}
                               center={{ lat: 37.685246, lng: -122.40277 }}
+                              zoom={15}
+                            /> */}
+
+                            <ComposedMapWrapper // this is ./modals/Map_Modal_MoreInfo.js
+                              timesheetData={this.props.activity_obj}
+                              center={{ lat: this.props.activity_obj.location_latitude, lng: this.props.activity_obj.location_longitude }}
                               zoom={15}
                             />
                       </div>

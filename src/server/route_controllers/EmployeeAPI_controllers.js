@@ -209,7 +209,7 @@ const get_PendingTasks_by_EmployeeID = (req, res) => {
               // console.log('locationbyProjectID', locationbyProjectID)
               // console.log('projectMgrByProjectID', projectMgrByProjectID)
               // console.log('ActivityType_by_activity_code_id', ActivityType_by_activity_code_id)
-              console.log('projectByProjectID', projectByProjectID)
+              // console.log('projectByProjectID', projectByProjectID)
               return { locationbyProjectID, projectMgrByProjectID, projectByProjectID, ActivityType_by_activity_code_id }
             })
           })
@@ -225,6 +225,8 @@ const get_PendingTasks_by_EmployeeID = (req, res) => {
                   location_state: currElement.locationbyProjectID[0].location_state,
                   location_zip: currElement.locationbyProjectID[0].location_zip,
                   location_type: currElement.locationbyProjectID[0].location_type,
+                  location_latitude: currElement.locationbyProjectID[0].location_latitude,
+                  location_longitude: currElement.locationbyProjectID[0].location_longitude,
                   // from project mgr (employee) object
                   project_manager_firstName: currElement.projectMgrByProjectID[0].project_manager_firstName,
                   project_manager_lastName: currElement.projectMgrByProjectID[0].project_manager_lastName,

@@ -405,7 +405,9 @@ const getLocation_by_project_id = (project_id) => {
 							'locations.location_city',
 							'locations.location_state',
 							'locations.location_zip',
-							'locations.location_type')
+							'locations.location_type',
+							'locations.location_latitude',
+							'locations.location_longitude')
 			.join('projects',
 						'locations.location_id',
 						'=',
