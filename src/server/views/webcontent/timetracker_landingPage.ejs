@@ -51,14 +51,18 @@
           <a class="nav-link js-scroll-trigger" href="#about">About</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" href="#employee_dashboard">Employee Dashboard</a>
+          <a class="nav-link js-scroll-trigger" href="#design">Design</a>
         </li>
         <li class="nav-item">
           <a class="nav-link js-scroll-trigger" href="#admin_dashboard">Admin Dashboard</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" href="#skills">Technology stack</a>
+          <a class="nav-link js-scroll-trigger" href="#employee_dashboard">Employee Dashboard</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link js-scroll-trigger" href="#tech_stack">Technology stack</a>
+        </li>
+        
         <!-- <li class="nav-item">
           <a class="nav-link js-scroll-trigger" href="#interests">Interests</a>
         </li>
@@ -91,6 +95,9 @@
           <a href="http://github.com/pmeaney/timetracker" target="_blank">
             <i class="fab fa-github"></i>
           </a>
+          <a href="https://pmeaney.com/" target="_blank">
+            <i class="fa fa-home fa-home-icon-adjust"></i>
+          </a>
           <!-- <a href="#">
             <i class="fab fa-twitter"></i>
           </a>
@@ -101,11 +108,153 @@
       </div>
     </section>
   
-    <hr class="m-0">
-  
-    <section class="resume-section p-3 p-lg-5 d-flex justify-content-center" id="employee_dashboard">
+    <hr class="m-0 page-split-style">
+    
+    <section class="resume-section p-3 p-lg-5 d-flex align-items-center" id="design">
       <div class="w-100">
-        <h2 class="mb-5">Employee Dashboard</h2>
+        <h2 class="mb-5">Design</h2>
+        <div class="resume-item d-flex flex-column flex-md-row justify-content-between mb-5">
+          <div class="resume-content ">
+            
+            <h3 class="mb-1">Goals for user interface</h3>
+            <p>My goal was to design the application with minimalism in mind.  
+              <br><br> &bull; The user interface is based on opening and closing of viewports, selected from the "Dashboard" menu button. viewports is hidden within the Dashboard dropdown button.
+              <br><br>&bull; Each viewport is simply a box with a close button in the upper right corner.  The user can open as many viewports as they want in order to create the "dashboard" or set of viewports they want to see.
+              <br><br>&bull; The viewports also help to maintain a sense of visually modularity in the application.  This makes it easy to introduce new viewports, each with their own independent functionality, such as data charts, tabular data, or other data visualizations.
+              <br><br>The main design frameworks used are bulma and bootstrap.
+              <br>
+            </p>
+            <h3 class="mb-1">Purpose and ideas for expansion</h3>
+            <p>
+              The idea behind this project is simply to provide various modules for providing business data, to small businesses.  In this initial version of the project, the administrator can view timesheets on a table and a map,  add new database rows for locations, projects, and employee activities, as well as edit and delete data.  The timesheets time and map are updated in real time whenever an employee clocks in or out.
+              <br><br>An idea for expansion of this project would be to incorporate other business modules alongside this employee tracking system, such as one for property management&mdash; with the system provided here, an administrator can track the work of their maintenance technicians, gardeners, and property managers for example.  With this foundation, additional modules could be added for setting up customer accounts (perhaps even do so with an API for a CRM, or shared DB), and monitoring rental payments, as well as a dashboard for tenants to view and pay their rent, and a scheduling system so that customers can schedule maintenance visits.
+              <br><br>Other future modules might include charts to display worktime logged, expense tracking, or even video/IoT-related modules such as receipt scanning, warehouse monitoring, or equipment scanning.
+            </p>
+            <h3 class="mb-1">Next steps</h3>
+            <p>I will be turning this project into a basic SaaS (multi-tenant monthly subscription app), which will involve a few more steps, including:
+
+              <br><br> &bull; Admin user account layer  &mdash; I'll create an "accounts" table, and use its ID as a prefix on the other tables in the system.  In this way, each account will have its own set of database tables, keeping it separate from other accounts (For example, the "timesheets" table becomes  "2_timesheets" for admin account number 2 ).
+              <br><br> &bull; Brandable-pages &mdash; the account holder will be able to upload their logo and set up a few pages, such as a public facing landing page about the company, a list of jobs available to apply to, and private company pages, such as internal company news and contact information.  From this area, employees will login to their accounts, within the administrator company's account
+              <br><br> &bull; An email verification step for all users &mdash; this will be a simple url query, set up with a hash code and user email address to be queried and matched against the database.
+              <br><br> &bull; A subscription system
+              <br><br> &bull; A flashy promo page
+              <br><br> Once all of that is done, I can add on new business modules.
+          
+            </p>
+          </div>
+          <!-- <div class="resume-date text-md-right">
+            <span class="text-primary">August 2006 - May 2010</span>
+          </div> -->
+        </div>
+    
+        <!-- <div class="resume-item d-flex flex-column flex-md-row justify-content-between">
+          <div class="resume-content">
+            <h3 class="mb-0">James Buchanan High School</h3>
+            <div class="subheading mb-3">Technology Magnet Program</div>
+            <p>GPA: 3.56</p>
+          </div>
+          <div class="resume-date text-md-right">
+            <span class="text-primary">August 2002 - May 2006</span>
+          </div>
+        </div> -->
+    
+      </div>
+    </section>
+
+    <hr class="m-0 page-split-style">
+  
+     <section class="resume-section p-3 p-lg-5 d-flex align-items-center" id="admin_dashboard">
+      <div class="w-100">
+        <h2 class="mb-3">Admin Dashboard</h2>
+  
+        <h3 class="mb-0">Section: Timesheet Tracker</h3>
+        <div class="resume-item d-flex flex-column flex-md-row justify-content-between mb-5">
+          <div class="resume-content">
+            
+            <div class="subheading mb-3"></div>
+            <p><img src="./images/stars.png" alt=""></p>
+          </div>
+          <div class="resume-date text-md-right" style="margin: auto 0; padding: 2rem 3rem 0 2rem;">
+            <ul>
+              <li class="text-primary">Real-time display of new clockin/clock out events</li><br>
+              <li class="text-primary">Table and map view (clicking on table displays marker)</li><br>
+              <li class="text-primary">Timerange search, with default value set to the past two weeks</li><br>
+              <li class="text-primary">UI Slider allows user to adjust viewport width of table or map shown</li><br>
+            </ul>
+          </div>
+        </div>
+
+        <h3 class="mb-0">Section: Data creation via forms</h3>
+        <div class="resume-item d-flex flex-column flex-md-row justify-content-between mb-5">
+          <div class="resume-date text-md-left" style="margin: auto 0; padding: 2rem 3rem 0 2rem;">
+            <ul>
+              <li class="text-primary">Allows user to create new data in selected table</li><br>
+              <li class="text-primary">Autopopulated dropdown selector shows tables for which new data can be created</li><br>
+              <li class="text-primary">Various autopopulated UI elements within forms, such as tables or dropdown seelctors</li><br>
+              <li class="text-primary">On creation of new activity, the assigned employee receives the activity in their task list in real-time</li><br>
+
+            </ul>
+          </div>
+          <div class="resume-content">
+            <div class="subheading mb-3"></div>
+            <p><img src="./images/stars.png" alt=""></p>
+          </div>
+        </div>
+
+        <h3 class="mb-0">Section: Data administration&mdash; editing and deleting data</h3>
+        <div class="resume-item d-flex flex-column flex-md-row justify-content-between mb-5">
+          <div class="resume-content">
+            <div class="subheading mb-3"></div>
+            <p><img src="./images/stars.png" alt=""></p>
+          </div>
+          <div class="resume-date text-md-right" style="margin: auto 0; padding: 2rem 3rem 0 2rem;">
+            <ul>
+              <li class="text-primary">User double clicks to edit data</li><br>
+              <li class="text-primary">Simply select row and click 'delete' to remove data</li><br>
+              <li class="text-primary">Easy download of csv file for any table, such as timesheets</li><br>
+            </ul>
+          </div>
+        </div>
+
+        <h3 class="mb-0">Section: View submitted resume documents and job applicant data</h3>
+        <div class="resume-item d-flex flex-column flex-md-row justify-content-between mb-5">
+          <div class="resume-date text-md-left" style="margin: auto 0; padding: 2rem 3rem 0 2rem;">
+            <ul>
+              <li class="text-primary">Simple table display of job applicants and resume allows user to view resume in browser or download</li><br>
+            </ul>
+          </div>
+          <div class="resume-content">
+            <div class="subheading mb-3"></div>
+            <p><img src="./images/stars.png" alt=""></p>
+          </div>
+        </div>
+  
+      </div>
+    </section>
+  
+    <hr class="m-0 page-split-style">
+  
+   
+   <section class="resume-section p-3 p-lg-5 d-flex justify-content-center" id="employee_dashboard">
+      <div class="w-100">
+        <h2 class="mb-3">Employee Dashboard</h2>
+
+        <h3 class="mb-0">Section: Authentication</h3>
+        <div class="resume-item d-flex flex-column flex-md-row justify-content-between mb-5">
+          <div class="resume-date text-md-left" style="margin: auto 0; padding: 2rem 3rem 0 2rem;">
+            <ul>
+              <li class="text-primary">Registration / Login / Logout system</li><br>
+              <li class="text-primary">Passwords salted & hashed with bcrypt</li><br>
+              <li class="text-primary">User type & password comparison check on login</li><br>
+            </ul>
+          </div>
+          <div class="resume-content">
+            <div class="subheading mb-3"></div>
+            <p><img src="./images/stars.png" alt=""></p>
+          </div>
+        </div>
+
+        
         
         <h3 class="mb-0">Section: Task list</h3>
         <div class="resume-item d-flex flex-column flex-md-row justify-content-between mb-5">
@@ -116,20 +265,21 @@
           </div>
           <div class="resume-date text-md-right" style="margin: auto 0; padding: 2rem 3rem 0 2rem;">
             <ul>
-              <li class="text-primary">Visual timeline of upcoming tasks</li><br>
-              <li class="text-primary">Clocking in & out</li><br>
+              <li class="text-primary">Visual timeline of upcoming tasks updated in real time</li><br>
+              <li class="text-primary">Clocking in & out, with real-time display in Admin timesheet table & map</li><br>
               <li class="text-primary">Project information including map of location</li><br>
+              <li class="text-primary">Ability to create task for self</li><br>
             </ul>
           </div>
         </div>
 
-        <h3 class="mb-0">Section: Profile</h3>
+        <h3 class="mb-0">Section: User/Employee Profile</h3>
         <div class="resume-item d-flex flex-column flex-md-row justify-content-between mb-5">
           <div class="resume-date text-md-left" style="margin: auto 0; padding: 2rem 3rem 0 2rem;">
             <ul>
               <li class="text-primary">Autocompletion of address via google maps API</li><br>
               <li class="text-primary">Photo upload, with preview</li><br>
-              <li class="text-primary">Document upload, with format check validation</li><br>
+              <li class="text-primary">Resume/document upload, with format check validation</li><br>
             </ul>
           </div>
           <div class="resume-content">
@@ -141,86 +291,121 @@
       </div>
   
     </section>
+    
+    <hr class="m-0 page-split-style">
   
-    <hr class="m-0">
-  
-    <section class="resume-section p-3 p-lg-5 d-flex align-items-center" id="admin_dashboard">
+    <section class="resume-section p-3 p-lg-5 d-flex align-items-center" id="tech_stack">
       <div class="w-100">
-        <h2 class="mb-5">Admin Dashboard</h2>
-  
-        <div class="resume-item d-flex flex-column flex-md-row justify-content-between mb-5">
-          <div class="resume-content">
-            <h3 class="mb-0">University of Colorado Boulder</h3>
-            <div class="subheading mb-3">Bachelor of Science</div>
-            <div>Computer Science - Web Development Track</div>
-            <p>GPA: 3.23</p>
-          </div>
-          <div class="resume-date text-md-right">
-            <span class="text-primary">August 2006 - May 2010</span>
-          </div>
-        </div>
-  
-        <div class="resume-item d-flex flex-column flex-md-row justify-content-between">
-          <div class="resume-content">
-            <h3 class="mb-0">James Buchanan High School</h3>
-            <div class="subheading mb-3">Technology Magnet Program</div>
-            <p>GPA: 3.56</p>
-          </div>
-          <div class="resume-date text-md-right">
-            <span class="text-primary">August 2002 - May 2006</span>
-          </div>
-        </div>
-  
-      </div>
-    </section>
-  
-    <hr class="m-0">
-  
-    <section class="resume-section p-3 p-lg-5 d-flex align-items-center" id="skills">
-      <div class="w-100">
-        <h2 class="mb-5">Technology stack</h2>
+        <h2 class="mb-3">Technology stack</h2>
   
         <div class="subheading mb-3">Programming Languages &amp; Tools</div>
         <ul class="list-inline dev-icons">
           <li class="list-inline-item">
-            <i class="fab fa-html5"></i>
+            <span class="icon-header">linux</span>
+            <img class="icon-image" src="/bootstrap4-resumeTemplateStartBootstrap/icons_I_added/linux.svg"/>
           </li>
           <li class="list-inline-item">
-            <i class="fab fa-css3-alt"></i>
+            <div>
+            <span class="icon-header">PostgreSQL</span>
+            <img class="icon-image" src="/bootstrap4-resumeTemplateStartBootstrap/icons_I_added/postgresql.svg"/>
+            </div>
           </li>
           <li class="list-inline-item">
-            <i class="fab fa-js-square"></i>
+            <div>
+            <span class="icon-header">nginx</span>
+            <img class="icon-image" src="/bootstrap4-resumeTemplateStartBootstrap/icons_I_added/nginx.svg"/>
+            </div>
+          </li>
+          <br>
+          <li class="list-inline-item">
+            <div>
+            <span class="icon-header">Javascript</span>
+            <i class="icon-fa fab fa-js-square" style=""></i>
+            </div>
           </li>
           <li class="list-inline-item">
-            <i class="fab fa-angular"></i>
+            <div>
+            <span class="icon-header">ReactJS</span>
+            <i class="icon-fa fab fa-react" style=""></i>
+            </div>
           </li>
           <li class="list-inline-item">
-            <i class="fab fa-react"></i>
+            <div>
+            <span class="icon-header">NodeJS</span>
+            <i class="icon-fa fab fa-node-js" style=""></i>
+            </div>
           </li>
           <li class="list-inline-item">
-            <i class="fab fa-node-js"></i>
+            <div>
+            <span class="icon-header">npm</span>
+            <i class="icon-fa fab fa-npm" style=""></i>
+            </div>
           </li>
           <li class="list-inline-item">
-            <i class="fab fa-sass"></i>
+            <div>
+            <span class="icon-header">babel</span>
+            <img class="icon-image" src="/bootstrap4-resumeTemplateStartBootstrap/icons_I_added/babel.svg"/>
+            </div>
           </li>
           <li class="list-inline-item">
-            <i class="fab fa-less"></i>
+            <div>
+            <span class="icon-header">webpack</span>
+            <img class="icon-image" src="/bootstrap4-resumeTemplateStartBootstrap/icons_I_added/webpack.svg"/>
+            </div>
+          </li>
+          <br>
+          <li class="list-inline-item">
+            <div>
+            <span class="icon-header">html</span>
+              <i class="icon-fa fab fa-html5" style=""></i>
+            </div>
           </li>
           <li class="list-inline-item">
-            <i class="fab fa-wordpress"></i>
+            <div>
+            <span class="icon-header">CSS</span>
+            <i class="icon-fa fab fa-css3-alt" style=""></i>
+            </div>
           </li>
           <li class="list-inline-item">
-            <i class="fab fa-gulp"></i>
+            <div>
+            <span class="icon-header">Sass</span>
+            <i class="icon-fa fab fa-sass" style=""></i>
+            </div>
           </li>
           <li class="list-inline-item">
-            <i class="fab fa-grunt"></i>
+            <div>
+            <span class="icon-header">bulma</span>
+            <img class="icon-image" src="/bootstrap4-resumeTemplateStartBootstrap/icons_I_added/bulma.svg"/>
+            </div>
           </li>
           <li class="list-inline-item">
-            <i class="fab fa-npm"></i>
+            <div>
+            <span class="icon-header">bootstrap</span>
+            <img class="icon-image" src="/bootstrap4-resumeTemplateStartBootstrap/icons_I_added/bootstrap.svg"/>
+            </div>
+          </li>
+          <br>
+          <li class="list-inline-item">
+            <div>
+            <span class="icon-header">VS Code</span>
+            <img class="icon-image" src="/bootstrap4-resumeTemplateStartBootstrap/icons_I_added/vscode.svg"/>
+            </div>
+          </li>
+          <li class="list-inline-item">
+            <div>
+            <span class="icon-header">github</span>
+            <img class="icon-image" src="/bootstrap4-resumeTemplateStartBootstrap/icons_I_added/github.svg"/>
+            </div>
+          </li>
+          <li class="list-inline-item">
+            <div>
+            <span class="icon-header">git</span>
+            <img class="icon-image" src="/bootstrap4-resumeTemplateStartBootstrap/icons_I_added/git.svg"/>
+            </div>
           </li>
         </ul>
   
-        <div class="subheading mb-3">Workflow</div>
+        <!-- <div class="subheading mb-3">Workflow</div>
         <ul class="fa-ul mb-0">
           <li>
             <i class="fa-li fa fa-check"></i>
@@ -235,8 +420,10 @@
             <i class="fa-li fa fa-check"></i>
             Agile Development &amp; Scrum</li>
         </ul>
-      </div>
+      </div> -->
     </section>
+
+
   </div>
   
   <!-- Bootstrap core JavaScript -->

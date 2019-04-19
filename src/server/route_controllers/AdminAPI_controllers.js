@@ -266,6 +266,7 @@ const post_createTableRow = (req, res) => {
   console.log('/createRow/:tableName -- request received for table name: ', req.params.tableName)
   // note on regex character escape:  \W is the equivalent of [^0-9a-zA-Z_] -- so, we keep only those characters and discard anything else such as strange characters
   const escaped_tableName = req.params.tableName.replace(/\W/g, '')
+  // TODO: This needs frontend validation in the Admin form (check employee version too).
 
   /* Currently, admin user can add new rows to four tables:
   activities, activity_codes, projects, locations.
@@ -312,7 +313,7 @@ const post_createTableRow = (req, res) => {
 
   if (escaped_tableName === 'activity_codes') {
     console.log('Request for "activity_codes" table update received-- req.body', req.body)
-
+    // TODO: This needs frontend validation in the form.
     return Promise.try(() => {
       return Api_fns.post_createRow_ActivityCodes(req.body)
     }).then((results) => {
@@ -322,7 +323,7 @@ const post_createTableRow = (req, res) => {
 
   if (escaped_tableName === 'projects') {
     console.log('Request for "projects" table update received-- req.body', req.body)
-
+    // TODO: This needs frontend validation in the form.
     return Promise.try(() => {
       return Api_fns.post_createRow_Projects(req.body)
     }).then((results) => {
@@ -333,6 +334,7 @@ const post_createTableRow = (req, res) => {
   if (escaped_tableName === 'locations') {
     console.log('Request for "locations" table update received-- req.body', req.body)
 
+    // TODO: This needs frontend validation in the form.
     // Here, we need to do a gps lookup.  Add the coordinates into this DB insert function below (post_createRow_Locations)
     // info: https://developers.google.com/maps/documentation/geocoding/start?csw=1
     // example: https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=YOUR_API_KEY
@@ -367,6 +369,32 @@ const post_createTableRow = (req, res) => {
         // console.log('results lng: ', results.data.geometry.location.lng)
         const location_latitude = response.data.results[0].geometry.location.lat
         const location_longitude = response.data.results[0].geometry.location.lng
+        // const loc_lat = location_latitude.toString().substr(0,10)
+        // const loc_lng = location_longitude.toString().substr(0, 10)
+        console.log('location_latitude', location_latitude)
+        console.log('location_longitude', location_longitude)
+
+        var loc_lat = location_latitude.toString()
+        var loc_lng = location_longitude.toString()
+
+        var loc_lat_trimmed = loc_lat.substr(0, 9)
+        var loc_lng_trimmed = loc_lng.substr(0, 9)
+
+        // If negative coordinate, override by taking an extra character, so that we get 9 digits.
+         if (loc_lat.charAt(0) === '-') {
+          console.log('begins with negative: ', loc_lat)
+          loc_lat_trimmed = loc_lat.substr(0, 10)
+           console.log('loc_lat_trimmed @ 10', loc_lat_trimmed, loc_lat_trimmed.length)
+        }
+        if (loc_lng.charAt(0) === '-') {
+          console.log('begins with negative: ', loc_lng)
+          loc_lng_trimmed = loc_lng.substr(0, 10)
+          console.log('loc_lng_trimmed @ 10', loc_lat_trimmed, loc_lat_trimmed.length)
+        }
+
+        console.log('loc_lat_trimmed', loc_lat_trimmed, loc_lat_trimmed.length)
+        console.log('loc_lng_trimmed', loc_lng_trimmed, loc_lng_trimmed.length)
+
         return { location_latitude, location_longitude }
       })
       .then((objectReturned) => {

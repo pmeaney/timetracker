@@ -10,7 +10,14 @@ const TableOfHiringInfo = (props) => {
   let content_rows = []
   props.dataForTable.map((currElement, index) => {
 
+    // console.log('currElement.user_profile_resumeFilename.substr(0, 21)', currElement.user_profile_resumeFilename.substr(0, 21))
+
     var resumeURL = 'http://localhost:3000/resume-storage/Resume_user_id__' + currElement.user_id + '.pdf'
+    // if not-yet-completed.pdf (the default resume filename, before it's completed) is the resume filename,
+    // then overwrite the resumeURL variable to show it, rather than the resume per user_id
+    if (currElement.user_profile_resumeFilename.substr(0, 21) === 'not-yet-completed.pdf') { // 'not-yet-completed.pdf'.length === 21
+      resumeURL = 'http://localhost:3000/resume-storage/not-yet-completed.pdf'
+    }
 
     content_rows.push(
       <tr key={currElement.user_id}>

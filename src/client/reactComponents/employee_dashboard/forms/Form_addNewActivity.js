@@ -41,7 +41,7 @@ const initialErrorData = {
 }
 
 const initialState = {
-  recentActivities: initialData,
+  projectsEmployeeIsAssignedTo: initialData,
   selectedRow: null,
   newActivityNotes: '',
   dropdownSelected_ActivityType: null,
@@ -82,7 +82,7 @@ class FormAddNewActivity extends Component {
       .then((response) => {
         console.log('data response is', response)
 
-        var recentActivitiesData = response.data.map((currElement) => {
+        var httpreceived_projectsEmployeeIsAssignedTo = response.data.map((currElement) => {
           var location = currElement.location_address + " " + currElement.location_city + ", " + currElement.location_state
           var project_manager_fullName = currElement.project_manager_firstName + " " + currElement.project_manager_lastName
 
@@ -94,10 +94,10 @@ class FormAddNewActivity extends Component {
 
         })
 
-        console.log('recentActivitiesData', recentActivitiesData)
+        console.log('httpreceived_projectsEmployeeIsAssignedTo', httpreceived_projectsEmployeeIsAssignedTo)
 
         this.setState({
-          recentActivities: recentActivitiesData
+          projectsEmployeeIsAssignedTo: httpreceived_projectsEmployeeIsAssignedTo
         })
       })
 
@@ -294,7 +294,7 @@ class FormAddNewActivity extends Component {
     };
 
     const { 
-      recentActivities,
+      projectsEmployeeIsAssignedTo,
       newActivityNotes,
       selectedRow,
       selectedDay_date,
@@ -393,11 +393,11 @@ class FormAddNewActivity extends Component {
             </div>
 
             <div className="box overflowXYScroll">
-              <p>Select the project to work on:</p>
+              <p>Below are projects you have recently worked on.  Select the project you'll be working on for this activity:</p>
               {!selectedRow && formSubmit_attempt &&
                 <span className="myCustomError">{errors["selectedRow"]}</span>
               }
-              <BootstrapTable data={recentActivities} selectRow={selectRowProp}>
+              <BootstrapTable data={projectsEmployeeIsAssignedTo} selectRow={selectRowProp}>
                 <TableHeaderColumn dataField='project_id' isKey={true}>PID</TableHeaderColumn>
                 <TableHeaderColumn dataField='location_name'>Location name</TableHeaderColumn>
                 <TableHeaderColumn dataField='fullLocation'>Location address</TableHeaderColumn>
