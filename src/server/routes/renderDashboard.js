@@ -8,6 +8,8 @@ const FileUpload_ctrl = require('../route_controllers/FileUpload_controllers')
 // are routed to different dashboards 
 router.get('/user/:user_id', RenderDashboard_ctrl.get_userDashboard_byUserID )
 
+router.get('/employee_dash', RenderDashboard_ctrl.get_demonstrationDashboard )
+
 router.get('/admin_dash', RenderDashboard_ctrl.get_adminDashboard)
 
 

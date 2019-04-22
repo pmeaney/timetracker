@@ -4,7 +4,7 @@
 #### Description
 A fullstack javscript app (expressjs/reactjs) for tracking timesheets for hourly employees.
 
-[View description page](https://www.pmeaney.com/timetracker)
+[View project description & demo](https://www.pmeaney.com/timetracker)
 
 #### Basic install workflow
 To set this up locally for yourself would require a few steps:

@@ -1,6 +1,21 @@
 // const dotenv = require("dotenv").config({ path: '../.env' });
 
-const get_adminDashboard = function (req, res) {
+const get_demonstrationDashboard = (req, res) => {
+  req.session.mock_employee_id = 2
+  req.session.user_type = 'employee'
+  req.session.is_authorized = true
+
+  res.render('pages/employeeDashboard', {
+      // data: { user_id: req.session.user_id, user_type: req.session.user_type, user_email: req.session.user_email },
+      errors: {},
+      env: process.env.NODE_ENV,
+      gmaps_api_key: process.env.GMAPS_API.toString(),
+      csrfToken: req.csrfToken(),
+      user_type: req.session.user_type
+  })
+}
+
+const get_adminDashboard = (req, res) => {
   res.render('pages/adminDashboard', {
     errors: {},
     csrfToken: req.csrfToken(),
@@ -9,7 +24,7 @@ const get_adminDashboard = function (req, res) {
   }) 
 }
 
-const get_userDashboard_byUserID = function (req, res) {
+const get_userDashboard_byUserID = (req, res) =>  {
 
   // if there's no user session
   // if (!req.session.user_id) {
@@ -76,6 +91,7 @@ const get_userDashboard_byUserID = function (req, res) {
 }
 
 module.exports = {
+  get_demonstrationDashboard,
   get_userDashboard_byUserID,
   get_adminDashboard
 }
