@@ -40,12 +40,10 @@ const EmployeeEventStream = (req, res) => {
   });
 
   EmployeeAPI_EventsEmitter.on('message', data => {
-    console.log('[Emitting event: new activity -- employeeSelfAssignedActivity ] - Final data received.  An employee just assigned themselves an activity. Sending it into the data stream where the client will find it.')
-
-    console.log('[Emitting event: new activity -- employeeSelfAssignedActivity ] - Final data received--> data to write to stream is ', data)
+    console.log('[Emitting event: EmployeeEventStream] - Final data received--> data to write to stream is ', data)
     
     if (data.title === 'newActivity') {
-      console.log('writing newActivity -- employeeSelfAssignedActivity data to stream now')
+      console.log('newActivity writing newActivity data to stream now')
       // The string-type data to send to admin eventstream:
       res.write(`event: message\n`);
       res.write(`data: ${JSON.stringify(data)}\n\n`);
@@ -194,61 +192,21 @@ const get_PendingTasks_by_EmployeeID = (req, res) => {
           return array_task_list
         })
         .then((array_task_list) => {
+
+            return Promise.try(() => {
+               return Api_fns.LookupInfo_Location_Project_ActivityType(array_task_list)
+            }).then((result) => {
+
+            res.status(200).json(result);
+
+            /* //*: This is to repopulate the test user's timesheet/activity queue. */
+            // the numeric value is the new interval, which gets set if the check runs as false
+            Api_fns.checkIfNeedToRepopulateTaskQueue(employee_id_asInt)
+
           // console.log('get_PendingTasks_by_EmployeeID -- array_task_list', array_task_list)
-          return Promise.map(array_task_list, (task) => {
-            return Promise.all([
-              // -> These first three functions could be combined into one DB join.
-              // -> However, currently, within Api_fns, one or two of them are being used individually by other functions.
-              // -> So for now, I am keeping them separate.  
-              Api_fns.getLocation_by_project_id(task.project_id),
-              Api_fns.getProjectMgr_by_project_id(task.project_id),
-              Api_fns.getProject_by_project_id(task.project_id),
-              Api_fns.getActivityType_by_activity_code_id(task.activity_code_id)
-            ]).spread((locationbyProjectID, projectMgrByProjectID, projectByProjectID, ActivityType_by_activity_code_id) => {
-
-              // console.log('locationbyProjectID', locationbyProjectID)
-              // console.log('projectMgrByProjectID', projectMgrByProjectID)
-              // console.log('ActivityType_by_activity_code_id', ActivityType_by_activity_code_id)
-              // console.log('projectByProjectID', projectByProjectID)
-              return { locationbyProjectID, projectMgrByProjectID, projectByProjectID, ActivityType_by_activity_code_id }
-            })
-          })
-            .then((resultData) => {
-              // console.log('get_PendingTasks_by_EmployeeID -- resultData', resultData)
-              const combined_Project_Location_Data = resultData.map((currElement, index) => {  // activity set one
-                return {
-                  
-                  // from location object
-                  location_name: currElement.locationbyProjectID[0].location_name,
-                  location_address: currElement.locationbyProjectID[0].location_address,
-                  location_city: currElement.locationbyProjectID[0].location_city,
-                  location_state: currElement.locationbyProjectID[0].location_state,
-                  location_zip: currElement.locationbyProjectID[0].location_zip,
-                  location_type: currElement.locationbyProjectID[0].location_type,
-                  location_latitude: currElement.locationbyProjectID[0].location_latitude,
-                  location_longitude: currElement.locationbyProjectID[0].location_longitude,
-                  // from project mgr (employee) object
-                  project_manager_firstName: currElement.projectMgrByProjectID[0].project_manager_firstName,
-                  project_manager_lastName: currElement.projectMgrByProjectID[0].project_manager_lastName,
-                  project_manager_phone: currElement.projectMgrByProjectID[0].project_manager_phone,
-                  project_manager_email: currElement.projectMgrByProjectID[0].project_manager_email,
-                  project_manager_profile_photo: currElement.projectMgrByProjectID[0].project_manager_profile_photo,
-                  // from project object (project)
-                  project_description: currElement.projectByProjectID[0].project_description,
-                  // from activity type object
-                  activity_type: currElement.ActivityType_by_activity_code_id[0].activity_type
-                }
-              })
-
-              const merged_Task_Project_Location_data = merge(array_task_list, combined_Project_Location_Data)
               // return merged_Task_Project_Location_data
-              res.status(200).json(merged_Task_Project_Location_data);
-
-              /* //*: This is to repopulate the test user's timesheet/activity queue. */
-              // the numeric value is the new interval, which gets set if the check runs as false
-              Api_fns.checkIfNeedToRepopulateTaskQueue(employee_id_asInt)
-            })
-        })
+          })
+      })
     })
 
 
@@ -383,7 +341,7 @@ const post_createSelfAssignedTask = (req, res) => {
   const newActivity_notes_escaped_fix2 = newActivity_notes_escaped_fix1.replace(/%2C/g, ",") // fix commas
   const newActivity_notes_escaped_fix3 = newActivity_notes_escaped_fix2.replace(/%23/g, "#") // fix pound sign
   const newActivity_notes_escaped_fix4 = newActivity_notes_escaped_fix3.replace(/%24/g, "$") // fix dollar sign
-  const newActivity_notes_escaped = newActivity_notes_escaped_fix4.replace(/%2E/g, ".") // fix period
+  const newActivity_notes = newActivity_notes_escaped_fix4.replace(/%2E/g, ".") // fix period
 
 
   const newActivity_project_id = req.body.newActivity_project_id
@@ -394,7 +352,7 @@ const post_createSelfAssignedTask = (req, res) => {
   const newActivity_emp_assigned_to = employee_id_asInt
   
   const newActivity_objectToPost = {
-    newActivity_notes_escaped,
+    newActivity_notes,
     newActivity_project_id,
     newActivity_type,
     newActivity_begin,

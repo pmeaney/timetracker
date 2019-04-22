@@ -135,7 +135,14 @@ const get_DataForTable = (req, res) => {
 
       var SortedAndFormattedData = General_fns.SortData_ByPrimaryKey_And_Format_DateTimes(dataResponse, DateTimes_need_converting_toBeReadable)
 
-    res.status(200).json(SortedAndFormattedData)
+      SortedAndFormattedData.forEach((object) => {
+        // remove isDeleted property because:  re: {isDeleted: false}
+        // 1. they should all be false anyway at this point (already retrieved data)
+        // 2. we dont need to display this in the data table.  if they're deleted they simple won't appear
+        delete object['isDeleted']
+      })
+
+      res.status(200).json(SortedAndFormattedData)
     })
   }
 }
@@ -262,6 +269,8 @@ const get_User_applicantData = (req, res) => {
   })
 }
 
+
+// => router.post('/createRow/:tableName', AdminAPI_ctrl.post_createTableRow)
 const post_createTableRow = (req, res) => { 
   console.log('/createRow/:tableName -- request received for table name: ', req.params.tableName)
   // note on regex character escape:  \W is the equivalent of [^0-9a-zA-Z_] -- so, we keep only those characters and discard anything else such as strange characters
@@ -296,8 +305,8 @@ const post_createTableRow = (req, res) => {
         newActivity_notes: req.body.newActivity_notes,
         newActivity_type: req.body.newActivity_type,
         newActivity_project_id: req.body.newActivity_project_id,
-        newActivity_begin_dateTime: req.body.newActivity_begin_dateTime,
-        newActivity_end_dateTime: req.body.newActivity_end_dateTime,
+        newActivity_begin: req.body.newActivity_begin_dateTime,
+        newActivity_end: req.body.newActivity_end_dateTime,
       }
 
       return Promise.try(() => {
@@ -306,8 +315,19 @@ const post_createTableRow = (req, res) => {
       .then((results) => {
         console.log('post_createTableRow -- results', results)
         // res.status(200).json(results)
-      })
 
+        return Promise.try(() => {
+               return Api_fns.LookupInfo_Location_Project_ActivityType(results)
+        }).then((result) => {
+
+          console.log('result to emit', result)
+          EmployeeAPI_EventsEmitter.emit('message', {
+            title: 'newActivity',
+            newActivity_type: 'adminAssignedActivity',
+            newActivity: result[0]
+          })
+        })
+      })
     })
   }
 
@@ -367,33 +387,33 @@ const post_createTableRow = (req, res) => {
         // console.log('response response.data.geometry ', response.data.results[0].geometry.location.lat)
         // console.log('response response.data.geometry ', response.data.results[0].geometry.location.lng)
         // console.log('results lng: ', results.data.geometry.location.lng)
-        const location_latitude = response.data.results[0].geometry.location.lat
-        const location_longitude = response.data.results[0].geometry.location.lng
+        const raw_location_latitude = response.data.results[0].geometry.location.lat
+        const raw_location_longitude = response.data.results[0].geometry.location.lng
         // const loc_lat = location_latitude.toString().substr(0,10)
         // const loc_lng = location_longitude.toString().substr(0, 10)
         console.log('location_latitude', location_latitude)
         console.log('location_longitude', location_longitude)
 
-        var loc_lat = location_latitude.toString()
-        var loc_lng = location_longitude.toString()
+        var loc_lat = raw_location_latitude.toString()
+        var loc_lng = raw_location_longitude.toString()
 
-        var loc_lat_trimmed = loc_lat.substr(0, 9)
-        var loc_lng_trimmed = loc_lng.substr(0, 9)
+        var location_latitude = loc_lat.substr(0, 9)
+        var location_longitude = loc_lng.substr(0, 9)
 
         // If negative coordinate, override by taking an extra character, so that we get 9 digits.
          if (loc_lat.charAt(0) === '-') {
           console.log('begins with negative: ', loc_lat)
-          loc_lat_trimmed = loc_lat.substr(0, 10)
-           console.log('loc_lat_trimmed @ 10', loc_lat_trimmed, loc_lat_trimmed.length)
+          location_latitude = loc_lat.substr(0, 10)
+           console.log('location_latitude @ 10', location_latitude, location_latitude.length)
         }
         if (loc_lng.charAt(0) === '-') {
           console.log('begins with negative: ', loc_lng)
-          loc_lng_trimmed = loc_lng.substr(0, 10)
-          console.log('loc_lng_trimmed @ 10', loc_lat_trimmed, loc_lat_trimmed.length)
+          location_longitude = loc_lng.substr(0, 10)
+          console.log('location_longitude @ 10', location_latitude, location_latitude.length)
         }
 
-        console.log('loc_lat_trimmed', loc_lat_trimmed, loc_lat_trimmed.length)
-        console.log('loc_lng_trimmed', loc_lng_trimmed, loc_lng_trimmed.length)
+        console.log('location_latitude', location_latitude, location_latitude.length)
+        console.log('location_longitude', location_longitude, location_longitude.length)
 
         return { location_latitude, location_longitude }
       })
@@ -429,6 +449,43 @@ const post_createTableRow = (req, res) => {
 }
 
 
+const put_delete_DataForTable = (req, res) => {
+  // console.log('put_delete_DataForTable req.query', req.query)
+  // { table_name: 'activities', row_id_set: '1,2' } 
+
+  const tableName = req.body.tableName
+  const arrayOfRowsToDelete = req.body.tableRows
+
+  const arrayOfRowsToDelete_numbers = []
+  arrayOfRowsToDelete.map((currElement) => {
+    arrayOfRowsToDelete_numbers.push(parseInt(currElement,10))
+  })
+
+  const db_primaryKey_list = {
+    activities: 'activity_id',
+    timesheets: 'timesheet_id',
+    activity_codes: 'activity_codes_id',
+    projects: 'projects_id',
+    locations: 'locations_id',
+    users: 'users_id',
+    user_profiles: 'user_profiles_id',
+    employees: 'employees_id',
+  }
+
+  const table_primaryKey = db_primaryKey_list[tableName]
+
+  // console.log('arrayOfRowsToDelete_numbers', arrayOfRowsToDelete_numbers)
+
+  console.log('send to db for each row in arrayOfRowsToDelete_numbers: ', tableName, table_primaryKey, arrayOfRowsToDelete_numbers)
+
+  return Promise.try(() => {
+      return Api_fns.put_IsDeletedTRUE_mapThruRows_forPrimaryKey_forTable(tableName, table_primaryKey, arrayOfRowsToDelete_numbers)
+    }).then((results) => {
+      res.status(200).json(results);
+    })
+
+}
+
 module.exports = { 
   AdminEventStream,
   get_Timesheets_All,
@@ -440,5 +497,6 @@ module.exports = {
   put_DataForTable_update,
   get_Projects_WithLocation_and_ProjectMgr,
   get_User_applicantData,
-  post_createTableRow
+  post_createTableRow,
+  put_delete_DataForTable,
 }

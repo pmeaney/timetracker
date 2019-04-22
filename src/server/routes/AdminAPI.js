@@ -30,6 +30,9 @@ router.post('/createRow/:tableName', AdminAPI_ctrl.post_createTableRow)
 
 router.put('/updateDataForTable', AdminAPI_ctrl.put_DataForTable_update)
 
+router.put('/deleteDataForTable', AdminAPI_ctrl.put_delete_DataForTable)
+
+
 
 
 module.exports = router

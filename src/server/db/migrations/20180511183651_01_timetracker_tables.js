@@ -46,6 +46,7 @@ exports.up = function(knex, Promise) {
 			table.text('user_type') // this should be of type ENUM or ENU once i figure out all categories
 			// so, ill be able to access this info within the 'employees' viewport
 			// --> edit user_type for example, or hire/fire/restrict employees
+			table.boolean('isDeleted')
 			table.timestamps(true, true)// this automatically sets 'created at' and 'updated at' timestamps
 		}),
 
@@ -63,6 +64,7 @@ exports.up = function(knex, Promise) {
 			// table.text('user_profile_zipcode')
 			table.text('user_profile_email')
 			table.text('user_profile_phoneNumber')
+			table.boolean('isDeleted')
 			table.timestamps(true, true)// this automatically sets 'created at' and 'updated at' timestamps
 		}),
 
@@ -76,18 +78,21 @@ exports.up = function(knex, Promise) {
 		table.enu('location_type', ['residential', 'commercial']),
 		table.specificType('location_latitude', 'DECIMAL'), //.defaultTo(knex.raw('POINT (37.3875, -122.0575)'))
 		table.specificType('location_longitude', 'DECIMAL'), //.defaultTo(knex.raw('POINT (37.3875, -122.0575)'))
+		table.boolean('isDeleted')
 	  table.timestamps(true, true)// this automatically sets 'created at' and 'updated at' timestamps
 	}),
 
 	knex.schema.createTable('activity_codes', function(table) {
 	  table.increments('activity_code_id').primary()
-	  table.text('activity_type') 
+		table.text('activity_type') 
+		table.boolean('isDeleted')
   	  table.timestamps(true, true)// this automatically sets 'created at' and 'updated at' timestamps
 	}),
 
 	knex.schema.createTable('cost_centers', function(table) {
 	  table.increments('cost_center_id').primary()
-	  table.text('cost_center_name') 
+		table.text('cost_center_name') 
+		table.boolean('isDeleted')
 		table.timestamps(true, true)// this automatically sets 'created at' and 'updated at' timestamps
 	}),
 
@@ -95,6 +100,7 @@ exports.up = function(knex, Promise) {
 		table.increments('employee_id').primary()
 		table.integer('user_id').references('users.user_id')  
 		table.text('employee_type')  // regular_employee, team_manager, or some other type.  This way we can check user for user_type, and employee for employee_type, for more fine grained control of dashboard accessibility
+		table.boolean('isDeleted')
 	  table.timestamps(true, true)// this automatically sets 'created at' and 'updated at' timestamps
 	}),
 
@@ -108,6 +114,7 @@ exports.up = function(knex, Promise) {
 		table.text('employment_change_reason')  // hired, promotion, laid off, fired, sabbatical, etc
 		table.text('employment_change_notes')  // any text 
 		table.integer('employment_pay_rate') 
+		table.boolean('isDeleted')
 		table.timestamps(true, true)// this automatically sets 'created at' and 'updated at' timestamps
 	}),
 
@@ -118,6 +125,7 @@ exports.up = function(knex, Promise) {
 	  table.date('project_date_begin')
 		table.date('project_date_end')
 		table.text('project_description') 
+		table.boolean('isDeleted')
 	  table.timestamps(true, true)// this automatically sets 'created at' and 'updated at' timestamps
 	}),
 
@@ -139,6 +147,7 @@ exports.up = function(knex, Promise) {
 	  table.timestamp('activity_datetime_end')
 
 
+		table.boolean('isDeleted')
 	  table.timestamps(true, true)// this automatically sets 'created at' and 'updated at' timestamps
 	}),
 
@@ -162,6 +171,7 @@ exports.up = function(knex, Promise) {
 	  table.specificType('timesheet_clockout_lat', 'DECIMAL') //.defaultTo(knex.raw('POINT (37.3875, -122.0575)'))
 	  table.specificType('timesheet_clockout_long', 'DECIMAL') //.defaultTo(knex.raw('POINT (37.3875, -122.0575)'))
 
+		table.boolean('isDeleted')
 	  table.timestamps(true, true)// this automatically sets 'created at' and 'updated at' timestamps
 	}),
 

@@ -105,6 +105,7 @@ export default class CustomInsertModalBodyTable extends React.Component {
     // if we don't bind this function, we cannot access state nor props within it.
     this.beforeSaveCellAsync = this.beforeSaveCellAsync.bind(this)
     this.HandleClick_CloseButton_VisibilityToggle_ErrorNotification = this.HandleClick_CloseButton_VisibilityToggle_ErrorNotification.bind(this)
+    this.onAfterDeleteRow = this.onAfterDeleteRow.bind(this)
   }
   
   // createCustomModalBody = (columns, validateState, ignoreEditable) => {
@@ -176,20 +177,46 @@ export default class CustomInsertModalBodyTable extends React.Component {
      })
   }
 
-  render() {
-    // This is the function (onAfterDeleteRow) we would call to run http request to drop the row (we won't delete it, just add a new column in DB for 'isDeleted' and set it to false by default.  Then update to true on delete
-    // Then, on backend, when retrieving DB table, only retrieve those with isDeleted: false)
-    function onAfterDeleteRow(rowKeys) {
-      console.log('The rowkey you drop: ' + rowKeys);
+
+  onAfterDeleteRow(rowKeys) {
+    console.log('The rowkey you drop: ' + rowKeys)
+    console.log('this.props:', this.props)
+
+    var token = document.querySelector("[name=csrf-param][content]").content // token is on meta tag
+
+    const tableName = this.props.value.value
+    const tableRows = rowKeys
+
+    let dataObj_toUpload = {
+      tableName,
+      tableRows
+    }
+    
+    let post_config = {
+      headers: {
+        'CSRF-Token': token,
+      }
     }
 
+    axios
+      .put(
+        '/admin_api/deleteDataForTable', 
+        dataObj_toUpload,
+        post_config
+      ).then((response) => {
+        console.log('delete response: ', response)
+      })
+    }
+
+  render() {
+
     const selectRowProp = {
-      mode: 'radio'
+      mode: 'checkbox'
     };
 
     const options = {
       // insertModalBody: this.createCustomModalBody,
-      afterDeleteRow: onAfterDeleteRow  // A hook for after droping rows.
+      afterDeleteRow: this.onAfterDeleteRow  // A hook for after droping rows.
     };
 
     var wide_row = ['created_at', 'updated_at']

@@ -287,7 +287,8 @@ const post_createNewTimesheet_onClockin = (employee_id_accepted_by, activity_id,
 			timesheet_submitted_datetime: null,
 			timesheet_clockout: null,
 			timesheet_clockout_lat: null,
-			timesheet_clockout_long: null
+			timesheet_clockout_long: null,
+			isDeleted: false
 		})
 	})
 }
@@ -587,6 +588,7 @@ const post_updateOrInsert_UserProfileFormData_byUserID = (dataObject) => {
 						user_profile_address: dataObject.address,
 						user_profile_city: dataObject.city,
 						user_profile_state: dataObject.state,
+						isDeleted: false
 					})
 					.returning(['user_profiles.user_id', 'user_profile_phoneNumber', 'user_profile_email', 'user_profile_address', 'user_profile_city', 'user_profile_state']) // response data to return to user upon insert
 			})
@@ -618,14 +620,14 @@ const populateTestUserData = (testUserID_forRepopulation) => {
 			//  2018-01-01T00:00:00.000Z
 			// NEED TO FIX:  Add in 'activity manager', stop using 'emp_assigned_by' as default for activity mgr
 			database('activities').insert([
-				{ activity_code_id: 1, project_id: 1, emp_assigned_by: 1, emp_assigned_to: testUserID_forRepopulation, activity_notes: 'paint with blue until you run out, then switch to red', activity_datetime_begin: '2018-01-01T16:00:00.000Z', activity_datetime_end: '2018-01-01T21:00:00.000Z' },
-				{ activity_code_id: 3, project_id: 2, emp_assigned_by: 1, emp_assigned_to: testUserID_forRepopulation, activity_notes: 'work on building shelf in store', activity_datetime_begin: '2018-02-01T13:00:00.000Z', activity_datetime_end: '2018-02-01T21:00:00.000Z' },
-				{ activity_code_id: 8, project_id: 2, emp_assigned_by: 1, emp_assigned_to: testUserID_forRepopulation, activity_notes: 'install drywall in champagne conference room', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z' },
-				{ activity_code_id: 8, project_id: 3, emp_assigned_by: 1, emp_assigned_to: testUserID_forRepopulation, activity_notes: 'Testing...', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z' },
+				{ activity_code_id: 1, project_id: 1, emp_assigned_by: 1, emp_assigned_to: testUserID_forRepopulation, activity_notes: 'paint with blue until you run out, then switch to red', activity_datetime_begin: '2018-01-01T16:00:00.000Z', activity_datetime_end: '2018-01-01T21:00:00.000Z', isDeleted: false },
+				{ activity_code_id: 3, project_id: 2, emp_assigned_by: 1, emp_assigned_to: testUserID_forRepopulation, activity_notes: 'work on building shelf in store', activity_datetime_begin: '2018-02-01T13:00:00.000Z', activity_datetime_end: '2018-02-01T21:00:00.000Z', isDeleted: false },
+				{ activity_code_id: 8, project_id: 2, emp_assigned_by: 1, emp_assigned_to: testUserID_forRepopulation, activity_notes: 'install drywall in champagne conference room', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z', isDeleted: false },
+				{ activity_code_id: 8, project_id: 3, emp_assigned_by: 1, emp_assigned_to: testUserID_forRepopulation, activity_notes: 'Testing...', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z', isDeleted: false },
 
-				{ activity_code_id: 8, project_id: 1, emp_assigned_by: 1, emp_assigned_to: testUserID_forRepopulation, activity_notes: 'Testing 2...', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z' },
-				{ activity_code_id: 8, project_id: 2, emp_assigned_by: 1, emp_assigned_to: testUserID_forRepopulation, activity_notes: 'Testing 3...', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z' },
-				{ activity_code_id: 8, project_id: 2, emp_assigned_by: 1, emp_assigned_to: testUserID_forRepopulation, activity_notes: 'Testing 4...', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z' },
+				{ activity_code_id: 8, project_id: 1, emp_assigned_by: 1, emp_assigned_to: testUserID_forRepopulation, activity_notes: 'Testing 2...', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z', isDeleted: false },
+				{ activity_code_id: 8, project_id: 2, emp_assigned_by: 1, emp_assigned_to: testUserID_forRepopulation, activity_notes: 'Testing 3...', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z', isDeleted: false },
+				{ activity_code_id: 8, project_id: 2, emp_assigned_by: 1, emp_assigned_to: testUserID_forRepopulation, activity_notes: 'Testing 4...', activity_datetime_begin: '2018-02-04T13:00:00.000Z', activity_datetime_end: '2018-02-08T21:00:00.000Z', isDeleted: false },
 			])
 		])
 	})
@@ -669,8 +671,19 @@ const checkIfNeedToRepopulateTaskQueue = (employee_id_repopTaskQueue) => {
 
 const get_Admin_dataFor_DataTable = (tableName) => {
 	console.log('tableName received in api fns', tableName)
+
+	/* 
+	Need to add subquery:
+	retrieve table where:
+	deleted: false
+	
+	*/
 	return Promise.try(() => {
 		return database( tableName )
+			.where({ isDeleted: false })
+	}).then((res) => {
+		console.log('results', res)
+		return res
 	})
 }
 
@@ -724,45 +737,45 @@ const update_FileName_ProfilePhoto_byUserID = (new_filename, user_id_passedIn, s
 	}
 } 
 
-const hireUser_toEmployee = (user_id_passedIn) => {
-	/* 
+// const hireUser_toEmployee = (user_id_passedIn) => {
+// 	/* 
 
-	Used to lookup users, and change them to employees
-	NOT to update current employees status/info
+// 	Used to lookup users, and change them to employees
+// 	NOT to update current employees status/info
 
-	1. query employees table for user_id
-	2. query users table with user_id (to update user_type to 'employee')
-	3. query user_profiles table with user_id (to add in a blank profile image -- user_profile_imageFilename)
-	*/
-	return Promise.try(() => {
-		return database('employees')
-			.insert({ user_id: user_id_passedIn, 
-								employee_type: 'regular employee' })
-			.returning(['user_id'])
-	})
-	.then((result) => {
+// 	1. query employees table for user_id
+// 	2. query users table with user_id (to update user_type to 'employee')
+// 	3. query user_profiles table with user_id (to add in a blank profile image -- user_profile_imageFilename)
+// 	*/
+// 	return Promise.try(() => {
+// 		return database('employees')
+// 			.insert({ user_id: user_id_passedIn, 
+// 								employee_type: 'regular employee' })
+// 			.returning(['user_id'])
+// 	})
+// 	.then((result) => {
 
-		// console.log('result', result)
-		console.log('result[0][user_id]', result[0]['user_id'] )
-		return Promise.try(() => {
-			return database('users')
-				.where({ user_id: result[0]['user_id'] })
-				.update({ user_type: 'employee' })
-				.returning(['user_id'])
+// 		// console.log('result', result)
+// 		console.log('result[0][user_id]', result[0]['user_id'] )
+// 		return Promise.try(() => {
+// 			return database('users')
+// 				.where({ user_id: result[0]['user_id'] })
+// 				.update({ user_type: 'employee' })
+// 				.returning(['user_id'])
 			
-		})
-	})
-	.then((result) => {
+// 		})
+// 	})
+// 	.then((result) => {
 
-		console.log('result[0][user_id] ... updating user profile now', result[0]['user_id'])
-		return Promise.try(() => {
-			return database('user_profiles')
-			.where({ user_id: result[0]['user_id'] })
-				.insert({ user_profile_imageFilename: 'profilePhoto_user_id__0.png' }) // setting profile image as a blank photo
-			.returning('user_id', 'user_profile_imageFilename')
-		})
-	})
-}	
+// 		console.log('result[0][user_id] ... updating user profile now', result[0]['user_id'])
+// 		return Promise.try(() => {
+// 			return database('user_profiles')
+// 			.where({ user_id: result[0]['user_id'] })
+// 				.insert({ user_profile_imageFilename: 'profilePhoto_user_id__0.png' }) // setting profile image as a blank photo
+// 			.returning('user_id', 'user_profile_imageFilename')
+// 		})
+// 	})
+// }	
 
 
 const get_retrieve_Projects_WithLocation_and_ProjectMgr = () => {
@@ -824,7 +837,7 @@ const get_retrieve_Projects_WithLocation_and_ProjectMgr = () => {
 
 const post_createRow_Activities = (newActivity_objectToPost) => {
 
-	// console.log('newActivity_objectToPost', newActivity_objectToPost)
+	console.log('newActivity_objectToPost', newActivity_objectToPost)
 	return Promise.try(() => {
 		return database("activities")
 			.returning([
@@ -843,11 +856,13 @@ const post_createRow_Activities = (newActivity_objectToPost) => {
 				emp_assigned_by: newActivity_objectToPost.newActivity_emp_assigned_by,
 				emp_assigned_to: newActivity_objectToPost.newActivity_emp_assigned_to,
 				activity_notes: newActivity_objectToPost.newActivity_notes,
-				activity_datetime_begin: newActivity_objectToPost.newActivity_begin_dateTime,
-				activity_datetime_end: newActivity_objectToPost.newActivity_end_dateTime,
+				activity_datetime_begin: newActivity_objectToPost.newActivity_begin,
+				activity_datetime_end: newActivity_objectToPost.newActivity_end,
+				isDeleted: false
 			})
 	}).then((results) => {
 		console.log('post_createRow_Activities -- New data added:', results)
+		return results
 	})
 }
 
@@ -861,10 +876,12 @@ const post_createRow_ActivityCodes = (objectToPost) => {
 			])
 			.insert({
 				activity_type: objectToPost.activity_type,
+				isDeleted: false
 			})
 	})
 	.then((results) => {
 		console.log('results from post_createRow_ActivityCodes:', results)
+		return results
 	})
 }
 
@@ -882,10 +899,12 @@ const post_createRow_Projects = (objectToPost) => {
 				project_mgr_emp_id: objectToPost.selected_projectMgr_employee_id,
 				project_date_begin: objectToPost.selectedDay_dateBegin,
 				project_date_end: objectToPost.selectedDay_dateEnd,
+				isDeleted: false
 			})
 	})
 		.then((results) => {
 			console.log('results from post_createRow_Projects:', results)
+			return results
 		})
 }
 
@@ -914,10 +933,12 @@ const post_createRow_Locations = (objectToPost) => {
 				location_type: objectToPost.location_type,
 				location_latitude: objectToPost.location_latitude,
 				location_longitude: objectToPost.location_longitude,
+				isDeleted: false
 			})
 	})
 	.then((results) => {
 		console.log('results from post_createRow_Locations:', results)
+		return results
 	})
 }
 
@@ -961,7 +982,78 @@ return Promise.try(() => {
 	})
 }
 
+const LookupInfo_Location_Project_ActivityType = (array_task_list) => {
+
+	console.log('array_task_list', array_task_list)
+	return Promise.map(array_task_list, (task) => {
+		return Promise.all([
+			// -> These first three functions could be combined into one DB join.
+			// -> However, currently, within Api_fns, one or two of them are being used individually by other functions.
+			// -> So for now, I am keeping them separate.  
+			getLocation_by_project_id(task.project_id),
+			getProjectMgr_by_project_id(task.project_id),
+			getProject_by_project_id(task.project_id),
+			getActivityType_by_activity_code_id(task.activity_code_id)
+		]).spread((locationbyProjectID, projectMgrByProjectID, projectByProjectID, ActivityType_by_activity_code_id) => {
+
+			// console.log('locationbyProjectID', locationbyProjectID)
+			// console.log('projectMgrByProjectID', projectMgrByProjectID)
+			// console.log('ActivityType_by_activity_code_id', ActivityType_by_activity_code_id)
+			// console.log('projectByProjectID', projectByProjectID)
+			return { locationbyProjectID, projectMgrByProjectID, projectByProjectID, ActivityType_by_activity_code_id }
+		})
+	})
+		.then((resultData) => {
+			// console.log('get_PendingTasks_by_EmployeeID -- resultData', resultData)
+			const combined_Project_Location_Data = resultData.map((currElement, index) => {  // activity set one
+				return {
+					
+					// from location object
+					location_name: currElement.locationbyProjectID[0].location_name,
+					location_address: currElement.locationbyProjectID[0].location_address,
+					location_city: currElement.locationbyProjectID[0].location_city,
+					location_state: currElement.locationbyProjectID[0].location_state,
+					location_zip: currElement.locationbyProjectID[0].location_zip,
+					location_type: currElement.locationbyProjectID[0].location_type,
+					location_latitude: currElement.locationbyProjectID[0].location_latitude,
+					location_longitude: currElement.locationbyProjectID[0].location_longitude,
+					// from project mgr (employee) object
+					project_manager_firstName: currElement.projectMgrByProjectID[0].project_manager_firstName,
+					project_manager_lastName: currElement.projectMgrByProjectID[0].project_manager_lastName,
+					project_manager_phone: currElement.projectMgrByProjectID[0].project_manager_phone,
+					project_manager_email: currElement.projectMgrByProjectID[0].project_manager_email,
+					project_manager_profile_photo: currElement.projectMgrByProjectID[0].project_manager_profile_photo,
+					// from project object (project)
+					project_description: currElement.projectByProjectID[0].project_description,
+					// from activity type object
+					activity_type: currElement.ActivityType_by_activity_code_id[0].activity_type
+				}
+			})
+
+			const merged_Task_Project_Location_data = merge(array_task_list, combined_Project_Location_Data)
+
+			return merged_Task_Project_Location_data
+		})
+}
+
+const put_IsDeletedTRUE_mapThruRows_forPrimaryKey_forTable = (tableName, primaryKey, arrayOfRowIDs) => {
+	console.log('put_IsDeletedTRUE_mapThruRows_forPrimaryKey_forTable --', tableName, primaryKey, arrayOfRowIDs)
+
+	return Promise.map(arrayOfRowIDs, (row_id) => {
+		return Promise.try(() => {
+			return database(tableName)
+				.where(primaryKey, '=', row_id )
+				.update({ isDeleted: true})
+		})
+	}).then((results) => {
+		console.log('db results', results)
+	})
+}
+
+
 module.exports = {
+	LookupInfo_Location_Project_ActivityType,
+
 	// get
 	getAllActivities,
 	getActivity_by_id,
@@ -1001,11 +1093,17 @@ module.exports = {
 
 	// put
 	put_DataForTable_update_Table_Field_withData,
-	hireUser_toEmployee,
+	
 	updateExistingTimesheet_onClockout,
 	update_FileName_ProfilePhoto_byUserID,
 	
+	// delete
+	put_IsDeletedTRUE_mapThruRows_forPrimaryKey_forTable,
+
 	// for testing
 	checkIfNeedToRepopulateTaskQueue, // for testing -- when scheduled activities reach zero, new such data are seeded ('repopulated') so that we have activity data to work with.
 	populateTestUserData, // for testing -- when scheduled activities reach zero, new such data are seeded so that we have activity data to work with.
+
+	// unused -- to delete
+	// hireUser_toEmployee, 
 }

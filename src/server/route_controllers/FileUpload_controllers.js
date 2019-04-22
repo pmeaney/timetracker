@@ -1,6 +1,7 @@
 const multer = require('multer');
 const path = require('path');
 // const dotenv = require("dotenv").config({ path: '../.env' });
+const Promise = require('bluebird')
 
 const Api_fns = require('../lib/api_fns')
 
@@ -26,7 +27,7 @@ const multerConfig_images = {
       const fileName_prefix = 'profilePhoto_user_id__' + req.session.user_id;
       const fileName_saved = fileName_prefix + '.' + fileType_extension;
       console.log('fileName_saved is', fileName_saved);
-      logFilenameToDB_multerFile(fileName_saved, 'profile_photo')
+      logFilenameToDB_multerFile(fileName_saved, req.session.user_id, 'profile_photo')
       next(null, fileName_saved);
     }
   }),
@@ -89,12 +90,12 @@ const multerConfig_docs = {
       if (fileType_extension === 'vnd.openxmlformats-officedocument.wordprocessingml.document'){
         const fileName_saved = fileName_prefix + '.docx'
         console.log('fileName_saved is', fileName_saved)
-        logFilenameToDB_multerFile(fileName_saved, 'profile_resume')
+        logFilenameToDB_multerFile(fileName_saved, req.session.user_id, 'profile_resume')
         next(null, fileName_saved);
       } else {
         const fileName_saved = fileName_prefix + '.' + fileType_extension
         console.log('fileName_saved is', fileName_saved)
-        logFilenameToDB_multerFile(fileName_saved, 'profile_resume')
+        logFilenameToDB_multerFile(fileName_saved, req.session.user_id, 'profile_resume')
         next(null, fileName_saved);
       }
       
@@ -133,11 +134,11 @@ const multerConfig_docs = {
 const uploadedPhotoConfig = multer(multerConfig_images).single('fileName_input');
 const uploadedResumeConfig = multer(multerConfig_docs).single('fileName_input');
 
-var logFilenameToDB_multerFile = (new_filename, photoOrResume_str) => {
+var logFilenameToDB_multerFile = (new_filename, user_id, photoOrResume_str) => {
   return Promise.try(() => {
     // note: we update the filename, because the filename is initialized in the DB call to create new user during registration
     // note: photoOrResume_str will be 'profile_photo' or 'profile_resume'
-    return Api_fns.update_FileName_ProfilePhoto_byUserID(new_filename, req.session.user_id, photoOrResume_str)
+    return Api_fns.update_FileName_ProfilePhoto_byUserID(new_filename, user_id, photoOrResume_str)
   })
 }
 

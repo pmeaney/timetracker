@@ -5,6 +5,7 @@ var SortData_ByPrimaryKey_And_Format_DateTimes = (arrayInput, dateTimesToConvert
 	// => ##########################
 	// console.log('data response Object.keys(dataResponse[0])[0] is ', Object.keys(dataResponse[0])[0])
 	// need to sort by the first key (in first object) which will be primary key of the table selected: Object.keys(dataResponse[0])[0]
+	console.log('arrayInput', arrayInput)
 	const keyToSortBy = Object.keys(arrayInput[0])[0]
 	const array_sortedBy_ObjectPrimaryKey = arrayInput.sort(sort_by_object_field(keyToSortBy, false, parseInt))
 	// console.log('array_sortedBy_ObjectPrimaryKey', array_sortedBy_ObjectPrimaryKey)

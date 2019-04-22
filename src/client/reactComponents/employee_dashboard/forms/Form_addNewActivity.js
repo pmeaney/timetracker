@@ -327,25 +327,37 @@ class FormAddNewActivity extends Component {
                 
                   <DayPickerInput onDayChange={this.handleDayChange_selectedDay}/>
                 <br /><br />
+                <p>Enter activity type:</p>
 
-                {/* // * Time picker */}
-                {timepicker_beginTime && <p>Activity begin time: {getLuxon_local_DateTime(timepicker_beginTime, 'time')}</p>}
-                {!timepicker_beginTime && <p>Choose begin time</p>} 
-                {!timepicker_beginTime && formSubmit_attempt &&
-                  <span className="myCustomError">{errors["timepicker_beginTime"]}</span>
+                { !dropdownSelected_ActivityType && formSubmit_attempt &&
+                  <span className="myCustomError">{errors["dropdownSelected_ActivityType"]}</span>
                 }
-                  <TimePicker
-                    showSecond={false}
-                    defaultValue={now}
-                    className="xxx"
-                    onChange={e => this.onChange('timepicker_beginTime', e)}
-                    format={format}
-                    use12Hours
-                    inputReadOnly
-                  />
+
+                <Select
+                  value={dropdownSelected_ActivityType}
+                  onChange={this.handleChange}
+                  options={dropdownOptions_ActivityTypes}
+                />
 
               </div>
               <div className="column">
+
+                {/* // * Time picker */}
+                  {timepicker_beginTime && <p>Activity begin time: {getLuxon_local_DateTime(timepicker_beginTime, 'time')}</p>}
+                  {!timepicker_beginTime && <p>Choose begin time</p>} 
+                  {!timepicker_beginTime && formSubmit_attempt &&
+                    <span className="myCustomError">{errors["timepicker_beginTime"]}</span>
+                  }
+                    <TimePicker
+                      showSecond={false}
+                      defaultValue={now}
+                      className="xxx"
+                      onChange={e => this.onChange('timepicker_beginTime', e)}
+                      format={format}
+                      use12Hours
+                      inputReadOnly
+                    />
+
                 
                 {/* // * Time picker */}
                 {timepicker_endTime && <p>Activity end time: {getLuxon_local_DateTime(timepicker_endTime, 'time')}</p>}
@@ -363,21 +375,6 @@ class FormAddNewActivity extends Component {
                     inputReadOnly
                   />
 
-              </div>
-              <div className="column">
-                
-                <p>Enter activity type:</p>
-
-                { !dropdownSelected_ActivityType && formSubmit_attempt &&
-                  <span className="myCustomError">{errors["dropdownSelected_ActivityType"]}</span>
-                }
-
-                <Select
-                  value={dropdownSelected_ActivityType}
-                  onChange={this.handleChange}
-                  options={dropdownOptions_ActivityTypes}
-                />
-                <br /><br />
               </div>
             </div>
 

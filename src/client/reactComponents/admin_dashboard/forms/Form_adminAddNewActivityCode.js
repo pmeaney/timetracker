@@ -5,19 +5,27 @@ import "../../../scss/scss-ReactBootstrapTable/bootstrap.scss"
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css'
 import axios from 'axios'
 
+const initialErrorData = {
+  input_item_activityCodeName: ''
+}
+
+const initialState = {
+  retrievedTable: [],
+  columnNames: [],
+  errors: initialErrorData,
+  input_item_activityCodeName: '',
+  formSubmit_attempt: false
+}
+
 class Form_adminAddNewActivityCode extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      retrievedTable: [],
-      columnNames: [],
-      input_item_activityCodeName: ''
-    }
+    this.state = initialState
 
     this.onChangeInput = this.onChangeInput.bind(this)
-    // Handle submit
     this.onSubmit = this.onSubmit.bind(this)
+    this.handleValidation = this.handleValidation.bind(this)
   }
 
   onChangeInput = (event) => {
@@ -29,42 +37,62 @@ class Form_adminAddNewActivityCode extends Component {
     }
   }
 
+  handleValidation() {
+    let errors = {};
+    let formIsValid = true;
+
+    console.log('running handleValidation on this state:', this.state)
+                
+    if (!this.state.input_item_activityCodeName) {
+      // console.log('ran check on !this.state.input_item_activityCodeName, here is result:', !this.state.input_item_activityCodeName)
+      // console.log('setting error: input_item_activityCodeName -- here is state:', this.state.input_item_activityCodeName)
+
+      formIsValid = false;
+      errors["input_item_activityCodeName"] = "Please enter the name of the activity type.";
+    }
+
+    this.setState({ errors: errors });
+    console.log('errors state:', this.state.errors)
+    return formIsValid;
+  }
+
   onSubmit = (event) => {
     event.preventDefault()
     console.log('form submitted')
-    // console.log('access form data directly from event this way -->', event.target[0].value)
     console.log('form state', this.state)
 
-    // submit state to post route
-    // post to this url: /emp_api/profile/uploadContactInfo
-
-    
-
-    var token = document.querySelector("[name=csrf-param][content]").content // token is on meta tag
-    let post_config = {
-      headers: {
-        'CSRF-Token': token,
-      }
-    }
-
-    var dataObj_toUpload = {
-      activity_type: this.state.input_item_activityCodeName
-    }
-
-    axios
-      .post(
-        '/admin_api/createRow/activity_codes',
-        dataObj_toUpload,
-        post_config
-      )
-      .then((response) => {
-        console.log('response from server is', response)
-      })
-      .catch((error) => { console.log('error: ', error) })
-    // clear state when all done
     this.setState({
-      input_item_activityCodeName: '',
+      formSubmit_attempt: true
     })
+
+    if (this.handleValidation()) {
+      var token = document.querySelector("[name=csrf-param][content]").content // token is on meta tag
+      let post_config = {
+        headers: {
+          'CSRF-Token': token,
+        }
+      }
+
+      var dataObj_toUpload = {
+        activity_type: this.state.input_item_activityCodeName
+      }
+
+      axios
+        .post(
+          '/admin_api/createRow/activity_codes',
+          dataObj_toUpload,
+          post_config
+        )
+        .then((response) => {
+          console.log('response from server is', response)
+          // clear state when all done
+          this.setState({
+            initialState
+          })
+        })
+        .catch((error) => { console.log('error: ', error) })
+      
+    }
   }
 
 
@@ -85,6 +113,10 @@ class Form_adminAddNewActivityCode extends Component {
   
   render () {
     // console.log('this.state', this.state)
+    const { input_item_activityCodeName,
+            formSubmit_attempt,
+            errors  } = this.state 
+
     return (
       <div>
         <div className="container">
@@ -94,6 +126,12 @@ class Form_adminAddNewActivityCode extends Component {
             </p>
             <br />
             <form onSubmit={this.onSubmit}>
+
+            {!input_item_activityCodeName && <p>Name of activity code (activity type):</p>}
+                {!input_item_activityCodeName && formSubmit_attempt &&
+                  <span className="myCustomError">{errors["input_item_activityCodeName"]}</span>
+                }
+
               <input 
                 className="input" 
                 type="text" 

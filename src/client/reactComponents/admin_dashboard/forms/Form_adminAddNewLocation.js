@@ -7,18 +7,31 @@ import axios from 'axios'
 // Note: After uploading the address, I should do a GPS coordinates conversion on the backend,
 // and then store the coordinates in the locations DB alongisde the corresponding location.
 
+// Regarding initialErrorData -- these become errors[location_type] for example.
+// This object will simply hold text data which will be rendered as the error message next to each input.
+const initialErrorData = { 
+  location_type: '',
+  location_name: '',
+  address: '',
+}
+
+const initialState = {
+  retrievedTable: [],
+  columnNames: [],
+  address: '', // will extract city, state on submit
+  location_type: 'commercial', // set as default
+  location_name: '',
+  location_type_HandlerActivated: false,
+  formSubmit_attempt: false,
+  errors: initialErrorData
+}
+
 
 class Form_adminAddNewLocation extends Component {
 
   constructor(props) {
     super(props)
-    this.state = {
-      retrievedTable: [],
-      columnNames: [],
-      address: '', // will extract city, state on submit
-      location_type: 'commercial', // set as default
-      location_name: ''
-    }
+    this.state = initialState
 
     // this.onChangeInput = this.onChangeInput.bind(this)
     // // Handle submit
@@ -42,19 +55,59 @@ class Form_adminAddNewLocation extends Component {
     console.log('address typeof is', typeof address)
     console.log('address typeof is (toString)', typeof address.toString())
 
-    this.setState({ address: address })
+    this.setState({ address })
   }
 
   handleChange_location_type = (location_type) => {
     console.log('In handler...  handleChange_location_type', location_type)
-    this.setState({ location_type });
+    this.setState({ 
+      location_type,
+      location_type_HandlerActivated: true
+    });
   }
+
+  handleValidation() {
+    let errors = {};
+    let formIsValid = true;
+
+    console.log('running handleValidation on this state:', this.state)
+                
+    if (!this.state.location_type_HandlerActivated) {
+      // console.log('ran check on !this.state.input_item_activityCodeName, here is result:', !this.state.input_item_activityCodeName)
+      // console.log('setting error: input_item_activityCodeName -- here is state:', this.state.input_item_activityCodeName)
+      formIsValid = false;
+      errors["location_type"] = "Please select the location type.";
+    }
+
+    if (!this.state.address) {
+      // console.log('ran check on !this.state.input_item_activityCodeName, here is result:', !this.state.input_item_activityCodeName)
+      // console.log('setting error: input_item_activityCodeName -- here is state:', this.state.input_item_activityCodeName)
+      formIsValid = false;
+      errors["address"] = "Please enter an address.";
+    }
+
+    if (!this.state.location_name) {
+      // console.log('ran check on !this.state.input_item_activityCodeName, here is result:', !this.state.input_item_activityCodeName)
+      // console.log('setting error: input_item_activityCodeName -- here is state:', this.state.input_item_activityCodeName)
+      formIsValid = false;
+      errors["location_name"] = "Please enter a locationa name.";
+    }
+
+    this.setState({ errors: errors });
+    console.log('errors state:', this.state.errors)
+    return formIsValid;
+  }
+
 
   onSubmit = (event) => {
     event.preventDefault()
     console.log('form submitted')
     // console.log('access form data directly from event this way -->', event.target[0].value)
     console.log('form state', this.state)
+
+    this.setState({
+      formSubmit_attempt: true
+    })
 
     // submit state to post route
     // post to this url: /emp_api/profile/uploadContactInfo
@@ -69,40 +122,50 @@ class Form_adminAddNewLocation extends Component {
     var city = splitAddress[1]
     var state = splitAddress[2]
 
-    var token = document.querySelector("[name=csrf-param][content]").content // token is on meta tag
-    let post_config = {
-      headers: {
-        'CSRF-Token': token,
+    if (this.handleValidation()) {
+      var token = document.querySelector("[name=csrf-param][content]").content // token is on meta tag
+
+      let post_config = {
+        headers: {
+          'CSRF-Token': token,
+        }
       }
-    }
 
-    var dataObj_toUpload = {
-      location_address: address,
-      location_city: city,
-      location_state: state,
-      location_name: this.state.location_name,
-      location_type: this.state.location_type['value']
-    }
+      var dataObj_toUpload = {
+        location_address: address,
+        location_city: city,
+        location_state: state,
+        location_name: this.state.location_name,
+        location_type: this.state.location_type['value']
+      }
 
-    axios
-      .post(
-        '/admin_api/createRow/locations',
-        dataObj_toUpload,
-        post_config
-      )
-      .then((response) => {
-        console.log('response from server is', response)
-      })
-      .catch((error) => { console.log('error: ', error) })
-    // clear state when all done
-    this.setState({
-      location_type: '',
-      location_name: '',
-      address: '',
-    })
+      axios
+        .post(
+          '/admin_api/createRow/locations',
+          dataObj_toUpload,
+          post_config
+        )
+        .then((response) => {
+          console.log('response from server is', response)
+        })
+        .catch((error) => { console.log('error: ', error) })
+        
+        this.setState({
+          initialState
+        })
+    }
   }
   
   render () {
+
+    const {
+      location_type,
+      location_name,
+      location_type_HandlerActivated,
+      address,
+      formSubmit_attempt,
+      errors
+    } = this.state 
 
     const dropdownOptions_LocationTypes = [ 
       { value: 'commercial', label: 'commercial' },
@@ -117,6 +180,11 @@ class Form_adminAddNewLocation extends Component {
             <form onSubmit={this.onSubmit}>
               <p className="is-size-4"><strong>Location creation form</strong></p>
               <br/>
+
+              {!location_type_HandlerActivated && <p>Select date for activity</p>}
+                {!location_type_HandlerActivated && formSubmit_attempt &&
+                  <span className="myCustomError">{errors["location_type"]}</span>
+                }
             
               <Select
                 className='locations_form_inputs'
@@ -126,7 +194,12 @@ class Form_adminAddNewLocation extends Component {
               />
 
               <br /><br />
-              <p>Enter location address:</p>
+              
+              {!address && <p>Enter location address</p>}
+                {!address && formSubmit_attempt &&
+                  <span className="myCustomError">{errors["address"]}</span>
+                }
+            
               <PlacesAutocomplete
                 className='locations_form_inputs'
                 value={this.state.address}
@@ -167,10 +240,11 @@ class Form_adminAddNewLocation extends Component {
                 )}
               </PlacesAutocomplete>
               <br/><br/>
-              <p>Enter location name:</p>
-              {/* {!newActivityNotes && formSubmit_attempt &&
-                <span className="myCustomError">{errors["newActivityNotes"]}</span>
-              } */}
+              
+              {!location_name && <p>Enter location name:</p>}
+                {!location_name && formSubmit_attempt &&
+                  <span className="myCustomError">{errors["location_name"]}</span>
+                }
               <input 
                 className='locations_form_inputs'
                 type="text" 

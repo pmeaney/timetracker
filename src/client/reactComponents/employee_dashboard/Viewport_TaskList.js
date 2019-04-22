@@ -78,15 +78,13 @@ class Viewport_TaskList extends Component {
     es.onmessage = (e) => {
       console.log('on message e', e)
       const es_data = JSON.parse(e.data)
-      // console.log('[Viewport_tasklist cDM] employee event stream data', es_data)
+      // console.log(e'[Viewport_tasklist cDM] employee event stream data', es_data)
       console.log('New activity data to append is ', es_data.newActivity)
 
-      if (es_data.newActivity_type === "employeeSelfAssignedActivity") {
-
+      if (es_data.title === "newActivity") {
         // Here, we add it to the new tasks array within state.
         // So, take state, and append a new activity
         // this.state.employee_data_newTasks_forClockIn
-
         const joined_unClockedInTasks_withNew_employeeSelfAssignedActivity = this.state.employee_data_newTasks_forClockIn.concat(es_data.newActivity)
 
         this.setState({

@@ -38,6 +38,7 @@ const createUser = (email, hashed_password) => {
 				{	user_email: email,
 					hashed_password: hashed_password,
 					user_type: 'general-hasNot-applied',
+					isDeleted: false
 				}
 			])
 			.returning('*')
@@ -59,6 +60,7 @@ const createUser = (email, hashed_password) => {
 						user_profile_state: 'not-yet-completed',
 						user_profile_imageFilename: 'not-yet-completed',
 						user_profile_resumeFilename: 'not-yet-completed.pdf',
+						isDeleted: false
 					}
 				])
 		})
