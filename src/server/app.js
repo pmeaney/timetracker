@@ -18,7 +18,7 @@ console.log('current time is', new Date())
 
 const environment = process.env.NODE_ENV;
 const knex_config = require('./knexfile');
-const database = require('knex')(knex_config[environment]);
+const database = require('knex')(knex_cconfig[environment]);
 
 // ############## Session #####################
 const session = require('express-session');

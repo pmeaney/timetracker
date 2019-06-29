@@ -9,9 +9,10 @@ A fullstack javscript app (expressjs/reactjs) for tracking timesheets for hourly
 #### Basic install workflow
 To set this up locally for yourself would require a few steps:
 - Install & configure postgreSQL
-- Clone & install this project in two locations:
-  - root directory
-  - server directory: ./src/server
+- Clone this project.
+- Install at two locations:
+  - root directory  (For the clientside development package.json)
+  - server directory: ./src/server (For the serverside development package.json)
 - Create .env file credentials (DB, API)
 - Run knex db migrations & seeding, and manually create sessions table for express-sessions
 - Compile frontend client with webpack configuration files
@@ -82,3 +83,12 @@ To set this up locally for yourself would require a few steps:
 ![alt screenshot4](https://github.com/pmeaney/timetracker/blob/master/src/server/public/project_documentation/screenshots/4.png)
 
 ![alt screenshot5](https://github.com/pmeaney/timetracker/blob/master/src/server/public/project_documentation/screenshots/5.png) -->
+
+
+#### Testing
+
+I written any tests yet, but plan to.
+(REST API test examples: 
+- https://github.com/fortunejs/fortune-json-api/blob/master/test/index.js
+- https://github.com/santiq/bulletproof-nodejs
+)
