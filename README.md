@@ -13,7 +13,7 @@ To set this up locally for yourself would require a few steps:
 - Install at two locations:
   - root directory  (For the clientside development package.json)
   - server directory: ./src/server (For the serverside development package.json)
-- Create .env file credentials (DB, API)
+- Create .env file credentials (DB, API) -- See file "example-.env.file.txt" for instructions.
 - Run knex db migrations & seeding, and manually create sessions table for express-sessions
 - Compile frontend client with webpack configuration files
 - Run server ("npm run dev" -- see clientside package.json)
